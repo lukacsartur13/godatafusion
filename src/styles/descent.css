@@ -1,0 +1,837 @@
+/* ============================================================
+   03 / THE DATA DESCENT — PHASE 11
+
+   THIS SECTION DOES NOT USE THE SITE'S LAYOUT GRID, AND IT SHOULD NOT.
+
+   Everywhere else on this site the type sits on one editorial measure
+   inside `--gutter`, under the engineering frame, with a headline over a
+   lede over a rule. That grammar is what makes the rest of the page read
+   as one document. Inside the journey it is the wrong instrument: the
+   reader is not looking at a page any more, they are inside a building,
+   and a headline pinned to a left margin says "page" in every frame.
+
+   So this file declares a second, LOCAL system — PART 16's "no-rules
+   zone", which is not no rules. Its rules are:
+
+     DEPTH        type has a place in the space, not on the page. Words
+                  crop at the viewport edge because the space continues
+                  past it, and nothing is centred by default.
+     DATUM        technical marks align to real elevations and real
+                  identifiers, set in the mono face, always small.
+     ARCHITECTURE the field is 12 x 12 and every placement is on it.
+                  Nothing is at a random percentage.
+     MOVEMENT     entrances are OPACITY plus a short vertical rise, and
+                  nothing else. There is no horizontal entrance anywhere
+                  in this file — PART 21 — and no rotation used as a
+                  device.
+
+   TWO CUSTOM PROPERTIES DRIVE ALL OF IT, both written by
+   modules/descent.js on the chapter's own sticky element:
+
+     --on   how present this chapter is, 0 → 1 → 0
+     --k    local progress through the chapter, 0 → 1
+
+   and each element carries `--d`, the point in `--k` at which it arrives.
+   That is the whole animation system: no per-element tweens, no
+   ScrollTrigger instance per word, one style write per chapter per frame.
+
+   PERFORMANCE, PART 24. Nothing in this file uses backdrop-filter,
+   mix-blend-mode or filter. There is no new stacking context that needs
+   its own render surface, because the one thing Phase 8.3 proved is that
+   this page can afford exactly one full-screen compositing layer and the
+   WebGL canvas is it.
+   ============================================================ */
+
+.dsc {
+  position: relative;
+  z-index: 2;
+  /* The journey's total scroll length. Every block's height is its own
+     share of it, and that share is the SAME number webgl/descent.js keys
+     its camera path to — so the pacing map is written once and the type
+     can never drift out of step with the camera. */
+  --dsc-total: 1150vh;
+}
+
+/* The whole journey's scroll length lives on the SECTION, and the one
+   sticky pane inside it is what the reader looks at for the duration.
+   `--span` stays on each state because it is the pacing map and because
+   it is what the no-JS and reduced-motion stacks lay out from. */
+.dsc { height: var(--dsc-total); }
+.dsc__stick { position: sticky; top: 0; height: 100svh; }
+
+.dsc__ch { position: absolute; inset: 0; }
+
+.dsc__hold {
+  position: absolute; inset: 0;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  /* No padding: a word is allowed to run off the edge of the field,
+     because the space it is in runs off the edge of the screen. */
+  pointer-events: none;
+  opacity: var(--on, 0);
+  /* A chapter that is not being read is not composited at all. */
+  visibility: var(--vis, hidden);
+  /* ------------------------------------------------------------------
+     ONE PROMOTED LAYER, AND ONLY WHILE IT IS BEING READ.
+
+     The first cut put `will-change: opacity, transform` on every item of
+     every state — about twenty standing render surfaces for the whole
+     eleven screens, which is precisely the class of cost Phase 8.3 was
+     spent removing (see styles/nav.css and the note on the stage's blur
+     hint in modules/narrative.js: a promise made for the duration of a
+     page is not a hint, it is a permanent surface).
+
+     The promise is made per STATE instead of per word, and it is made
+     when that state starts being read and withdrawn when it stops —
+     modules/descent.js writes `--wc` alongside `--vis`. At most two
+     states overlap, so at most two surfaces exist at any moment.
+     ------------------------------------------------------------------ */
+  will-change: var(--wc, auto);
+}
+
+/* The arrival curve, resolved per element. `--d` is when this element
+   joins, `--e` is how far in it is. Multiplying by 5 gives every element
+   a fifth of the chapter to arrive in, which at these block lengths is
+   between a third and a whole viewport of scroll. */
+.dsc__hold > * {
+  --e: clamp(0, calc((var(--k, 0) - var(--d, 0)) * 5), 1);
+  margin: 0;
+  opacity: var(--e);
+  transform: translate3d(0, calc((1 - var(--e)) * 2.4vh), 0);
+}
+
+/* ------------------------------------------------------------------
+   the two type tiers of the journey
+
+   LARGE is the display face at sizes the rest of the site never uses,
+   because a word encountered in space is not a headline on a page — it
+   is signage, and signage is read at a glance from a distance.
+
+   SMALL is the mono face, and it is only ever an identifier, an
+   elevation or a count. There is no third tier: PART 17 asks for single
+   words, numbers and technical anchors, and a paragraph in the middle of
+   this section would be the page reasserting itself.
+   ------------------------------------------------------------------ */
+
+.dsc__word, .dsc__frag, .dsc__lock span, .dsc__final span, .dsc__pw {
+  display: block;
+  font-family: var(--ff-display);
+  font-weight: 500;
+  line-height: .82;
+  letter-spacing: var(--ls-dxl);
+  text-transform: uppercase;
+  color: var(--fg);
+  text-wrap: nowrap;
+}
+
+.dsc__tag, .dsc__datum-k, .dsc__proj, .dsc__vol-u, .dsc__sect, .dsc__ladder,
+.dsc__levels, .dsc__layers, .dsc__field {
+  font-family: var(--ff-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-c);
+}
+
+.dsc__hu {
+  font-family: var(--ff-text);
+  font-size: clamp(.82rem, .9vw, 1rem);
+  line-height: 1.5;
+  color: var(--fg-50);
+  max-width: 30ch;
+  text-wrap: pretty;
+}
+
+/* ============================================================
+   01 · ENTRY — "GO INSIDE."
+
+   PART 02 asks for the two words NOT to be set neatly. They are on the
+   field's diagonal instead: GO sits high and left of centre at a size
+   that reads as a caption to the building behind it, and INSIDE. is
+   four times its size, low and right, and deliberately runs past the
+   right edge of the viewport. The sentence is completed off-screen,
+   which is the point — the thing it names is off-screen too.
+   ============================================================ */
+.dsc__lock { display: contents; }
+
+.dsc__go {
+  grid-area: 4 / 3 / 5 / 7;
+  align-self: end;
+  font-size: clamp(2.2rem, 5.4vw, 6.4rem);
+  color: var(--fg-60);
+}
+.dsc__in {
+  grid-area: 7 / 6 / 11 / 13;
+  align-self: start;
+  /* Larger than the frame can hold, on purpose. */
+  font-size: clamp(4.2rem, 17vw, 19rem);
+  margin-right: -6vw;
+  --d: .10;
+}
+.dsc__hu--entry { grid-area: 11 / 3 / 12 / 7; --d: .22; }
+
+/* Technical anchors: one at the top edge of the field, one at the
+   bottom, both at the field's own margin rather than the page's. */
+.dsc__tag--a { grid-area: 2 / 2 / 3 / 5; align-self: center; }
+.dsc__tag--b { grid-area: 12 / 10 / 13 / 13; align-self: center; justify-self: end;
+  padding-right: clamp(12px, 2vw, 34px); --d: .30; }
+
+/* ============================================================
+   02 · GLASS
+   Two marks, and they pass as fast as the crossing does.
+   ============================================================ */
+.dsc__tag--g1 { grid-area: 6 / 2 / 7 / 5; align-self: center; }
+.dsc__tag--g2 { grid-area: 7 / 2 / 8 / 6; align-self: center; color: var(--fg-50); --d: .12; }
+
+/* ============================================================
+   03 · INTERIOR — "PRESENCE."
+
+   The word crops on the LEFT. The camera has just come through the south
+   glazing and is looking north-west across the room, so the space
+   continues to the left of the frame and the word continues with it.
+   ============================================================ */
+.dsc__word--presence {
+  grid-area: 5 / 1 / 9 / 11;
+  align-self: center;
+  font-size: clamp(3.4rem, 13.5vw, 15rem);
+  margin-left: -4vw;
+  --d: .16;
+}
+.dsc__tag--i1 { grid-area: 3 / 8 / 4 / 12; align-self: center; justify-self: end; }
+.dsc__tag--i2 { grid-area: 4 / 8 / 5 / 12; align-self: center; justify-self: end;
+  color: var(--fg-50); --d: .06; }
+.dsc__hu--interior { grid-area: 10 / 8 / 12 / 13; padding-right: clamp(12px, 2vw, 34px);
+  --d: .34; }
+
+/* ============================================================
+   04 · CAPTURE — EVERY / VIEW / REMAINS.
+
+   Three fragments, three positions, three arrival times. They step down
+   and to the right across the field the way a sampling round steps
+   around a room — and each one is a separate element in the markup, in
+   reading order, so the sentence survives being taken apart.
+   ============================================================ */
+.dsc__frag--1 { grid-area: 3 / 2 / 5 / 7;  align-self: center;
+  font-size: clamp(2.6rem, 8.2vw, 9rem); --d: 0; }
+.dsc__frag--2 { grid-area: 6 / 7 / 8 / 13; align-self: center; justify-self: end;
+  font-size: clamp(2.2rem, 6.6vw, 7.4rem); color: var(--fg-60);
+  padding-right: clamp(12px, 3vw, 60px); --d: .13; }
+.dsc__frag--3 { grid-area: 9 / 3 / 12 / 11; align-self: center;
+  font-size: clamp(3.4rem, 11.6vw, 13rem); --d: .26; }
+.dsc__hu--capture { grid-area: 5 / 2 / 6 / 6; --d: .40; }
+.dsc__tag--c1 { grid-area: 12 / 2 / 13 / 7; align-self: center; --d: .46; }
+
+/* ============================================================
+   05 · FLOOR CROSSING
+
+   Two rows and a rule between them, at the vertical centre of the frame,
+   because that is where the slab is while the camera is inside it. It is
+   the only symmetrical composition in the journey, and it is symmetrical
+   for the same reason a section drawing is.
+   ============================================================ */
+.dsc__sect {
+  grid-area: 6 / 2 / 8 / 7;
+  align-self: center;
+  list-style: none; padding: 0;
+  display: grid; gap: 0;
+}
+.dsc__sect li {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 3ch;
+  padding: .55em 0;
+  border-top: var(--rule-w) solid var(--accent-40);
+}
+.dsc__sect li:last-child { border-bottom: var(--rule-w) solid var(--accent-40); }
+.dsc__sect b { font-weight: 400; letter-spacing: var(--ls-micro); }
+.dsc__sect i { font-style: normal; color: var(--fg-50); }
+.dsc__hu--floor { grid-area: 8 / 2 / 9 / 7; --d: .30; }
+
+/* ============================================================
+   06 · THE UNDERWORLD — the datum ladder and DEPTH.
+
+   PART 08 asks for a large vertical datum system rather than a
+   horizontal headline. The ladder is the terrain's own contour set,
+   written by modules/descent.js, and it runs the full height of the
+   field on the left. DEPTH. is placed independently of it, low and
+   right, cropping the bottom edge — the two are not a lockup and must
+   not read as one.
+   ============================================================ */
+.dsc__datum {
+  grid-area: 1 / 2 / 13 / 5;
+  align-self: center;
+  display: grid; gap: clamp(10px, 1.4vh, 18px);
+  align-content: center;
+}
+.dsc__datum-k { color: var(--fg-50); }
+.dsc__ladder { list-style: none; margin: 0; padding: 0; display: grid; }
+.dsc__ladder li {
+  display: grid;
+  grid-template-columns: 7ch 1fr;
+  align-items: center;
+  gap: 1.2ch;
+  /* The rule between two elevations IS the interval. */
+  min-height: clamp(26px, 4.2vh, 52px);
+  color: var(--accent-c);
+}
+.dsc__ladder li::before {
+  content: '';
+  grid-column: 2;
+  height: var(--rule-w);
+  background: var(--accent-40);
+}
+.dsc__ladder li b { font-weight: 400; font-size: clamp(.95rem, 1.5vw, 1.5rem); }
+.dsc__ladder li i {
+  font-style: normal; grid-column: 2; grid-row: 1;
+  justify-self: end; color: var(--fg-50);
+  font-size: var(--fs-micro); letter-spacing: var(--ls-micro);
+}
+.dsc__ladder li[data-mark] b { color: var(--fg-hi); }
+.dsc__ladder li[data-mark]::before { background: var(--accent-c); }
+.dsc__datum-n {
+  font-family: var(--ff-text); font-size: clamp(.7rem, .78vw, .82rem);
+  line-height: 1.45; color: var(--fg-50); letter-spacing: 0;
+  max-width: 34ch; text-transform: none;
+}
+.dsc__word--depth {
+  grid-area: 9 / 6 / 13 / 13;
+  align-self: end;
+  justify-self: end;
+  font-size: clamp(3.6rem, 15vw, 17rem);
+  /* Cropped by the bottom edge: the space keeps going down. */
+  margin-bottom: -1.6vh;
+  padding-right: clamp(10px, 2vw, 40px);
+  --d: .30;
+}
+
+/* ============================================================
+   07 · VOLUME — the number IS the architecture
+
+   PART 09: not a KPI card. The figure is set at the largest size
+   anywhere on this site, sitting on the field's own baseline with its
+   unit hung off the top right of it as a superscript would be on a
+   drawing. Everything else in the frame is a caption to it.
+   ============================================================ */
+.dsc__vol {
+  grid-area: 4 / 2 / 10 / 12;
+  align-self: center;
+  display: flex; align-items: flex-start; gap: clamp(8px, 1.4vw, 26px);
+}
+.dsc__vol-n {
+  font-family: var(--ff-display); font-weight: 500;
+  font-size: clamp(4.6rem, 21vw, 24rem);
+  line-height: .78; letter-spacing: -.05em;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}
+.dsc__vol-u {
+  padding-top: .9em;
+  color: var(--accent-c);
+  font-size: var(--fs-mono);
+}
+.dsc__tag--v1 { grid-area: 3 / 2 / 4 / 5; align-self: end; }
+.dsc__tag--v2 { grid-area: 10 / 2 / 11 / 6; align-self: start; color: var(--fg-50); --d: .16; }
+.dsc__hu--volume { grid-area: 11 / 7 / 13 / 13; justify-self: end;
+  padding-right: clamp(12px, 2vw, 34px); --d: .34; }
+
+/* ============================================================
+   08 · ASCENT — level signage
+
+   PART 10's level moments. Each mark is at extreme scale and each one is
+   ALLOWED TO LEAVE THE FRAME, because that is what a level number does
+   when you pass it: it is never centred, it is never complete, and it is
+   gone before you have finished reading it.
+
+   They are stacked on the field in the order the camera meets them —
+   L00 lowest, L02 highest — so the block itself reads as a rise.
+   ============================================================ */
+.dsc__levels {
+  grid-area: 1 / 1 / 13 / 13;
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-rows: repeat(3, 1fr);
+}
+.dsc__levels li {
+  position: relative;
+  display: grid;
+  align-content: center;
+  opacity: var(--lv, 0);
+  transform: translate3d(0, calc((1 - var(--lv, 0)) * 4vh), 0);
+}
+.dsc__levels b {
+  font-family: var(--ff-display); font-weight: 500;
+  font-size: clamp(4rem, 20vw, 23rem);
+  line-height: .78; letter-spacing: -.05em;
+  color: var(--fg);
+}
+.dsc__levels i {
+  font-style: normal;
+  font-family: var(--ff-display); font-weight: 500;
+  font-size: clamp(1.4rem, 4.4vw, 5rem);
+  line-height: .9; letter-spacing: var(--ls-dm);
+  text-transform: uppercase;
+  color: var(--fg-60);
+}
+.dsc__levels u {
+  text-decoration: none;
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); color: var(--accent-c);
+  font-variant-numeric: tabular-nums;
+}
+/* L02 is met last and sits highest; it crops off the top. L00 crops off
+   the bottom. The middle one is the only one you see whole. */
+.dsc__levels li[data-level="L02"] { justify-items: start; margin-left: -2vw; margin-top: -4vh; }
+.dsc__levels li[data-level="L01"] { justify-items: end;   margin-right: -1vw; }
+.dsc__levels li[data-level="L00"] { justify-items: start; margin-left: 6vw; margin-bottom: -5vh; }
+.dsc__levels li[data-level="L01"] u,
+.dsc__levels li[data-level="L01"] i { text-align: right; }
+/* Document order is L00 → L01 → L02; the field order is the reverse,
+   because the camera is going up. */
+.dsc__levels li[data-level="L00"] { grid-row: 3; }
+.dsc__levels li[data-level="L01"] { grid-row: 2; }
+.dsc__levels li[data-level="L02"] { grid-row: 1; }
+
+/* ============================================================
+   09 · PERSPECTIVE COLLAPSE
+   An instrument readout, because what is changing is an instrument.
+   ============================================================ */
+.dsc__proj {
+  grid-area: 2 / 8 / 4 / 13;
+  align-self: center; justify-self: end;
+  padding-right: clamp(12px, 2vw, 34px);
+  display: grid; gap: 6px; text-align: right;
+}
+.dsc__proj-k { color: var(--fg-50); }
+.dsc__proj-v { color: var(--accent-c); font-size: clamp(.95rem, 1.6vw, 1.5rem); }
+.dsc__hu--collapse { grid-area: 11 / 2 / 13 / 6; --d: .24; }
+
+/* ============================================================
+   10 · THE PLAN IS THE TYPOGRAPHIC GRID — PART 12
+
+   The four words are positioned by modules/descent.js onto the projected
+   centres of four real rooms on the L01 drawing. `--px` / `--py` are
+   those centres in pixels; the CSS only has to consent to being placed.
+
+   The fallback below is not decoration: if the projector has not run —
+   no JS, no WebGL, reduced motion — the words fall back onto the field
+   and the phrase still reads as a phrase across a screen.
+   ============================================================ */
+.dsc__phrase {
+  grid-area: 1 / 1 / 13 / 13;
+  position: relative;
+  margin: 0; font-weight: 500;
+}
+.dsc__pw {
+  position: absolute;
+  left: var(--px, 50%); top: var(--py, 50%);
+  transform: translate3d(-50%, calc(-50% + (1 - var(--e)) * 2vh), 0);
+  font-size: clamp(1.5rem, 4.4vw, 4.6rem);
+  color: var(--fg);
+  opacity: var(--e);
+  white-space: nowrap;
+}
+.dsc__pw[data-room="1"] { --d: .10; }
+.dsc__pw[data-room="2"] { --d: .20; }
+.dsc__pw--end { --d: .30; font-size: clamp(1.9rem, 6vw, 6.4rem); }
+/* Before the projector has a frame to read, the words sit on the field. */
+.dsc__phrase:not(.is-placed) .dsc__pw[data-room="0"] { --px: 22%; --py: 26%; }
+.dsc__phrase:not(.is-placed) .dsc__pw[data-room="1"] { --px: 62%; --py: 40%; }
+.dsc__phrase:not(.is-placed) .dsc__pw[data-room="2"] { --px: 30%; --py: 62%; }
+.dsc__phrase:not(.is-placed) .dsc__pw[data-room="3"] { --px: 68%; --py: 76%; }
+.dsc__tag--p1 { grid-area: 12 / 2 / 13 / 7; align-self: center; --d: .40; }
+
+/* ============================================================
+   11 · DISASSEMBLY
+   A layer key. It is a legend for what the drawing is doing, and it
+   arrives one line at a time, in the order the layers detach.
+   ============================================================ */
+.dsc__layers {
+  grid-area: 3 / 8 / 11 / 13;
+  align-self: center; justify-self: end;
+  /* Clear of the section tracker, which lives in the right margin from
+     1240 up and is still live navigation during the journey (PART 19). */
+  padding-right: clamp(12px, 7vw, 118px);
+  list-style: none; margin: 0;
+  display: grid; gap: 0; min-width: min(30ch, 40vw);
+}
+.dsc__layers li {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 2ch;
+  padding: .62em 0;
+  border-bottom: var(--rule-w) solid var(--rule-secondary);
+  opacity: var(--lv, 0);
+  transform: translate3d(0, calc((1 - var(--lv, 0)) * 1.6vh), 0);
+}
+.dsc__layers b { font-weight: 400; letter-spacing: var(--ls-micro); color: var(--fg-60); }
+.dsc__layers i { font-style: normal; color: var(--accent-c); }
+.dsc__layers li:first-child b { color: var(--fg); }
+
+/* ============================================================
+   12 · THE DATA FIELD — PART 14
+
+   "Let numeric data take over scale. Body text almost disappears."
+
+   There is no body text here at all. The field is a set of measured
+   values at four different sizes, placed on the 12 x 12 field so that
+   the largest are read first and the identifiers are found afterwards —
+   which is the order the data was produced in.
+   ============================================================ */
+.dsc__field {
+  grid-area: 1 / 1 / 13 / 13;
+  list-style: none; margin: 0; padding: 0;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+}
+.dsc__field li {
+  display: grid; align-content: center; gap: .2em;
+  grid-area: var(--a);
+  /* The field's own margin. Numbers may crop at the viewport edge, but a
+     LABEL that loses its last letter is a defect rather than a crop. */
+  padding-inline: clamp(12px, 2vw, 34px);
+  justify-items: var(--j, start);
+  opacity: var(--lv, 0);
+  transform: translate3d(0, calc((1 - var(--lv, 0)) * 2vh), 0);
+}
+.dsc__field b {
+  font-family: var(--ff-display); font-weight: 500;
+  font-size: var(--fz, clamp(2rem, 7vw, 8rem));
+  line-height: .8; letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+  white-space: nowrap;
+}
+.dsc__field i {
+  font-style: normal;
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); color: var(--accent-c);
+}
+
+/* ============================================================
+   13 · THE FINAL STATEMENT
+
+   PART 15's closing composition, and it is three separate placements
+   rather than a centred lockup: REALITY, at the top left of the field,
+   MADE small and far into it, COMPUTABLE. very large across the bottom
+   and running off the left edge. The sentence is assembled by reading
+   the frame, which is what the whole journey has been asking the reader
+   to do.
+   ============================================================ */
+.dsc__final { display: contents; }
+.dsc__f1 {
+  grid-area: 3 / 2 / 5 / 8; align-self: center;
+  font-size: clamp(2.6rem, 9vw, 10rem);
+}
+.dsc__f2 {
+  grid-area: 6 / 8 / 7 / 12; align-self: center; justify-self: end;
+  font-size: clamp(1rem, 2.2vw, 2.2rem);
+  color: var(--fg-50);
+  padding-right: clamp(12px, 2vw, 34px);
+  --d: .16;
+}
+.dsc__f3 {
+  grid-area: 8 / 1 / 12 / 13; align-self: center;
+  font-size: clamp(3.2rem, 14.5vw, 16rem);
+  margin-left: -3vw;
+  --d: .30;
+}
+
+/* ============================================================
+   PHASE 11.2 — THE SOLVED COMPOSITION
+
+   Everything above this line is the AUTHORED FALLBACK: a twelve-by-twelve
+   field that lays the journey out with no JavaScript, no WebGL and under
+   reduced motion, where there is no camera to project against and
+   therefore nothing for a spatial composition to be spatial about.
+
+   When there IS a camera, modules/descentCompose.js sets `is-solved` on
+   the section and takes the placement over. From that moment a word's
+   position is not a grid area, it is a projected world anchor or the
+   largest void the camera has left — and the twelve-by-twelve field
+   stops applying to the elements the solver owns.
+
+   THE CONTRACT IS THREE CUSTOM PROPERTIES AND NOTHING ELSE:
+
+     --ax  --ay   the element's top-left inside the state's pane, px
+     --e          how resolved it is, 0 → 1
+     --pw         an explicit measure, for the few blocks that wrap
+
+   Nothing here introduces a filter, a blend mode or a second promoted
+   layer: the solver writes transforms and opacities, which is what the
+   compositor was already doing for this section.
+   ============================================================ */
+.dsc.is-solved .dsc__hold .is-ph {
+  position: absolute;
+  left: 0; top: 0;
+  grid-area: auto;
+  justify-self: auto; align-self: auto;
+  margin: 0;
+  padding: 0;
+  width: var(--pw, max-content);
+  opacity: var(--e, 1);
+  /* The one entrance in the file — PART 21's rule survives 11.2 intact:
+     opacity plus a short vertical rise, no horizontal entrance anywhere,
+     no rotation used as a device. */
+  transform: translate3d(var(--ax, 0px), calc(var(--ay, 0px) + (1 - var(--e, 1)) * 1.5vh), 0);
+}
+
+/* The wrapping blocks keep a measure; the solver hands them the width it
+   solved for and the authored maximum is still the ceiling. */
+.dsc.is-solved .dsc__hu.is-ph,
+.dsc.is-solved .dsc__layers.is-ph { max-width: var(--pw, 34ch); }
+.dsc.is-solved .dsc__layers.is-ph { min-width: 0; }
+
+/* The four plan words resolve against the pane like everything else. */
+.dsc.is-solved .dsc__phrase .dsc__pw {
+  left: 0; top: 0;
+  font-size: inherit;
+  opacity: var(--e, 1);
+  transform: translate3d(var(--ax, 0px), calc(var(--ay, 0px) + (1 - var(--e, 1)) * 1.2vh), 0);
+}
+
+/* ------------------------------------------------------------------
+   PART 14/15 — THE FLOOR LABEL IS AN ARCHITECTURAL OBJECT
+
+   Not a hero headline. Its size comes from how long its own slab edge is
+   on screen, between a floor and a ceiling the solver holds, and the
+   three parts of it — mark, name, elevation — are one signage unit
+   hanging off that edge rather than three items on a field.
+   ------------------------------------------------------------------ */
+.dsc.is-solved .dsc__levels li {
+  width: max-content;
+  justify-items: start;
+  align-content: start;
+  gap: .12em;
+}
+.dsc.is-solved .dsc__levels b { font-size: var(--bfz, 4rem); }
+.dsc.is-solved .dsc__levels i { font-size: var(--ifz, 1.2rem); }
+.dsc.is-solved .dsc__levels u {
+  text-align: left;
+  /* One object, one voice. The elevation is the third line of a floor
+     label, not a separate technical mark, and setting it in the page's
+     accent left the one value the label exists to carry as the least
+     legible thing in the frame — over the scan band it disappeared. */
+  color: var(--fg-60);
+}
+
+/* ------------------------------------------------------------------
+   THE THREE WRAPPERS ARE NEUTRALISED, NOT PLACED.
+
+   `.dsc__levels`, `.dsc__field` and `.dsc__phrase` hold placed CHILDREN,
+   so each of them has to stop being three things at once: a grid that
+   distributes them, a transformed box — which would silently become
+   their containing block and put every solved co-ordinate in the wrong
+   space — and a second opacity over the one they already carry.
+
+   This is the rule that was missing the first time the field was solved:
+   the figures were positioned correctly and painted in a stack down the
+   left margin, because their offsets were being measured from a box that
+   was itself being moved.
+   ------------------------------------------------------------------ */
+.dsc.is-solved .dsc__levels,
+.dsc.is-solved .dsc__field,
+.dsc.is-solved .dsc__phrase {
+  display: block;
+  position: static;
+  transform: none;
+  opacity: 1;
+  will-change: auto;
+  grid-area: 1 / 1 / -1 / -1;
+}
+.dsc.is-solved .dsc__field li { grid-area: auto; }
+/* The figure is sized to its own evidence, so the solver writes the size
+   and the authored clamp is the fallback behind it. */
+.dsc.is-solved .dsc__field b { font-size: var(--nfz, var(--fz)); }
+
+/* ------------------------------------------------------------------
+   PART 12 — DEPTH IS PART OF THE INSTRUMENT
+
+   Set along the datum's own axis rather than lying beside it. This is an
+   ORIENTATION, not a motion device: the word is static, and a vertical
+   axis label is how a section drawing names a vertical measurement.
+   ------------------------------------------------------------------ */
+/* A room name that is set down its room, for the same reason and by the
+   same means as DEPTH: it is the orientation the drawing itself uses. */
+.dsc.is-solved .dsc__pw.is-down {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.dsc.is-solved .dsc__word--depth {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  line-height: 1;
+  letter-spacing: var(--ls-dm);
+}
+
+/* ============================================================
+   PART 19 — NAVIGATION DURING THE IMMERSIVE CORE
+
+   The full bar recedes to the wordmark, and the engineering frame goes
+   with it: they are the page's furniture, and the page is what this
+   section is temporarily not.
+
+   Nobody is trapped. The compact menu control is REVEALED at every
+   width for the duration — on a wide frame it normally does not exist —
+   and it opens the same drawer, with the same links, that the mobile
+   navigation uses. The skip link and the section tracker both keep
+   working; the tracker is dimmed rather than removed, and comes back at
+   full strength on hover or keyboard focus.
+   ============================================================ */
+body.is-journey .nav__links,
+body.is-journey .nav .btn--cta { opacity: 0; pointer-events: none; }
+body.is-journey .nav { background: none; border-bottom-color: transparent; }
+body.is-journey .nav__burger { display: block; }
+body.is-journey .frame__rule,
+body.is-journey .frame__mark { opacity: 0; }
+body.is-journey .tracker { opacity: .28; }
+body.is-journey .tracker:hover,
+body.is-journey .tracker:focus-within { opacity: 1; }
+
+.nav__links, .nav .btn--cta, .frame__rule, .frame__mark, .tracker {
+  transition: opacity var(--t-commit) var(--ease);
+}
+/* The drawer is the escape route, so it must not recede with the bar. */
+body.is-journey .nav__drawer { opacity: 1; }
+
+/* ============================================================
+   PART 25 — THE MOBILE EDIT
+
+   The narrative is the same and every word is still here. What changes
+   is the length and the composition:
+
+     * the whole journey is 0.62 of its desktop scroll, because the
+       mobile camera path has fewer intermediate frames to travel
+       through (see PATH_MOBILE in webgl/descent.js);
+     * the field is 8 columns rather than 12, so a placement that was a
+       third of the way across is still a third of the way across;
+     * the display sizes come down by roughly a third, but NOT to the
+       point where a word fits comfortably — the cropping is the
+       composition and it survives.
+   ============================================================ */
+@media (max-width: 900px) {
+  .dsc { --dsc-total: 720vh; }
+  .dsc__hold { grid-template-columns: repeat(8, 1fr); }
+
+  /* A word may run off ONE edge. Running off both leaves a fragment with
+     no beginning and no end, which is not a crop — it is an unreadable
+     word. Every oversized item below is anchored to the edge it crops on. */
+  .dsc__go { grid-area: 4 / 2 / 5 / 7; font-size: clamp(2rem, 11vw, 3.4rem); }
+  .dsc__in { grid-area: 6 / 2 / 10 / 9; font-size: clamp(3.4rem, 23vw, 7rem); margin-right: -10vw; }
+  .dsc__hu--entry { grid-area: 11 / 2 / 12 / 8; }
+  .dsc__tag--a { grid-area: 2 / 2 / 3 / 6; }
+  .dsc__tag--b { grid-area: 12 / 4 / 13 / 9; padding-right: 5vw; }
+
+  .dsc__tag--g1 { grid-area: 6 / 2 / 7 / 7; }
+  .dsc__tag--g2 { grid-area: 7 / 2 / 8 / 8; }
+
+  .dsc__word--presence { grid-area: 5 / 1 / 8 / 9; font-size: clamp(2.6rem, 17vw, 6rem);
+    margin-left: -7vw; }
+  .dsc__tag--i1 { grid-area: 3 / 4 / 4 / 9; padding-right: 5vw; }
+  .dsc__tag--i2 { grid-area: 4 / 4 / 5 / 9; padding-right: 5vw; }
+  .dsc__hu--interior { grid-area: 9 / 2 / 11 / 8; padding-right: 0; }
+
+  .dsc__frag--1 { grid-area: 3 / 2 / 4 / 7; font-size: clamp(2rem, 13vw, 3.6rem); }
+  .dsc__frag--2 { grid-area: 5 / 3 / 6 / 9; font-size: clamp(1.8rem, 11vw, 3rem); padding-right: 5vw; }
+  .dsc__frag--3 { grid-area: 7 / 1 / 9 / 9; font-size: clamp(2.4rem, 16vw, 5rem);
+    margin-left: -4vw; }
+  .dsc__hu--capture { grid-area: 10 / 2 / 11 / 8; }
+  .dsc__tag--c1 { grid-area: 12 / 2 / 13 / 8; }
+
+  .dsc__sect { grid-area: 6 / 2 / 8 / 8; }
+  .dsc__hu--floor { grid-area: 8 / 2 / 10 / 8; }
+
+  .dsc__datum { grid-area: 1 / 2 / 9 / 7; }
+  .dsc__ladder li { min-height: clamp(20px, 3.4vh, 34px); }
+  .dsc__word--depth { grid-area: 10 / 1 / 13 / 9; justify-self: start;
+    font-size: clamp(2.8rem, 19vw, 6.4rem); padding-right: 0;
+    margin-left: -5vw; margin-bottom: -1vh; }
+
+  .dsc__vol { grid-area: 4 / 2 / 9 / 9; }
+  .dsc__vol-n { font-size: clamp(3.2rem, 26vw, 8rem); }
+  .dsc__tag--v1 { grid-area: 3 / 2 / 4 / 6; }
+  .dsc__tag--v2 { grid-area: 9 / 2 / 10 / 7; }
+  .dsc__hu--volume { grid-area: 11 / 2 / 13 / 8; justify-self: start; padding-right: 0; }
+
+  .dsc__levels b { font-size: clamp(3rem, 26vw, 8rem); }
+  .dsc__levels i { font-size: clamp(1.1rem, 7vw, 2.2rem); }
+  .dsc__levels li[data-level="L00"] { margin-left: 8vw; }
+
+  .dsc__proj { grid-area: 2 / 3 / 4 / 9; padding-right: 5vw; }
+  .dsc__hu--collapse { grid-area: 10 / 2 / 12 / 8; }
+
+  .dsc__pw { font-size: clamp(1.1rem, 6vw, 2rem); }
+  .dsc__pw--end { font-size: clamp(1.4rem, 8vw, 2.6rem); }
+  .dsc__tag--p1 { grid-area: 12 / 2 / 13 / 8; }
+
+  /* Below the drawing rather than over it: on a phone the plan occupies
+     the middle third of the frame and the layer key is a legend to it. */
+  .dsc__layers { grid-area: 8 / 2 / 13 / 9; justify-self: stretch;
+    padding-right: clamp(12px, 4vw, 30px); min-width: 0; }
+
+  .dsc__field { grid-template-columns: repeat(8, 1fr); }
+  .dsc__field b { font-size: var(--fz-m, clamp(1.6rem, 12vw, 3.6rem)); }
+
+  .dsc__f1 { grid-area: 3 / 2 / 5 / 9; font-size: clamp(2.2rem, 15vw, 4.4rem); }
+  .dsc__f2 { grid-area: 6 / 4 / 7 / 9; padding-right: 5vw; font-size: clamp(.9rem, 4vw, 1.2rem); }
+  .dsc__f3 { grid-area: 8 / 1 / 11 / 9; font-size: clamp(2.2rem, 14vw, 5.6rem); margin-left: -5vw; }
+}
+
+/* ============================================================
+   PART 26 — REDUCED MOTION, AND NO JAVASCRIPT
+
+   No camera travelling through slabs, and no sticky pane holding a
+   viewport hostage for eleven screens. Every block becomes an ordinary
+   stacked composition at its natural height, each one complete on its
+   own, and the scene behind them CUTS between five states as they are
+   reached (modules/descent.js). All narrative content remains — this is
+   the same markup, laid out so that it can be read rather than
+   travelled through.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .dsc { height: auto; }
+  .dsc__stick { position: static; height: auto; }
+  .dsc__ch { position: static; inset: auto; }
+  .dsc__hold {
+    position: static; inset: auto;
+    height: auto;
+    min-height: 62svh;
+    padding: clamp(48px, 9vh, 110px) var(--gutter);
+    opacity: 1;
+    visibility: visible;
+    grid-template-rows: repeat(12, minmax(0, auto));
+  }
+  .dsc__hold > * { opacity: 1; transform: none; }
+  .dsc__hold { will-change: auto; }
+  .dsc__levels li, .dsc__layers li, .dsc__field li { opacity: 1; transform: none; }
+  .dsc__pw { position: static; transform: none; opacity: 1; }
+  .dsc__phrase {
+    display: flex; flex-wrap: wrap; gap: .28em;
+    align-items: baseline; align-self: center;
+  }
+  .dsc__levels { gap: clamp(20px, 4vh, 44px); }
+  .dsc__field { gap: clamp(18px, 3vh, 36px); }
+  .dsc__field li, .dsc__levels li { margin: 0; }
+  body.is-journey .nav__links,
+  body.is-journey .nav .btn--cta { opacity: 1; pointer-events: auto; }
+  body.is-journey .frame__rule, body.is-journey .frame__mark { opacity: 1; }
+  body.is-journey .tracker { opacity: 1; }
+  /* Belt and braces: the solver never sets `is-solved` on this branch,
+     but if a preference changes mid-session the authored stack wins. */
+  .dsc.is-solved .dsc__hold .is-ph {
+    position: static; width: auto; opacity: 1; transform: none;
+  }
+  .dsc.is-solved .dsc__levels, .dsc.is-solved .dsc__field { display: grid; }
+  .dsc.is-solved .dsc__word--depth,
+  .dsc.is-solved .dsc__pw.is-down { writing-mode: horizontal-tb; }
+}
+
+html.no-js .dsc { height: auto; }
+html.no-js .dsc__stick { position: static; height: auto; }
+html.no-js .dsc__ch { position: static; inset: auto; }
+html.no-js .dsc__hold {
+  position: static; inset: auto; height: auto; min-height: 0;
+  padding: clamp(32px, 6vh, 72px) var(--gutter);
+  opacity: 1; visibility: visible;
+  grid-template-rows: repeat(12, minmax(0, auto));
+}
+html.no-js .dsc__hold > * { opacity: 1; transform: none; }
+html.no-js .dsc__pw { position: static; transform: none; }

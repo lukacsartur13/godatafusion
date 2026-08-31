@@ -1,0 +1,51 @@
+/* ============================================================
+   04 / OUTPUT — WHAT ARRIVES
+
+   PHASE 11 PART 22. This file used to be two sticky state machines: the
+   FUSION's five-state pipeline over 520vh, and "EGY HELY. NÉGY OLVASAT."
+   over 220vh beneath it. Both are gone, and both are gone for the same
+   reason — the DESCENT above now performs what they described, as one
+   continuous movement through one building rather than as two rails of
+   headings beside a canvas.
+
+   What is left is the part neither of them was: the DELIVERABLE. The
+   reader has just watched a site become data, and the question that
+   follows is what actually arrives in the inbox. It is a short, ordinary,
+   left-aligned block on the site's own grid, and that is deliberate — it
+   is the moment the page becomes a page again.
+   ============================================================ */
+.output { z-index: 2; padding-block: var(--sec-y) 0; }
+
+.output__head { max-width: 1180px; }
+.output__title {
+  font-family: var(--ff-display);
+  font-size: var(--fs-dl);
+  font-weight: 500; line-height: var(--lh-d); letter-spacing: var(--ls-dl);
+  text-transform: uppercase;
+}
+.output__lede {
+  margin-top: clamp(20px, 2.6vw, 34px);
+  max-width: 52ch;
+  font-size: var(--fs-body); line-height: 1.62;
+  color: var(--fg-60); letter-spacing: -.006em; text-wrap: pretty;
+}
+
+.fout__list {
+  display: grid; gap: 9px;
+  margin-top: clamp(30px, 5vh, 64px);
+  max-width: 62ch;
+}
+.fout__list > div {
+  display: grid; grid-template-columns: 11ch 1fr; gap: 14px;
+  padding-bottom: 9px; border-bottom: var(--rule-w) solid var(--rule-secondary);
+}
+.fout__list dt {
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: .12em; color: var(--fg-28);
+  font-weight: 500;
+}
+.fout__list dd { font-size: clamp(.8rem, .9vw, .92rem); color: var(--fg-60); }
+
+@media (max-width: 900px) {
+  .fout__list > div { grid-template-columns: 9ch 1fr; gap: 10px; }
+}

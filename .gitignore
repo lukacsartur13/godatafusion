@@ -1,0 +1,13 @@
+node_modules
+dist
+.DS_Store
+*.local
+.vite
+qa/
+test/.perf/
+
+# env
+.env
+.env.*
+!.env.example
+.netlify

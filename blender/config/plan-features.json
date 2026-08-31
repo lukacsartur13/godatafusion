@@ -1,0 +1,2498 @@
+{
+ "site": {
+  "size": 16,
+  "padY": -0.55,
+  "pad": {
+   "x0": -3.9,
+   "x1": 3.9,
+   "z0": -2.9,
+   "z1": 2.9
+  }
+ },
+ "metresPerUnit": 5.349852700125815,
+ "baseY": -0.4901852690275988,
+ "footprint": {
+  "X0": -3.2,
+  "X1": 3.2,
+  "Z0": -2.3,
+  "Z1": 2.3,
+  "L02_X1": 1.6
+ },
+ "bays": {
+  "x": 8,
+  "z": 6,
+  "bx": 0.8,
+  "bz": 0.7666666666666666
+ },
+ "core": {
+  "x0": -3.05,
+  "x1": -2.05,
+  "z0": -2.15,
+  "z1": -1.05,
+  "t": 0.3
+ },
+ "construction": {
+  "slab": 0.32,
+  "ext": 0.8559764320201305,
+  "int": 0.15
+ },
+ "doorTypes": {
+  "D01": {
+   "w": 1.1,
+   "h": 2.35,
+   "label": "Egyszárnyú ajtó"
+  },
+  "D02": {
+   "w": 1.6,
+   "h": 2.45,
+   "label": "Kétszárnyú ajtó"
+  },
+  "D03": {
+   "w": 0.9,
+   "h": 2.1,
+   "label": "Gépészeti / tároló ajtó"
+  }
+ },
+ "windowTypes": {
+  "W01": {
+   "w": 2.4,
+   "full": false,
+   "label": "Ablak — irodai"
+  },
+  "W02": {
+   "w": 1.6,
+   "full": false,
+   "label": "Ablak — kiszolgáló"
+  },
+  "W03": {
+   "w": 3.2,
+   "full": true,
+   "label": "Ablak — teljes belmagasságú"
+  }
+ },
+ "roof": {
+  "id": "ROOF",
+  "label": "TETŐ",
+  "elevation": 11.2,
+  "parapet": 1.1
+ },
+ "levels": [
+  {
+   "id": "L00",
+   "name": "GROUND",
+   "label": "FÖLDSZINT",
+   "elevation": 0,
+   "ftf": 4,
+   "slab": 0.32,
+   "clear": 3.68,
+   "x0": -3.2,
+   "x1": 3.2,
+   "z0": -2.3,
+   "z1": 2.3,
+   "winSill": 0.95,
+   "winHead": 3.3,
+   "winSillLow": 0.25,
+   "cuts": {
+    "south": [
+     [
+      0,
+      3.2
+     ]
+    ],
+    "east": [
+     [
+      -2.3,
+      -0.7666666666666666
+     ]
+    ],
+    "slab": [
+     {
+      "x0": 0,
+      "x1": 3.2,
+      "z0": 0.7666666666666666,
+      "z1": 2.3
+     }
+    ]
+   },
+   "terrace": null,
+   "area": 842.6,
+   "rooms": [
+    {
+     "id": "R01",
+     "uid": "L00-R01",
+     "name": "ROOM_L00_R01",
+     "kind": "CORE",
+     "zone": "CORE",
+     "label": "Közlekedőmag és gépészet",
+     "finish": null,
+     "x0": -3.2,
+     "x1": -1.6,
+     "z0": -2.3,
+     "z1": -0.7666666666666666,
+     "area": 70.2
+    },
+    {
+     "id": "R02",
+     "uid": "L00-R02",
+     "name": "ROOM_L00_R02",
+     "kind": "OFFICE",
+     "zone": "C",
+     "label": "Projektiroda",
+     "finish": null,
+     "x0": -1.6,
+     "x1": 0,
+     "z0": -2.3,
+     "z1": -0.7666666666666666,
+     "area": 70.2
+    },
+    {
+     "id": "R03",
+     "uid": "L00-R03",
+     "name": "ROOM_L00_R03",
+     "kind": "TECH",
+     "zone": "D",
+     "label": "Technikai helyiség",
+     "finish": null,
+     "x0": 0,
+     "x1": 1.6,
+     "z0": -2.3,
+     "z1": -0.7666666666666666,
+     "area": 70.2
+    },
+    {
+     "id": "R04",
+     "uid": "L00-R04",
+     "name": "ROOM_L00_R04",
+     "kind": "RAW",
+     "zone": "F",
+     "label": "Szerkezetkész terület",
+     "finish": "raw",
+     "x0": 1.6,
+     "x1": 3.2,
+     "z0": -2.3,
+     "z1": -0.7666666666666666,
+     "area": 70.2
+    },
+    {
+     "id": "R05",
+     "uid": "L00-R05",
+     "name": "ROOM_L00_R05",
+     "kind": "CIRC",
+     "zone": "E",
+     "label": "Közlekedő — nyugat",
+     "finish": null,
+     "x0": -3.2,
+     "x1": -1.6,
+     "z0": -0.7666666666666666,
+     "z1": 0.7666666666666666,
+     "area": 70.2
+    },
+    {
+     "id": "R06",
+     "uid": "L00-R06",
+     "name": "ROOM_L00_R06",
+     "kind": "CIRC",
+     "zone": "E",
+     "label": "Közlekedő — közép",
+     "finish": null,
+     "x0": -1.6,
+     "x1": 0,
+     "z0": -0.7666666666666666,
+     "z1": 0.7666666666666666,
+     "area": 70.2
+    },
+    {
+     "id": "R07",
+     "uid": "L00-R07",
+     "name": "ROOM_L00_R07",
+     "kind": "CIRC",
+     "zone": "E",
+     "label": "Közlekedő — kelet",
+     "finish": null,
+     "x0": 0,
+     "x1": 1.6,
+     "z0": -0.7666666666666666,
+     "z1": 0.7666666666666666,
+     "area": 70.2
+    },
+    {
+     "id": "R08",
+     "uid": "L00-R08",
+     "name": "ROOM_L00_R08",
+     "kind": "CIRC",
+     "zone": "E",
+     "label": "Érkeztető folyosó",
+     "finish": null,
+     "x0": 1.6,
+     "x1": 3.2,
+     "z0": -0.7666666666666666,
+     "z1": 0.7666666666666666,
+     "area": 70.2
+    },
+    {
+     "id": "R09",
+     "uid": "L00-R09",
+     "name": "ROOM_L00_R09",
+     "kind": "MEET",
+     "zone": "B",
+     "label": "Nagytárgyaló",
+     "finish": null,
+     "x0": -3.2,
+     "x1": -1.6,
+     "z0": 0.7666666666666666,
+     "z1": 2.3,
+     "area": 70.2
+    },
+    {
+     "id": "R10",
+     "uid": "L00-R10",
+     "name": "ROOM_L00_R10",
+     "kind": "RECEP",
+     "zone": "A",
+     "label": "Recepció",
+     "finish": null,
+     "x0": -1.6,
+     "x1": 0,
+     "z0": 0.7666666666666666,
+     "z1": 2.3,
+     "area": 70.2
+    },
+    {
+     "id": "R11",
+     "uid": "L00-R11",
+     "name": "ROOM_L00_R11",
+     "kind": "WAIT",
+     "zone": "A",
+     "label": "Ügyfélvárakozó",
+     "finish": null,
+     "x0": 0,
+     "x1": 1.6,
+     "z0": 0.7666666666666666,
+     "z1": 2.3,
+     "area": 70.2
+    },
+    {
+     "id": "R12",
+     "uid": "L00-R12",
+     "name": "ROOM_L00_R12",
+     "kind": "LOUNGE",
+     "zone": "A",
+     "label": "Lounge",
+     "finish": null,
+     "x0": 1.6,
+     "x1": 3.2,
+     "z0": 0.7666666666666666,
+     "z1": 2.3,
+     "area": 70.2
+    }
+   ],
+   "doors": [
+    {
+     "level": "L00",
+     "id": "L00-D01-01",
+     "name": "DOOR_L00_D01_01",
+     "type": "D01",
+     "axis": "h",
+     "x": -2.6811934311411854,
+     "z": -0.7666666666666666,
+     "room": "R01",
+     "from": "R05",
+     "exterior": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-D01-02",
+     "name": "DOOR_L00_D01_02",
+     "type": "D01",
+     "axis": "h",
+     "x": -0.5188065688588146,
+     "z": -0.7666666666666666,
+     "room": "R02",
+     "from": "R06",
+     "exterior": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-D01-03",
+     "name": "DOOR_L00_D01_03",
+     "type": "D01",
+     "axis": "h",
+     "x": -0.5188065688588146,
+     "z": 0.7666666666666666,
+     "room": "R10",
+     "from": "R06",
+     "exterior": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-D01-04",
+     "name": "DOOR_L00_D01_04",
+     "type": "D01",
+     "axis": "h",
+     "x": 0.5188065688588146,
+     "z": 0.7666666666666666,
+     "room": "R11",
+     "from": "R07",
+     "exterior": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-D02-01",
+     "name": "DOOR_L00_D02_01",
+     "type": "D02",
+     "axis": "h",
+     "x": -2.634463172568997,
+     "z": 0.7666666666666666,
+     "room": "R09",
+     "from": "R05",
+     "exterior": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-D02-02",
+     "name": "DOOR_L00_D02_02",
+     "type": "D02",
+     "axis": "h",
+     "x": 2.634463172568997,
+     "z": 0.7666666666666666,
+     "room": "R12",
+     "from": "R08",
+     "exterior": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-D02-03",
+     "name": "DOOR_L00_D02_03",
+     "type": "D02",
+     "axis": "h",
+     "x": -0.8,
+     "z": 2.3,
+     "room": "R10",
+     "from": "EXT",
+     "exterior": true
+    },
+    {
+     "level": "L00",
+     "id": "L00-D03-01",
+     "name": "DOOR_L00_D03_01",
+     "type": "D03",
+     "axis": "h",
+     "x": 0.5001144654299393,
+     "z": -0.7666666666666666,
+     "room": "R03",
+     "from": "R07",
+     "exterior": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-D03-02",
+     "name": "DOOR_L00_D03_02",
+     "type": "D03",
+     "axis": "h",
+     "x": 2.6998855345700608,
+     "z": -0.7666666666666666,
+     "room": "R04",
+     "from": "R08",
+     "exterior": false
+    }
+   ],
+   "openings": [
+    {
+     "level": "L00",
+     "axis": "v",
+     "x": -1.6,
+     "z": 0,
+     "w": 3.2,
+     "rooms": [
+      "R05",
+      "R06"
+     ]
+    },
+    {
+     "level": "L00",
+     "axis": "v",
+     "x": 0,
+     "z": 0,
+     "w": 3.2,
+     "rooms": [
+      "R06",
+      "R07"
+     ]
+    },
+    {
+     "level": "L00",
+     "axis": "v",
+     "x": 1.6,
+     "z": 0,
+     "w": 3.2,
+     "rooms": [
+      "R07",
+      "R08"
+     ]
+    }
+   ],
+   "windows": [
+    {
+     "level": "L00",
+     "id": "L00-W01-01",
+     "name": "WIN_L00_W01_01",
+     "type": "W01",
+     "axis": "h",
+     "side": "N",
+     "x": -1.2000000000000002,
+     "z": -2.3,
+     "room": "R02",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W01-02",
+     "name": "WIN_L00_W01_02",
+     "type": "W01",
+     "axis": "h",
+     "side": "N",
+     "x": -0.3999999999999999,
+     "z": -2.3,
+     "room": "R02",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W01-03",
+     "name": "WIN_L00_W01_03",
+     "type": "W01",
+     "axis": "h",
+     "side": "S",
+     "x": -2.8000000000000003,
+     "z": 2.3,
+     "room": "R09",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W01-04",
+     "name": "WIN_L00_W01_04",
+     "type": "W01",
+     "axis": "h",
+     "side": "S",
+     "x": -2,
+     "z": 2.3,
+     "room": "R09",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W01-05",
+     "name": "WIN_L00_W01_05",
+     "type": "W01",
+     "axis": "h",
+     "side": "S",
+     "x": 0.3999999999999999,
+     "z": 2.3,
+     "room": "R11",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": true
+    },
+    {
+     "level": "L00",
+     "id": "L00-W01-06",
+     "name": "WIN_L00_W01_06",
+     "type": "W01",
+     "axis": "h",
+     "side": "S",
+     "x": 1.2000000000000002,
+     "z": 2.3,
+     "room": "R11",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": true
+    },
+    {
+     "level": "L00",
+     "id": "L00-W01-07",
+     "name": "WIN_L00_W01_07",
+     "type": "W01",
+     "axis": "v",
+     "side": "W",
+     "x": -3.2,
+     "z": -0.3833333333333333,
+     "room": "R05",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W01-08",
+     "name": "WIN_L00_W01_08",
+     "type": "W01",
+     "axis": "v",
+     "side": "W",
+     "x": -3.2,
+     "z": 0.3833333333333333,
+     "room": "R05",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W01-09",
+     "name": "WIN_L00_W01_09",
+     "type": "W01",
+     "axis": "v",
+     "side": "W",
+     "x": -3.2,
+     "z": 1.15,
+     "room": "R09",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W01-10",
+     "name": "WIN_L00_W01_10",
+     "type": "W01",
+     "axis": "v",
+     "side": "W",
+     "x": -3.2,
+     "z": 1.916666666666667,
+     "room": "R09",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W01-11",
+     "name": "WIN_L00_W01_11",
+     "type": "W01",
+     "axis": "v",
+     "side": "E",
+     "x": 3.2,
+     "z": -0.3833333333333333,
+     "room": "R08",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W01-12",
+     "name": "WIN_L00_W01_12",
+     "type": "W01",
+     "axis": "v",
+     "side": "E",
+     "x": 3.2,
+     "z": 0.3833333333333333,
+     "room": "R08",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W02-01",
+     "name": "WIN_L00_W02_01",
+     "type": "W02",
+     "axis": "h",
+     "side": "N",
+     "x": -2.8000000000000003,
+     "z": -2.3,
+     "room": "R01",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W02-02",
+     "name": "WIN_L00_W02_02",
+     "type": "W02",
+     "axis": "h",
+     "side": "N",
+     "x": 0.3999999999999999,
+     "z": -2.3,
+     "room": "R03",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W02-03",
+     "name": "WIN_L00_W02_03",
+     "type": "W02",
+     "axis": "h",
+     "side": "N",
+     "x": 2,
+     "z": -2.3,
+     "room": "R04",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W02-04",
+     "name": "WIN_L00_W02_04",
+     "type": "W02",
+     "axis": "v",
+     "side": "W",
+     "x": -3.2,
+     "z": -1.9166666666666665,
+     "room": "R01",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W02-05",
+     "name": "WIN_L00_W02_05",
+     "type": "W02",
+     "axis": "v",
+     "side": "E",
+     "x": 3.2,
+     "z": -1.9166666666666665,
+     "room": "R04",
+     "sill": 0.95,
+     "head": 3.3,
+     "cut": true
+    },
+    {
+     "level": "L00",
+     "id": "L00-W03-01",
+     "name": "WIN_L00_W03_01",
+     "type": "W03",
+     "axis": "h",
+     "side": "S",
+     "x": -1.2000000000000002,
+     "z": 2.3,
+     "room": "R10",
+     "sill": 0.25,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W03-02",
+     "name": "WIN_L00_W03_02",
+     "type": "W03",
+     "axis": "h",
+     "side": "S",
+     "x": -0.3999999999999999,
+     "z": 2.3,
+     "room": "R10",
+     "sill": 0.25,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W03-03",
+     "name": "WIN_L00_W03_03",
+     "type": "W03",
+     "axis": "h",
+     "side": "S",
+     "x": 2,
+     "z": 2.3,
+     "room": "R12",
+     "sill": 0.25,
+     "head": 3.3,
+     "cut": true
+    },
+    {
+     "level": "L00",
+     "id": "L00-W03-04",
+     "name": "WIN_L00_W03_04",
+     "type": "W03",
+     "axis": "h",
+     "side": "S",
+     "x": 2.8,
+     "z": 2.3,
+     "room": "R12",
+     "sill": 0.25,
+     "head": 3.3,
+     "cut": true
+    },
+    {
+     "level": "L00",
+     "id": "L00-W03-05",
+     "name": "WIN_L00_W03_05",
+     "type": "W03",
+     "axis": "v",
+     "side": "E",
+     "x": 3.2,
+     "z": 1.15,
+     "room": "R12",
+     "sill": 0.25,
+     "head": 3.3,
+     "cut": false
+    },
+    {
+     "level": "L00",
+     "id": "L00-W03-06",
+     "name": "WIN_L00_W03_06",
+     "type": "W03",
+     "axis": "v",
+     "side": "E",
+     "x": 3.2,
+     "z": 1.916666666666667,
+     "room": "R12",
+     "sill": 0.25,
+     "head": 3.3,
+     "cut": false
+    }
+   ],
+   "walls": [
+    {
+     "axis": "v",
+     "coord": -3.2,
+     "t0": -2.3,
+     "t1": 2.3,
+     "kind": "ext"
+    },
+    {
+     "axis": "v",
+     "coord": -1.6,
+     "t0": -2.3,
+     "t1": 2.3,
+     "kind": "int"
+    },
+    {
+     "axis": "v",
+     "coord": 0,
+     "t0": -2.3,
+     "t1": 2.3,
+     "kind": "int"
+    },
+    {
+     "axis": "v",
+     "coord": 1.6,
+     "t0": -2.3,
+     "t1": 2.3,
+     "kind": "int"
+    },
+    {
+     "axis": "v",
+     "coord": 3.2,
+     "t0": -2.3,
+     "t1": 2.3,
+     "kind": "ext"
+    },
+    {
+     "axis": "h",
+     "coord": -2.3,
+     "t0": -3.2,
+     "t1": 3.2,
+     "kind": "ext"
+    },
+    {
+     "axis": "h",
+     "coord": -0.7666666666666666,
+     "t0": -3.2,
+     "t1": 3.2,
+     "kind": "int"
+    },
+    {
+     "axis": "h",
+     "coord": 0.7666666666666666,
+     "t0": -3.2,
+     "t1": 3.2,
+     "kind": "int"
+    },
+    {
+     "axis": "h",
+     "coord": 2.3,
+     "t0": -3.2,
+     "t1": 3.2,
+     "kind": "ext"
+    }
+   ]
+  },
+  {
+   "id": "L01",
+   "name": "WORK",
+   "label": "MUNKASZINT",
+   "elevation": 4,
+   "ftf": 3.6,
+   "slab": 0.32,
+   "clear": 3.2800000000000002,
+   "x0": -3.2,
+   "x1": 3.2,
+   "z0": -2.3,
+   "z1": 2.3,
+   "winSill": 0.85,
+   "winHead": 2.95,
+   "winSillLow": 0.2,
+   "cuts": {
+    "south": [
+     [
+      -1.6,
+      0
+     ]
+    ],
+    "slab": [
+     {
+      "x0": -1.6,
+      "x1": 0,
+      "z0": 0,
+      "z1": 2.3
+     }
+    ]
+   },
+   "terrace": null,
+   "area": 842.6,
+   "rooms": [
+    {
+     "id": "R01",
+     "uid": "L01-R01",
+     "name": "ROOM_L01_R01",
+     "kind": "CORE",
+     "zone": "CORE",
+     "label": "Közlekedőmag és gépészet",
+     "finish": null,
+     "x0": -3.2,
+     "x1": -1.6,
+     "z0": -2.3,
+     "z1": 0,
+     "area": 105.3
+    },
+    {
+     "id": "R02",
+     "uid": "L01-R02",
+     "name": "ROOM_L01_R02",
+     "kind": "OPEN",
+     "zone": "C",
+     "label": "Nyitott iroda",
+     "finish": null,
+     "x0": -1.6,
+     "x1": 0.8,
+     "z0": -2.3,
+     "z1": 0,
+     "area": 158
+    },
+    {
+     "id": "R03",
+     "uid": "L01-R03",
+     "name": "ROOM_L01_R03",
+     "kind": "CIRC",
+     "zone": "E",
+     "label": "Északi összekötő",
+     "finish": null,
+     "x0": 0.8,
+     "x1": 1.6,
+     "z0": -2.3,
+     "z1": 0,
+     "area": 52.7
+    },
+    {
+     "id": "R04",
+     "uid": "L01-R04",
+     "name": "ROOM_L01_R04",
+     "kind": "PROJECT",
+     "zone": "D",
+     "label": "Projektszoba",
+     "finish": null,
+     "x0": 1.6,
+     "x1": 2.4,
+     "z0": -2.3,
+     "z1": 0,
+     "area": 52.7
+    },
+    {
+     "id": "R05",
+     "uid": "L01-R05",
+     "name": "ROOM_L01_R05",
+     "kind": "STORE",
+     "zone": "D",
+     "label": "Tervtár és irattár",
+     "finish": null,
+     "x0": 2.4,
+     "x1": 3.2,
+     "z0": -2.3,
+     "z1": 0,
+     "area": 52.7
+    },
+    {
+     "id": "R06",
+     "uid": "L01-R06",
+     "name": "ROOM_L01_R06",
+     "kind": "CIRC",
+     "zone": "E",
+     "label": "Központi folyosó",
+     "finish": null,
+     "x0": -3.2,
+     "x1": 3.2,
+     "z0": 0,
+     "z1": 0.7666666666666666,
+     "area": 140.4
+    },
+    {
+     "id": "R07",
+     "uid": "L01-R07",
+     "name": "ROOM_L01_R07",
+     "kind": "MEET",
+     "zone": "B",
+     "label": "Tárgyaló 01",
+     "finish": null,
+     "x0": -3.2,
+     "x1": -1.6,
+     "z0": 0.7666666666666666,
+     "z1": 2.3,
+     "area": 70.2
+    },
+    {
+     "id": "R08",
+     "uid": "L01-R08",
+     "name": "ROOM_L01_R08",
+     "kind": "FOCUS",
+     "zone": "C",
+     "label": "Fókuszszoba 01",
+     "finish": null,
+     "x0": -1.6,
+     "x1": -0.8,
+     "z0": 0.7666666666666666,
+     "z1": 2.3,
+     "area": 35.1
+    },
+    {
+     "id": "R09",
+     "uid": "L01-R09",
+     "name": "ROOM_L01_R09",
+     "kind": "FOCUS",
+     "zone": "C",
+     "label": "Fókuszszoba 02",
+     "finish": null,
+     "x0": -0.8,
+     "x1": 0,
+     "z0": 0.7666666666666666,
+     "z1": 2.3,
+     "area": 35.1
+    },
+    {
+     "id": "R10",
+     "uid": "L01-R10",
+     "name": "ROOM_L01_R10",
+     "kind": "FOCUS",
+     "zone": "C",
+     "label": "Fókuszszoba 03",
+     "finish": null,
+     "x0": 0,
+     "x1": 0.8,
+     "z0": 0.7666666666666666,
+     "z1": 2.3,
+     "area": 35.1
+    },
+    {
+     "id": "R11",
+     "uid": "L01-R11",
+     "name": "ROOM_L01_R11",
+     "kind": "MEET",
+     "zone": "B",
+     "label": "Tárgyaló 02",
+     "finish": null,
+     "x0": 0.8,
+     "x1": 2.4,
+     "z0": 0.7666666666666666,
+     "z1": 2.3,
+     "area": 70.2
+    },
+    {
+     "id": "R12",
+     "uid": "L01-R12",
+     "name": "ROOM_L01_R12",
+     "kind": "KITCH",
+     "zone": "A",
+     "label": "Teakonyha és közösségi tér",
+     "finish": null,
+     "x0": 2.4,
+     "x1": 3.2,
+     "z0": 0.7666666666666666,
+     "z1": 2.3,
+     "area": 35.1
+    }
+   ],
+   "doors": [
+    {
+     "level": "L01",
+     "id": "L01-D01-01",
+     "name": "DOOR_L01_D01_01",
+     "type": "D01",
+     "axis": "h",
+     "x": -2.6811934311411854,
+     "z": 0,
+     "room": "R01",
+     "from": "R06",
+     "exterior": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-D01-02",
+     "name": "DOOR_L01_D01_02",
+     "type": "D01",
+     "axis": "v",
+     "x": 1.6,
+     "z": -0.7008065688588146,
+     "room": "R04",
+     "from": "R03",
+     "exterior": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-D01-03",
+     "name": "DOOR_L01_D01_03",
+     "type": "D01",
+     "axis": "h",
+     "x": 2.0891934311411853,
+     "z": 0,
+     "room": "R04",
+     "from": "R06",
+     "exterior": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-D01-04",
+     "name": "DOOR_L01_D01_04",
+     "type": "D01",
+     "axis": "h",
+     "x": -1.1108065688588147,
+     "z": 0.7666666666666666,
+     "room": "R08",
+     "from": "R06",
+     "exterior": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-D01-05",
+     "name": "DOOR_L01_D01_05",
+     "type": "D01",
+     "axis": "h",
+     "x": -0.4891934311411854,
+     "z": 0.7666666666666666,
+     "room": "R09",
+     "from": "R06",
+     "exterior": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-D01-06",
+     "name": "DOOR_L01_D01_06",
+     "type": "D01",
+     "axis": "h",
+     "x": 0.4891934311411854,
+     "z": 0.7666666666666666,
+     "room": "R10",
+     "from": "R06",
+     "exterior": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-D02-01",
+     "name": "DOOR_L01_D02_01",
+     "type": "D02",
+     "axis": "v",
+     "x": 0.8,
+     "z": -0.7475368274310031,
+     "room": "R02",
+     "from": "R03",
+     "exterior": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-D02-02",
+     "name": "DOOR_L01_D02_02",
+     "type": "D02",
+     "axis": "h",
+     "x": 0.026463172568996884,
+     "z": 0,
+     "room": "R02",
+     "from": "R06",
+     "exterior": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-D02-03",
+     "name": "DOOR_L01_D02_03",
+     "type": "D02",
+     "axis": "h",
+     "x": -2.634463172568997,
+     "z": 0.7666666666666666,
+     "room": "R07",
+     "from": "R06",
+     "exterior": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-D02-04",
+     "name": "DOOR_L01_D02_04",
+     "type": "D02",
+     "axis": "h",
+     "x": 1.3655368274310031,
+     "z": 0.7666666666666666,
+     "room": "R11",
+     "from": "R06",
+     "exterior": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-D02-05",
+     "name": "DOOR_L01_D02_05",
+     "type": "D02",
+     "axis": "h",
+     "x": 2.842463172568997,
+     "z": 0.7666666666666666,
+     "room": "R12",
+     "from": "R06",
+     "exterior": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-D03-01",
+     "name": "DOOR_L01_D03_01",
+     "type": "D03",
+     "axis": "h",
+     "x": 2.692114465429939,
+     "z": 0,
+     "room": "R05",
+     "from": "R06",
+     "exterior": false
+    }
+   ],
+   "openings": [
+    {
+     "level": "L01",
+     "axis": "h",
+     "x": 1.2000000000000002,
+     "z": 0,
+     "w": 2.6535269392624046,
+     "rooms": [
+      "R03",
+      "R06"
+     ]
+    }
+   ],
+   "windows": [
+    {
+     "level": "L01",
+     "id": "L01-W01-01",
+     "name": "WIN_L01_W01_01",
+     "type": "W01",
+     "axis": "h",
+     "side": "N",
+     "x": 1.2000000000000002,
+     "z": -2.3,
+     "room": "R03",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W01-02",
+     "name": "WIN_L01_W01_02",
+     "type": "W01",
+     "axis": "h",
+     "side": "N",
+     "x": 2,
+     "z": -2.3,
+     "room": "R04",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W01-03",
+     "name": "WIN_L01_W01_03",
+     "type": "W01",
+     "axis": "h",
+     "side": "S",
+     "x": -2.8000000000000003,
+     "z": 2.3,
+     "room": "R07",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W01-04",
+     "name": "WIN_L01_W01_04",
+     "type": "W01",
+     "axis": "h",
+     "side": "S",
+     "x": -2,
+     "z": 2.3,
+     "room": "R07",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W01-05",
+     "name": "WIN_L01_W01_05",
+     "type": "W01",
+     "axis": "h",
+     "side": "S",
+     "x": -1.2000000000000002,
+     "z": 2.3,
+     "room": "R08",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": true
+    },
+    {
+     "level": "L01",
+     "id": "L01-W01-06",
+     "name": "WIN_L01_W01_06",
+     "type": "W01",
+     "axis": "h",
+     "side": "S",
+     "x": -0.3999999999999999,
+     "z": 2.3,
+     "room": "R09",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": true
+    },
+    {
+     "level": "L01",
+     "id": "L01-W01-07",
+     "name": "WIN_L01_W01_07",
+     "type": "W01",
+     "axis": "h",
+     "side": "S",
+     "x": 0.3999999999999999,
+     "z": 2.3,
+     "room": "R10",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W01-08",
+     "name": "WIN_L01_W01_08",
+     "type": "W01",
+     "axis": "h",
+     "side": "S",
+     "x": 1.2000000000000002,
+     "z": 2.3,
+     "room": "R11",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W01-09",
+     "name": "WIN_L01_W01_09",
+     "type": "W01",
+     "axis": "h",
+     "side": "S",
+     "x": 2,
+     "z": 2.3,
+     "room": "R11",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W01-10",
+     "name": "WIN_L01_W01_10",
+     "type": "W01",
+     "axis": "h",
+     "side": "S",
+     "x": 2.8,
+     "z": 2.3,
+     "room": "R12",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W01-11",
+     "name": "WIN_L01_W01_11",
+     "type": "W01",
+     "axis": "v",
+     "side": "W",
+     "x": -3.2,
+     "z": 0.3833333333333333,
+     "room": "R06",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W01-12",
+     "name": "WIN_L01_W01_12",
+     "type": "W01",
+     "axis": "v",
+     "side": "W",
+     "x": -3.2,
+     "z": 1.15,
+     "room": "R07",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W01-13",
+     "name": "WIN_L01_W01_13",
+     "type": "W01",
+     "axis": "v",
+     "side": "W",
+     "x": -3.2,
+     "z": 1.916666666666667,
+     "room": "R07",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W01-14",
+     "name": "WIN_L01_W01_14",
+     "type": "W01",
+     "axis": "v",
+     "side": "E",
+     "x": 3.2,
+     "z": 0.3833333333333333,
+     "room": "R06",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W01-15",
+     "name": "WIN_L01_W01_15",
+     "type": "W01",
+     "axis": "v",
+     "side": "E",
+     "x": 3.2,
+     "z": 1.15,
+     "room": "R12",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W01-16",
+     "name": "WIN_L01_W01_16",
+     "type": "W01",
+     "axis": "v",
+     "side": "E",
+     "x": 3.2,
+     "z": 1.916666666666667,
+     "room": "R12",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W02-01",
+     "name": "WIN_L01_W02_01",
+     "type": "W02",
+     "axis": "h",
+     "side": "N",
+     "x": -2.8000000000000003,
+     "z": -2.3,
+     "room": "R01",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W02-02",
+     "name": "WIN_L01_W02_02",
+     "type": "W02",
+     "axis": "h",
+     "side": "N",
+     "x": 2.8,
+     "z": -2.3,
+     "room": "R05",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W02-03",
+     "name": "WIN_L01_W02_03",
+     "type": "W02",
+     "axis": "v",
+     "side": "W",
+     "x": -3.2,
+     "z": -1.9166666666666665,
+     "room": "R01",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W02-04",
+     "name": "WIN_L01_W02_04",
+     "type": "W02",
+     "axis": "v",
+     "side": "W",
+     "x": -3.2,
+     "z": -0.3833333333333333,
+     "room": "R01",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W02-05",
+     "name": "WIN_L01_W02_05",
+     "type": "W02",
+     "axis": "v",
+     "side": "E",
+     "x": 3.2,
+     "z": -1.9166666666666665,
+     "room": "R05",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W02-06",
+     "name": "WIN_L01_W02_06",
+     "type": "W02",
+     "axis": "v",
+     "side": "E",
+     "x": 3.2,
+     "z": -0.3833333333333333,
+     "room": "R05",
+     "sill": 0.85,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W03-01",
+     "name": "WIN_L01_W03_01",
+     "type": "W03",
+     "axis": "h",
+     "side": "N",
+     "x": -1.2000000000000002,
+     "z": -2.3,
+     "room": "R02",
+     "sill": 0.2,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W03-02",
+     "name": "WIN_L01_W03_02",
+     "type": "W03",
+     "axis": "h",
+     "side": "N",
+     "x": -0.3999999999999999,
+     "z": -2.3,
+     "room": "R02",
+     "sill": 0.2,
+     "head": 2.95,
+     "cut": false
+    },
+    {
+     "level": "L01",
+     "id": "L01-W03-03",
+     "name": "WIN_L01_W03_03",
+     "type": "W03",
+     "axis": "h",
+     "side": "N",
+     "x": 0.3999999999999999,
+     "z": -2.3,
+     "room": "R02",
+     "sill": 0.2,
+     "head": 2.95,
+     "cut": false
+    }
+   ],
+   "walls": [
+    {
+     "axis": "v",
+     "coord": -3.2,
+     "t0": -2.3,
+     "t1": 2.3,
+     "kind": "ext"
+    },
+    {
+     "axis": "v",
+     "coord": -1.6,
+     "t0": -2.3,
+     "t1": 0,
+     "kind": "int"
+    },
+    {
+     "axis": "v",
+     "coord": -1.6,
+     "t0": 0.7666666666666666,
+     "t1": 2.3,
+     "kind": "int"
+    },
+    {
+     "axis": "v",
+     "coord": 0.8,
+     "t0": -2.3,
+     "t1": 0,
+     "kind": "int"
+    },
+    {
+     "axis": "v",
+     "coord": 0.8,
+     "t0": 0.7666666666666666,
+     "t1": 2.3,
+     "kind": "int"
+    },
+    {
+     "axis": "v",
+     "coord": 1.6,
+     "t0": -2.3,
+     "t1": 0,
+     "kind": "int"
+    },
+    {
+     "axis": "v",
+     "coord": 2.4,
+     "t0": -2.3,
+     "t1": 0,
+     "kind": "int"
+    },
+    {
+     "axis": "v",
+     "coord": 2.4,
+     "t0": 0.7666666666666666,
+     "t1": 2.3,
+     "kind": "int"
+    },
+    {
+     "axis": "v",
+     "coord": 3.2,
+     "t0": -2.3,
+     "t1": 2.3,
+     "kind": "ext"
+    },
+    {
+     "axis": "v",
+     "coord": -0.8,
+     "t0": 0.7666666666666666,
+     "t1": 2.3,
+     "kind": "int"
+    },
+    {
+     "axis": "v",
+     "coord": 0,
+     "t0": 0.7666666666666666,
+     "t1": 2.3,
+     "kind": "int"
+    },
+    {
+     "axis": "h",
+     "coord": -2.3,
+     "t0": -3.2,
+     "t1": 3.2,
+     "kind": "ext"
+    },
+    {
+     "axis": "h",
+     "coord": 0,
+     "t0": -3.2,
+     "t1": 3.2,
+     "kind": "int"
+    },
+    {
+     "axis": "h",
+     "coord": 0.7666666666666666,
+     "t0": -3.2,
+     "t1": 3.2,
+     "kind": "int"
+    },
+    {
+     "axis": "h",
+     "coord": 2.3,
+     "t0": -3.2,
+     "t1": 3.2,
+     "kind": "ext"
+    }
+   ]
+  },
+  {
+   "id": "L02",
+   "name": "PROJECT",
+   "label": "PROJEKTSZINT",
+   "elevation": 7.6,
+   "ftf": 3.6,
+   "slab": 0.32,
+   "clear": 3.2800000000000002,
+   "x0": -3.2,
+   "x1": 1.6,
+   "z0": -2.3,
+   "z1": 2.3,
+   "winSill": 0.5,
+   "winHead": 3,
+   "winSillLow": 0.2,
+   "cuts": {
+    "east": [
+     [
+      0,
+      2.3
+     ]
+    ],
+    "slab": [
+     {
+      "x0": -1.6,
+      "x1": 1.6,
+      "z0": 0,
+      "z1": 2.3
+     }
+    ]
+   },
+   "terrace": {
+    "x0": 1.6,
+    "x1": 3.2,
+    "z0": -2.3,
+    "z1": 2.3
+   },
+   "area": 632,
+   "rooms": [
+    {
+     "id": "R01",
+     "uid": "L02-R01",
+     "name": "ROOM_L02_R01",
+     "kind": "CORE",
+     "zone": "CORE",
+     "label": "Közlekedőmag és gépészet",
+     "finish": null,
+     "x0": -3.2,
+     "x1": -1.6,
+     "z0": -2.3,
+     "z1": -0.7666666666666666,
+     "area": 70.2
+    },
+    {
+     "id": "R02",
+     "uid": "L02-R02",
+     "name": "ROOM_L02_R02",
+     "kind": "OFFICE",
+     "zone": "C",
+     "label": "Iroda 01",
+     "finish": null,
+     "x0": -1.6,
+     "x1": 0,
+     "z0": -2.3,
+     "z1": -0.7666666666666666,
+     "area": 70.2
+    },
+    {
+     "id": "R03",
+     "uid": "L02-R03",
+     "name": "ROOM_L02_R03",
+     "kind": "OFFICE",
+     "zone": "C",
+     "label": "Iroda 02",
+     "finish": null,
+     "x0": 0,
+     "x1": 0.8,
+     "z0": -2.3,
+     "z1": -0.7666666666666666,
+     "area": 35.1
+    },
+    {
+     "id": "R04",
+     "uid": "L02-R04",
+     "name": "ROOM_L02_R04",
+     "kind": "TECH",
+     "zone": "D",
+     "label": "Gépészeti helyiség",
+     "finish": null,
+     "x0": 0.8,
+     "x1": 1.6,
+     "z0": -2.3,
+     "z1": -0.7666666666666666,
+     "area": 35.1
+    },
+    {
+     "id": "R05",
+     "uid": "L02-R05",
+     "name": "ROOM_L02_R05",
+     "kind": "CIRC",
+     "zone": "E",
+     "label": "Folyosó",
+     "finish": null,
+     "x0": -3.2,
+     "x1": 1.6,
+     "z0": -0.7666666666666666,
+     "z1": 0,
+     "area": 105.3
+    },
+    {
+     "id": "R06",
+     "uid": "L02-R06",
+     "name": "ROOM_L02_R06",
+     "kind": "BIM",
+     "zone": "D",
+     "label": "BIM és adatszoba",
+     "finish": null,
+     "x0": -3.2,
+     "x1": -0.8,
+     "z0": 0,
+     "z1": 2.3,
+     "area": 158
+    },
+    {
+     "id": "R07",
+     "uid": "L02-R07",
+     "name": "ROOM_L02_R07",
+     "kind": "STUDIO",
+     "zone": "C",
+     "label": "Projektstúdió",
+     "finish": null,
+     "x0": -0.8,
+     "x1": 0.8,
+     "z0": 0,
+     "z1": 2.3,
+     "area": 105.3
+    },
+    {
+     "id": "R08",
+     "uid": "L02-R08",
+     "name": "ROOM_L02_R08",
+     "kind": "COLLAB",
+     "zone": "D",
+     "label": "Technikai és kollaborációs sáv",
+     "finish": null,
+     "x0": 0.8,
+     "x1": 1.6,
+     "z0": 0,
+     "z1": 2.3,
+     "area": 52.7
+    }
+   ],
+   "doors": [
+    {
+     "level": "L02",
+     "id": "L02-D01-01",
+     "name": "DOOR_L02_D01_01",
+     "type": "D01",
+     "axis": "h",
+     "x": -2.6811934311411854,
+     "z": -0.7666666666666666,
+     "room": "R01",
+     "from": "R05",
+     "exterior": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-D01-02",
+     "name": "DOOR_L02_D01_02",
+     "type": "D01",
+     "axis": "h",
+     "x": -0.5188065688588146,
+     "z": -0.7666666666666666,
+     "room": "R02",
+     "from": "R05",
+     "exterior": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-D01-03",
+     "name": "DOOR_L02_D01_03",
+     "type": "D01",
+     "axis": "h",
+     "x": 0.31080656885881464,
+     "z": -0.7666666666666666,
+     "room": "R03",
+     "from": "R05",
+     "exterior": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-D01-04",
+     "name": "DOOR_L02_D01_04",
+     "type": "D01",
+     "axis": "h",
+     "x": 1.2891934311411855,
+     "z": 0,
+     "room": "R08",
+     "from": "R05",
+     "exterior": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-D02-01",
+     "name": "DOOR_L02_D02_01",
+     "type": "D02",
+     "axis": "h",
+     "x": -1.573536827431003,
+     "z": 0,
+     "room": "R06",
+     "from": "R05",
+     "exterior": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-D02-02",
+     "name": "DOOR_L02_D02_02",
+     "type": "D02",
+     "axis": "h",
+     "x": -0.23446317256899696,
+     "z": 0,
+     "room": "R07",
+     "from": "R05",
+     "exterior": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-D03-01",
+     "name": "DOOR_L02_D03_01",
+     "type": "D03",
+     "axis": "h",
+     "x": 1.3078855345700608,
+     "z": -0.7666666666666666,
+     "room": "R04",
+     "from": "R05",
+     "exterior": false
+    }
+   ],
+   "openings": [],
+   "windows": [
+    {
+     "level": "L02",
+     "id": "L02-W01-01",
+     "name": "WIN_L02_W01_01",
+     "type": "W01",
+     "axis": "h",
+     "side": "N",
+     "x": -1.2000000000000002,
+     "z": -2.3,
+     "room": "R02",
+     "sill": 0.5,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W01-02",
+     "name": "WIN_L02_W01_02",
+     "type": "W01",
+     "axis": "h",
+     "side": "N",
+     "x": -0.3999999999999999,
+     "z": -2.3,
+     "room": "R02",
+     "sill": 0.5,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W01-03",
+     "name": "WIN_L02_W01_03",
+     "type": "W01",
+     "axis": "h",
+     "side": "N",
+     "x": 0.3999999999999999,
+     "z": -2.3,
+     "room": "R03",
+     "sill": 0.5,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W01-04",
+     "name": "WIN_L02_W01_04",
+     "type": "W01",
+     "axis": "h",
+     "side": "S",
+     "x": 1.2000000000000002,
+     "z": 2.3,
+     "room": "R08",
+     "sill": 0.5,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W01-05",
+     "name": "WIN_L02_W01_05",
+     "type": "W01",
+     "axis": "v",
+     "side": "W",
+     "x": -3.2,
+     "z": -0.3833333333333333,
+     "room": "R05",
+     "sill": 0.5,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W01-06",
+     "name": "WIN_L02_W01_06",
+     "type": "W01",
+     "axis": "v",
+     "side": "E",
+     "x": 1.6,
+     "z": -0.3833333333333333,
+     "room": "R05",
+     "sill": 0.5,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W01-07",
+     "name": "WIN_L02_W01_07",
+     "type": "W01",
+     "axis": "v",
+     "side": "E",
+     "x": 1.6,
+     "z": 0.3833333333333333,
+     "room": "R08",
+     "sill": 0.5,
+     "head": 3,
+     "cut": true
+    },
+    {
+     "level": "L02",
+     "id": "L02-W01-08",
+     "name": "WIN_L02_W01_08",
+     "type": "W01",
+     "axis": "v",
+     "side": "E",
+     "x": 1.6,
+     "z": 1.15,
+     "room": "R08",
+     "sill": 0.5,
+     "head": 3,
+     "cut": true
+    },
+    {
+     "level": "L02",
+     "id": "L02-W01-09",
+     "name": "WIN_L02_W01_09",
+     "type": "W01",
+     "axis": "v",
+     "side": "E",
+     "x": 1.6,
+     "z": 1.916666666666667,
+     "room": "R08",
+     "sill": 0.5,
+     "head": 3,
+     "cut": true
+    },
+    {
+     "level": "L02",
+     "id": "L02-W02-01",
+     "name": "WIN_L02_W02_01",
+     "type": "W02",
+     "axis": "h",
+     "side": "N",
+     "x": -2.8000000000000003,
+     "z": -2.3,
+     "room": "R01",
+     "sill": 0.5,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W02-02",
+     "name": "WIN_L02_W02_02",
+     "type": "W02",
+     "axis": "h",
+     "side": "N",
+     "x": 1.2000000000000002,
+     "z": -2.3,
+     "room": "R04",
+     "sill": 0.5,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W02-03",
+     "name": "WIN_L02_W02_03",
+     "type": "W02",
+     "axis": "v",
+     "side": "W",
+     "x": -3.2,
+     "z": -1.9166666666666665,
+     "room": "R01",
+     "sill": 0.5,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W02-04",
+     "name": "WIN_L02_W02_04",
+     "type": "W02",
+     "axis": "v",
+     "side": "E",
+     "x": 1.6,
+     "z": -1.9166666666666665,
+     "room": "R04",
+     "sill": 0.5,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W03-01",
+     "name": "WIN_L02_W03_01",
+     "type": "W03",
+     "axis": "h",
+     "side": "S",
+     "x": -2.8000000000000003,
+     "z": 2.3,
+     "room": "R06",
+     "sill": 0.2,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W03-02",
+     "name": "WIN_L02_W03_02",
+     "type": "W03",
+     "axis": "h",
+     "side": "S",
+     "x": -2,
+     "z": 2.3,
+     "room": "R06",
+     "sill": 0.2,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W03-03",
+     "name": "WIN_L02_W03_03",
+     "type": "W03",
+     "axis": "h",
+     "side": "S",
+     "x": -1.2000000000000002,
+     "z": 2.3,
+     "room": "R06",
+     "sill": 0.2,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W03-04",
+     "name": "WIN_L02_W03_04",
+     "type": "W03",
+     "axis": "h",
+     "side": "S",
+     "x": -0.3999999999999999,
+     "z": 2.3,
+     "room": "R07",
+     "sill": 0.2,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W03-05",
+     "name": "WIN_L02_W03_05",
+     "type": "W03",
+     "axis": "h",
+     "side": "S",
+     "x": 0.3999999999999999,
+     "z": 2.3,
+     "room": "R07",
+     "sill": 0.2,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W03-06",
+     "name": "WIN_L02_W03_06",
+     "type": "W03",
+     "axis": "v",
+     "side": "W",
+     "x": -3.2,
+     "z": 0.3833333333333333,
+     "room": "R06",
+     "sill": 0.2,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W03-07",
+     "name": "WIN_L02_W03_07",
+     "type": "W03",
+     "axis": "v",
+     "side": "W",
+     "x": -3.2,
+     "z": 1.15,
+     "room": "R06",
+     "sill": 0.2,
+     "head": 3,
+     "cut": false
+    },
+    {
+     "level": "L02",
+     "id": "L02-W03-08",
+     "name": "WIN_L02_W03_08",
+     "type": "W03",
+     "axis": "v",
+     "side": "W",
+     "x": -3.2,
+     "z": 1.916666666666667,
+     "room": "R06",
+     "sill": 0.2,
+     "head": 3,
+     "cut": false
+    }
+   ],
+   "walls": [
+    {
+     "axis": "v",
+     "coord": -3.2,
+     "t0": -2.3,
+     "t1": 2.3,
+     "kind": "ext"
+    },
+    {
+     "axis": "v",
+     "coord": -1.6,
+     "t0": -2.3,
+     "t1": -0.7666666666666666,
+     "kind": "int"
+    },
+    {
+     "axis": "v",
+     "coord": 0,
+     "t0": -2.3,
+     "t1": -0.7666666666666666,
+     "kind": "int"
+    },
+    {
+     "axis": "v",
+     "coord": 0.8,
+     "t0": -2.3,
+     "t1": -0.7666666666666666,
+     "kind": "int"
+    },
+    {
+     "axis": "v",
+     "coord": 0.8,
+     "t0": 0,
+     "t1": 2.3,
+     "kind": "int"
+    },
+    {
+     "axis": "v",
+     "coord": 1.6,
+     "t0": -2.3,
+     "t1": 2.3,
+     "kind": "ext"
+    },
+    {
+     "axis": "v",
+     "coord": -0.8,
+     "t0": 0,
+     "t1": 2.3,
+     "kind": "int"
+    },
+    {
+     "axis": "h",
+     "coord": -2.3,
+     "t0": -3.2,
+     "t1": 1.6,
+     "kind": "ext"
+    },
+    {
+     "axis": "h",
+     "coord": -0.7666666666666666,
+     "t0": -3.2,
+     "t1": 1.6,
+     "kind": "int"
+    },
+    {
+     "axis": "h",
+     "coord": 0,
+     "t0": -3.2,
+     "t1": 1.6,
+     "kind": "int"
+    },
+    {
+     "axis": "h",
+     "coord": 2.3,
+     "t0": -3.2,
+     "t1": 1.6,
+     "kind": "ext"
+    }
+   ]
+  }
+ ],
+ "quantities": {
+  "levels": [
+   {
+    "id": "L00",
+    "name": "GROUND",
+    "label": "FÖLDSZINT",
+    "elevation": 0,
+    "ftf": 4,
+    "clear": 3.68,
+    "rooms": 12,
+    "doors": 9,
+    "windows": 23,
+    "area": 842.6,
+    "doorTypes": {
+     "D01": 4,
+     "D02": 3,
+     "D03": 2
+    },
+    "windowTypes": {
+     "W01": 12,
+     "W02": 5,
+     "W03": 6
+    },
+    "finishes": {
+     "F1": 421.2,
+     "F2": 140.4,
+     "F0": 70.2,
+     "F3": 210.6
+    }
+   },
+   {
+    "id": "L01",
+    "name": "WORK",
+    "label": "MUNKASZINT",
+    "elevation": 4,
+    "ftf": 3.6,
+    "clear": 3.28,
+    "rooms": 12,
+    "doors": 12,
+    "windows": 25,
+    "area": 842.6,
+    "doorTypes": {
+     "D01": 6,
+     "D02": 5,
+     "D03": 1
+    },
+    "windowTypes": {
+     "W01": 16,
+     "W02": 6,
+     "W03": 3
+    },
+    "finishes": {
+     "F1": 351.1,
+     "F2": 456.4,
+     "F3": 35.1
+    }
+   },
+   {
+    "id": "L02",
+    "name": "PROJECT",
+    "label": "PROJEKTSZINT",
+    "elevation": 7.6,
+    "ftf": 3.6,
+    "clear": 3.28,
+    "rooms": 8,
+    "doors": 7,
+    "windows": 21,
+    "area": 632,
+    "doorTypes": {
+     "D01": 4,
+     "D02": 2,
+     "D03": 1
+    },
+    "windowTypes": {
+     "W01": 9,
+     "W02": 4,
+     "W03": 8
+    },
+    "finishes": {
+     "F1": 210.6,
+     "F2": 421.3
+    }
+   }
+  ],
+  "total": {
+   "levels": 3,
+   "rooms": 32,
+   "doors": 28,
+   "windows": 69,
+   "area": 2317.2,
+   "doorTypes": {
+    "D01": 14,
+    "D02": 10,
+    "D03": 4
+   },
+   "windowTypes": {
+    "W01": 37,
+    "W02": 15,
+    "W03": 17
+   },
+   "height": 11.2,
+   "terraceArea": 210.7
+  }
+ },
+ "stations": [
+  [
+   3.35,
+   3.15
+  ],
+  [
+   -4.3,
+   2.2
+  ],
+  [
+   5.2,
+   -1.4
+  ],
+  [
+   -2,
+   4.35
+  ],
+  [
+   0.6,
+   -3.5
+  ],
+  [
+   -5.3,
+   -3.6
+  ],
+  [
+   2.2,
+   1.05
+  ],
+  [
+   -1.2,
+   -1.6
+  ],
+  [
+   4.6,
+   4.5
+  ],
+  [
+   -3.4,
+   -0.4
+  ],
+  [
+   1,
+   4.9
+  ],
+  [
+   6.1,
+   0.9
+  ]
+ ],
+ "captureRound": [
+  [
+   "L00-R10",
+   "RECEPTION"
+  ],
+  [
+   "L00-R11",
+   "WAITING"
+  ],
+  [
+   "L00-R09",
+   "BOARDROOM"
+  ],
+  [
+   "L00-R06",
+   "CIRC_CENTRE"
+  ],
+  [
+   "L00-R08",
+   "CIRC_EAST"
+  ],
+  [
+   "L00-R02",
+   "OFFICE"
+  ],
+  [
+   "L00-R03",
+   "TECHNICAL"
+  ],
+  [
+   "L00-R04",
+   "RAW"
+  ],
+  [
+   "L01-R06",
+   "CORRIDOR"
+  ],
+  [
+   "L01-R02",
+   "OPEN_OFFICE"
+  ],
+  [
+   "L01-R07",
+   "MEETING_01"
+  ],
+  [
+   "L01-R09",
+   "FOCUS_02"
+  ],
+  [
+   "L01-R11",
+   "MEETING_02"
+  ],
+  [
+   "L01-R12",
+   "KITCHEN"
+  ],
+  [
+   "L01-R04",
+   "PROJECT"
+  ],
+  [
+   "L02-R05",
+   "CORRIDOR"
+  ],
+  [
+   "L02-R06",
+   "BIM"
+  ],
+  [
+   "L02-R07",
+   "STUDIO"
+  ],
+  [
+   "L02-R08",
+   "COLLAB"
+  ],
+  [
+   "L02-R02",
+   "OFFICE"
+  ]
+ ]
+}

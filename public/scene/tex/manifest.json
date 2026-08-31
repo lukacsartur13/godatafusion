@@ -1,0 +1,520 @@
+{
+ "metresPerUnit": 5.349852700125815,
+ "format": "webp",
+ "ktx2": false,
+ "tiers": {
+  "hi": {
+   "concrete_wall_001_arm_1k": 1024,
+   "concrete_wall_001_nor_gl_1k": 512,
+   "dining_chair_02_diff": 512,
+   "dining_chair_02_metal-dining_chair_02_rough": 512,
+   "dining_chair_02_nor_gl": 512,
+   "modern_arm_chair_01_legs_diff": 512,
+   "modern_arm_chair_01_legs_metal-modern_arm_chair_01_legs_rough": 512,
+   "modern_arm_chair_01_legs_nor_gl": 512,
+   "modern_arm_chair_01_pillow_diff": 512,
+   "modern_arm_chair_01_pillow_metal-modern_arm_chair_01_pillow_rough": 512,
+   "modern_arm_chair_01_pillow_nor_gl": 512,
+   "modern_ceiling_lamp_01_basecolor": 256,
+   "modern_ceiling_lamp_01_metallic-modern_ceiling_lamp_01_roughness": 256,
+   "oak_veneer_02_Diffuse_1k": 512,
+   "oak_veneer_02_arm_1k": 512,
+   "poly_wool_herringbone_Diffuse_1k": 512,
+   "poly_wool_herringbone_arm_1k": 512,
+   "poly_wool_herringbone_nor_gl_1k": 512,
+   "potted_plant_02_leaves_diff": 256,
+   "potted_plant_02_leaves_nor_gl": 256,
+   "potted_plant_02_leaves_rough": 256,
+   "potted_plant_02_pot_diff": 256,
+   "potted_plant_02_pot_nor_gl": 256,
+   "potted_plant_02_pot_rough": 256,
+   "side_table_01_BaseColor": 256,
+   "side_table_01_metallic-side_table_01_roughness": 256,
+   "steel_frame_shelves_03_diff": 256,
+   "steel_frame_shelves_03_drawers_diff": 256,
+   "steel_frame_shelves_03_drawers_rough": 256,
+   "steel_frame_shelves_03_metal-steel_frame_shelves_03_rough": 256,
+   "white_stucco_arm_1k": 1024,
+   "white_stucco_nor_gl_1k": 512
+  },
+  "lo": {
+   "concrete_wall_001_arm_1k": 512,
+   "concrete_wall_001_nor_gl_1k": 256,
+   "dining_chair_02_diff": 256,
+   "dining_chair_02_metal-dining_chair_02_rough": 256,
+   "dining_chair_02_nor_gl": 256,
+   "modern_arm_chair_01_legs_diff": 256,
+   "modern_arm_chair_01_legs_metal-modern_arm_chair_01_legs_rough": 256,
+   "modern_arm_chair_01_legs_nor_gl": 256,
+   "modern_arm_chair_01_pillow_diff": 256,
+   "modern_arm_chair_01_pillow_metal-modern_arm_chair_01_pillow_rough": 256,
+   "modern_arm_chair_01_pillow_nor_gl": 256,
+   "modern_ceiling_lamp_01_basecolor": 128,
+   "modern_ceiling_lamp_01_metallic-modern_ceiling_lamp_01_roughness": 128,
+   "oak_veneer_02_Diffuse_1k": 256,
+   "oak_veneer_02_arm_1k": 256,
+   "poly_wool_herringbone_Diffuse_1k": 256,
+   "poly_wool_herringbone_arm_1k": 256,
+   "poly_wool_herringbone_nor_gl_1k": 256,
+   "potted_plant_02_leaves_diff": 128,
+   "potted_plant_02_leaves_nor_gl": 128,
+   "potted_plant_02_leaves_rough": 128,
+   "potted_plant_02_pot_diff": 128,
+   "potted_plant_02_pot_nor_gl": 128,
+   "potted_plant_02_pot_rough": 128,
+   "side_table_01_BaseColor": 128,
+   "side_table_01_metallic-side_table_01_roughness": 128,
+   "steel_frame_shelves_03_diff": 128,
+   "steel_frame_shelves_03_drawers_diff": 128,
+   "steel_frame_shelves_03_drawers_rough": 128,
+   "steel_frame_shelves_03_metal-steel_frame_shelves_03_rough": 128,
+   "white_stucco_arm_1k": 512,
+   "white_stucco_nor_gl_1k": 256
+  }
+ },
+ "materials": {
+  "MAT_CONCRETE": {
+   "slug": "concrete_wall_001",
+   "uv": "box",
+   "metres": 3.4,
+   "mode": "tint",
+   "baseColor": [
+    0.455,
+    0.442,
+    0.421
+   ],
+   "roughness": 0.86,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {
+    "roughnessMap": "concrete_wall_001_arm_1k",
+    "normalMap": "concrete_wall_001_nor_gl_1k"
+   }
+  },
+  "MAT_FABRIC_DARK": {
+   "slug": "poly_wool_herringbone",
+   "uv": "box",
+   "metres": 0.55,
+   "mode": "tint",
+   "baseColor": [
+    0.106,
+    0.114,
+    0.122
+   ],
+   "roughness": 0.95,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {
+    "map": "poly_wool_herringbone_Diffuse_1k",
+    "roughnessMap": "poly_wool_herringbone_arm_1k",
+    "normalMap": "poly_wool_herringbone_nor_gl_1k"
+   }
+  },
+  "MAT_FABRIC_LIGHT": {
+   "slug": "poly_wool_herringbone",
+   "uv": "box",
+   "metres": 0.55,
+   "mode": "tint",
+   "baseColor": [
+    0.412,
+    0.392,
+    0.36
+   ],
+   "roughness": 0.95,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {
+    "map": "poly_wool_herringbone_Diffuse_1k",
+    "roughnessMap": "poly_wool_herringbone_arm_1k",
+    "normalMap": "poly_wool_herringbone_nor_gl_1k"
+   }
+  },
+  "MAT_GLASS": {
+   "slug": "",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.64,
+    0.678,
+    0.694
+   ],
+   "roughness": 0.05,
+   "metalness": 0.0,
+   "opacity": 0.16,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {}
+  },
+  "MAT_LIGHT": {
+   "slug": "",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.96,
+    0.918,
+    0.842
+   ],
+   "roughness": 0.4,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": [
+    0.96,
+    0.918,
+    0.842
+   ],
+   "emissiveStrength": 4.0,
+   "maps": {}
+  },
+  "MAT_METAL": {
+   "slug": "",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.118,
+    0.124,
+    0.13
+   ],
+   "roughness": 0.38,
+   "metalness": 0.9,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {}
+  },
+  "MAT_OAK": {
+   "slug": "oak_veneer_02",
+   "uv": "box",
+   "metres": 1.3,
+   "mode": "replace",
+   "baseColor": [
+    0.74,
+    0.66,
+    0.55
+   ],
+   "roughness": 0.54,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {
+    "map": "oak_veneer_02_Diffuse_1k",
+    "roughnessMap": "oak_veneer_02_arm_1k"
+   }
+  },
+  "MAT_PLANT": {
+   "slug": "",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.132,
+    0.208,
+    0.116
+   ],
+   "roughness": 0.72,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {}
+  },
+  "MAT_SCREEN": {
+   "slug": "",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.055,
+    0.062,
+    0.07
+   ],
+   "roughness": 0.22,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": [
+    0.34,
+    0.402,
+    0.455
+   ],
+   "emissiveStrength": 1.2,
+   "maps": {}
+  },
+  "MAT_WALL": {
+   "slug": "white_stucco",
+   "uv": "box",
+   "metres": 2.6,
+   "mode": "tint",
+   "baseColor": [
+    0.606,
+    0.594,
+    0.572
+   ],
+   "roughness": 0.93,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {
+    "roughnessMap": "white_stucco_arm_1k",
+    "normalMap": "white_stucco_nor_gl_1k"
+   }
+  },
+  "PH_dining_chair_02__dining_chair_02": {
+   "slug": "dining_chair_02",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.8,
+    0.8,
+    0.8
+   ],
+   "roughness": 0.5,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {
+    "map": "dining_chair_02_diff",
+    "roughnessMap": "dining_chair_02_metal-dining_chair_02_rough",
+    "metalnessMap": "dining_chair_02_metal-dining_chair_02_rough",
+    "normalMap": "dining_chair_02_nor_gl"
+   }
+  },
+  "PH_modern_arm_chair_01__modern_arm_chair_01_legs": {
+   "slug": "modern_arm_chair_01",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.8,
+    0.8,
+    0.8
+   ],
+   "roughness": 0.5,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {
+    "map": "modern_arm_chair_01_legs_diff",
+    "roughnessMap": "modern_arm_chair_01_legs_metal-modern_arm_chair_01_legs_rough",
+    "metalnessMap": "modern_arm_chair_01_legs_metal-modern_arm_chair_01_legs_rough",
+    "normalMap": "modern_arm_chair_01_legs_nor_gl"
+   }
+  },
+  "PH_modern_arm_chair_01__modern_arm_chair_01_pillow": {
+   "slug": "modern_arm_chair_01",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.8,
+    0.8,
+    0.8
+   ],
+   "roughness": 0.5,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {
+    "map": "modern_arm_chair_01_pillow_diff",
+    "roughnessMap": "modern_arm_chair_01_pillow_metal-modern_arm_chair_01_pillow_rough",
+    "metalnessMap": "modern_arm_chair_01_pillow_metal-modern_arm_chair_01_pillow_rough",
+    "normalMap": "modern_arm_chair_01_pillow_nor_gl"
+   }
+  },
+  "PH_modern_ceiling_lamp_01__modern_ceiling_globe": {
+   "slug": "modern_ceiling_lamp_01",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.8,
+    0.8,
+    0.8
+   ],
+   "roughness": 0.5,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": [
+    0.623,
+    0.5416,
+    0.4746
+   ],
+   "emissiveStrength": 1.0,
+   "maps": {
+    "map": "modern_ceiling_lamp_01_basecolor",
+    "roughnessMap": "modern_ceiling_lamp_01_metallic-modern_ceiling_lamp_01_roughness",
+    "metalnessMap": "modern_ceiling_lamp_01_metallic-modern_ceiling_lamp_01_roughness"
+   }
+  },
+  "PH_modern_ceiling_lamp_01__modern_ceiling_lamp_01": {
+   "slug": "modern_ceiling_lamp_01",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.8,
+    0.8,
+    0.8
+   ],
+   "roughness": 0.5,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {
+    "map": "modern_ceiling_lamp_01_basecolor",
+    "roughnessMap": "modern_ceiling_lamp_01_metallic-modern_ceiling_lamp_01_roughness",
+    "metalnessMap": "modern_ceiling_lamp_01_metallic-modern_ceiling_lamp_01_roughness"
+   }
+  },
+  "PH_modern_ceiling_lamp_01__modern_ceiling_lamp_01_glass": {
+   "slug": "modern_ceiling_lamp_01",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.8,
+    0.8,
+    0.8
+   ],
+   "roughness": 0.5,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": [
+    0.96,
+    0.918,
+    0.842
+   ],
+   "emissiveStrength": 3.0,
+   "maps": {
+    "map": "modern_ceiling_lamp_01_basecolor",
+    "roughnessMap": "modern_ceiling_lamp_01_metallic-modern_ceiling_lamp_01_roughness",
+    "metalnessMap": "modern_ceiling_lamp_01_metallic-modern_ceiling_lamp_01_roughness"
+   }
+  },
+  "PH_potted_plant_02__potted_plant_02_leaves": {
+   "slug": "potted_plant_02",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.8,
+    0.8,
+    0.8
+   ],
+   "roughness": 0.5,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {
+    "map": "potted_plant_02_leaves_diff",
+    "roughnessMap": "potted_plant_02_leaves_rough",
+    "metalnessMap": "potted_plant_02_leaves_rough",
+    "normalMap": "potted_plant_02_leaves_nor_gl"
+   }
+  },
+  "PH_potted_plant_02__potted_plant_02_pot": {
+   "slug": "potted_plant_02",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.8,
+    0.8,
+    0.8
+   ],
+   "roughness": 0.5,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {
+    "map": "potted_plant_02_pot_diff",
+    "roughnessMap": "potted_plant_02_pot_rough",
+    "metalnessMap": "potted_plant_02_pot_rough",
+    "normalMap": "potted_plant_02_pot_nor_gl"
+   }
+  },
+  "PH_side_table_01__side_table_01": {
+   "slug": "side_table_01",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.8,
+    0.8,
+    0.8
+   ],
+   "roughness": 0.5,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {
+    "map": "side_table_01_BaseColor",
+    "roughnessMap": "side_table_01_metallic-side_table_01_roughness",
+    "metalnessMap": "side_table_01_metallic-side_table_01_roughness"
+   }
+  },
+  "PH_steel_frame_shelves_03__steel_frame_shelves_03": {
+   "slug": "steel_frame_shelves_03",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.8,
+    0.8,
+    0.8
+   ],
+   "roughness": 0.5,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {
+    "map": "steel_frame_shelves_03_diff",
+    "roughnessMap": "steel_frame_shelves_03_metal-steel_frame_shelves_03_rough",
+    "metalnessMap": "steel_frame_shelves_03_metal-steel_frame_shelves_03_rough"
+   }
+  },
+  "PH_steel_frame_shelves_03__steel_frame_shelves_03_drawers": {
+   "slug": "steel_frame_shelves_03",
+   "uv": "asset",
+   "metres": null,
+   "mode": null,
+   "baseColor": [
+    0.8,
+    0.8,
+    0.8
+   ],
+   "roughness": 0.5,
+   "metalness": 0.0,
+   "opacity": 1.0,
+   "emissive": null,
+   "emissiveStrength": 0.0,
+   "maps": {
+    "map": "steel_frame_shelves_03_drawers_diff",
+    "roughnessMap": "steel_frame_shelves_03_drawers_rough",
+    "metalnessMap": "steel_frame_shelves_03_drawers_rough"
+   }
+  }
+ },
+ "bytes": {
+  "hi": 770014,
+  "lo": 169586
+ }
+}

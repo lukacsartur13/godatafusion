@@ -1,0 +1,259 @@
+/* ============================================================
+   §10–13 / §23 — THREE EDITORIAL RHYTHMS
+
+   The finding this phase opened with: all three service pages collapsed
+   into LEFT COPY / RIGHT VISUAL, section after section, so CAPTURE,
+   MEASURE and QUANTIFY were the same document with different words in it.
+
+   They share everything a design system should share — type, rules,
+   spacing, navigation, glyphs, the four hover primitives, the accent
+   contract. What they must NOT share is rhythm. Each page keys off the
+   `data-service` already on its <html>, so nothing here touches the
+   shared .sv- scaffolding and a fourth service would simply not opt in.
+
+     CAPTURE    SPATIAL             a walk across a field
+     MEASURE    INSTRUMENT          a calibrated vertical datum
+     QUANTIFY   EDITORIAL DRAWING   an architectural sheet
+
+   §23 — one master grid, emphasised three ways. CAPTURE reads the grid
+   HORIZONTALLY (the section heads step across its columns), MEASURE
+   reads it VERTICALLY (a datum with calibration ticks), QUANTIFY reads
+   it as a DRAWING (a sheet border, a title block, a plan that crops).
+   ============================================================ */
+
+
+/* ============================================================
+   CAPTURE — SPATIAL
+
+   A capture job is a walk: you stand at CP-01, then at CP-04, then at
+   CP-08, and the record is the relationship between those positions.
+   The page performs it. Each section head enters at a different
+   distance across the field, and a survey line runs back from it to the
+   left gutter with an anchor at the origin — so the indent is not a
+   margin, it is a measured offset from a station.
+
+   The offsets are NOT arbitrary: 0 / 7 / 14 / 21 vw, the same four-step
+   interval the engineering frame's column rules already use, clamped so
+   that at 1024 and below the walk compresses instead of pushing the copy
+   off the measure.
+   ============================================================ */
+[data-service="capture"] .sv-sec { --sp-x: 0px; }
+[data-service="capture"] .sv-story  { --sp-x: 0px; }
+[data-service="capture"] .sv-pano   { --sp-x: clamp(0px, 7vw, 118px); }
+[data-service="capture"] .sv-uses   { --sp-x: clamp(0px, 14vw, 236px); }
+[data-service="capture"] .sv-input  { --sp-x: clamp(0px, 7vw, 118px); }
+[data-service="capture"] .sv-sib    { --sp-x: clamp(0px, 21vw, 354px); }
+
+[data-service="capture"] .sv-sec__head {
+  position: relative;
+  margin-left: var(--sp-x);
+  max-width: 40rem;
+}
+/* the survey line back to the origin, with its anchor */
+[data-service="capture"] .sv-sec__head::before {
+  content: '';
+  position: absolute; right: 100%; top: .58em;
+  width: var(--sp-x); height: var(--rule-w);
+  background: var(--rule-measure);
+  opacity: .55;
+}
+[data-service="capture"] .sv-sec__head::after {
+  content: '';
+  position: absolute; right: calc(100% + var(--sp-x) - 2px); top: calc(.58em - 2px);
+  width: 5px; height: 5px;
+  background: var(--rule-measure);
+  opacity: .55;
+}
+[data-service="capture"] .sv-story .sv-sec__head::before,
+[data-service="capture"] .sv-story .sv-sec__head::after { display: none; }
+
+/* Large visual fields. The 360 viewer is the dominant object on this page
+   (§11), so it takes the full frame rather than sitting inside the text
+   column — and the copy above it steps in from the left, which is what
+   makes the viewer read as the environment and the copy as a note
+   attached to it. */
+[data-service="capture"] .sv-pano .pano,
+[data-service="capture"] .sv-pano .pano__open {
+  margin-inline: calc(var(--gutter) * -1);
+  width: auto;
+}
+@media (min-width: 1100px) {
+  /* asymmetry: the field is off-centre, weighted to the right, the way a
+     station's view is. Never centred — a centred field is a card. */
+  [data-service="capture"] .sv-pano .pano,
+  [data-service="capture"] .sv-pano .pano__open {
+    margin-left: calc(var(--gutter) * -1 + clamp(0px, 5vw, 90px));
+    margin-right: calc(var(--gutter) * -1);
+  }
+}
+
+/* the hero's station strip becomes a rail across the whole frame, with an
+   anchor at each station — environment, not metadata */
+[data-service="capture"] .sv-meta {
+  position: relative;
+  padding-top: 18px;
+  border-top: var(--rule-w) solid var(--rule-secondary);
+}
+[data-service="capture"] .sv-meta__i::before {
+  width: 5px; height: 5px; border-radius: 0;
+  background: var(--accent-40);
+}
+
+
+/* ============================================================
+   MEASURE — INSTRUMENT
+
+   Not a dashboard. A dashboard is a set of readouts arranged for
+   scanning; an instrument is one scale that everything is read AGAINST.
+
+   The page grows a continuous vertical DATUM — one hairline running the
+   full height of <main>, with a calibration tick every 24 px — and
+   every section is set to the right of it. The section eyebrows sit ON
+   the datum with a terminal mark, so each one reads as a level taken off
+   the same scale rather than as a new heading.
+
+   Nothing on this page wanders horizontally. The rhythm is entirely
+   vertical, and that IS the art direction: precision is the absence of
+   the freedom the CAPTURE page takes.
+   ============================================================ */
+[data-service="measure"] { --dtm-x: clamp(14px, 2.6vw, 46px); }
+[data-service="measure"] main { position: relative; }
+
+.dtm {
+  position: absolute;
+  left: calc(var(--gutter) + var(--dtm-x));
+  top: 0; bottom: 0; width: 9px;
+  pointer-events: none;
+  z-index: 1;
+}
+/* the datum itself */
+.dtm::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: var(--rule-w); background: var(--rule-measure); opacity: .5;
+}
+/* the calibration — a repeating gradient, so a scale 12 000 px long is
+   one element and one paint, not 500 ticks in the DOM */
+.dtm::after {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; right: 0;
+  background: repeating-linear-gradient(
+    180deg, var(--rule-measure) 0 1px, transparent 1px 24px);
+  opacity: .3;
+}
+/* every fifth tick is long — a real scale has a major division */
+.dtm i {
+  position: absolute; left: 0; top: 0; bottom: 0; right: -7px;
+  background: repeating-linear-gradient(
+    180deg, var(--rule-measure) 0 1px, transparent 1px 120px);
+  opacity: .42;
+}
+
+[data-service="measure"] .sv-sec,
+[data-service="measure"] .sv-hero {
+  padding-left: calc(var(--gutter) + var(--dtm-x) + clamp(26px, 3.4vw, 62px));
+}
+/* the eyebrow takes a level off the scale */
+[data-service="measure"] .sv-sec .sv-eyebrow,
+[data-service="measure"] .sv-hero .sv-eyebrow { position: relative; }
+[data-service="measure"] .sv-sec .sv-eyebrow::before,
+[data-service="measure"] .sv-hero .sv-eyebrow::before {
+  content: '';
+  position: absolute; top: 50%; right: calc(100% + 10px);
+  width: clamp(18px, 2.6vw, 50px); height: var(--rule-w);
+  background: var(--accent-40);
+  transform: translateY(-50%);
+}
+[data-service="measure"] .sv-lede,
+[data-service="measure"] .sv-note { max-width: 46ch; }
+
+@media (max-width: 860px) {
+  /* §24 — a 46 px datum plus a 62 px indent is a fifth of a 390 frame.
+     The scale survives at a third of the offset; the calibration does
+     not survive at all, so it goes rather than becoming noise. */
+  [data-service="measure"] { --dtm-x: 8px; }
+  [data-service="measure"] .sv-sec,
+  [data-service="measure"] .sv-hero { padding-left: calc(var(--gutter) + 20px); }
+  .dtm::after, .dtm i { display: none; }
+}
+
+
+/* ============================================================
+   QUANTIFY — EDITORIAL DRAWING
+
+   This page is a SHEET. It carries a drawn border inset from the frame
+   with registration crosses at its corners, its sections carry title
+   blocks, and the plan is allowed to run off the edge instead of being
+   politely contained — a drawing is cropped by its sheet, not fitted to
+   it.
+
+   The copy does not get its own column opposite the drawing. It sits in
+   the drawing's VOID: narrower than the measure, offset to the right,
+   and set against the plan rather than beside it.
+   ============================================================ */
+[data-service="quantify"] main { position: relative; }
+
+.qsh {
+  position: absolute;
+  inset: 0 calc(var(--gutter) * .42);
+  pointer-events: none; z-index: 1;
+  border-inline: var(--rule-w) solid var(--rule-secondary);
+}
+.qsh b, .qsh u {
+  position: absolute; width: 11px; height: 11px; text-decoration: none;
+}
+.qsh b::before, .qsh b::after, .qsh u::before, .qsh u::after {
+  content: ''; position: absolute; background: var(--rule-measure);
+}
+.qsh b::before, .qsh u::before { left: 0; right: 0; top: 5px; height: var(--rule-w); }
+.qsh b::after,  .qsh u::after  { top: 0; bottom: 0; left: 5px; width: var(--rule-w); }
+.qsh b:nth-of-type(1) { left: -5px;  top: 60px; }
+.qsh b:nth-of-type(2) { right: -5px; top: 60px; }
+.qsh u:nth-of-type(1) { left: -5px;  bottom: 60px; }
+.qsh u:nth-of-type(2) { right: -5px; bottom: 60px; }
+
+/* copy in the void: narrower, offset, never a half of a 50/50 split */
+[data-service="quantify"] .sv-sec__head {
+  max-width: 33rem;
+  margin-left: clamp(0px, 8vw, 150px);
+}
+[data-service="quantify"] .sv-out .sv-sec__head { margin-left: clamp(0px, 22vw, 400px); }
+[data-service="quantify"] .sv-sample .sv-sec__head { margin-left: 0; }
+
+/* the plan crops. An asymmetric bleed to the RIGHT only — a drawing that
+   bleeds on both edges is a background, and this one is still a subject. */
+@media (min-width: 900px) {
+  [data-service="quantify"] .sv-analysis .qplan,
+  [data-service="quantify"] .sv-analysis .qsheet {
+    margin-right: calc(var(--gutter) * -1);
+  }
+}
+
+/* the title block — bottom right of a drawing, always */
+.qtb {
+  display: grid; grid-template-columns: repeat(3, auto);
+  gap: 0 clamp(18px, 2.4vw, 44px);
+  justify-content: end; justify-items: end;
+  margin-top: clamp(26px, 4vh, 52px);
+  padding-top: 12px;
+  border-top: var(--rule-w) solid var(--rule-primary);
+}
+.qtb div { display: grid; gap: 5px; justify-items: end; }
+.qtb dt {
+  font-family: var(--ff-label); font-size: var(--fs-micro); font-weight: 500;
+  letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--fg-38);
+}
+.qtb dd {
+  margin: 0;
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); color: var(--fg-60);
+  font-variant-numeric: tabular-nums;
+}
+.qtb dd.is-live { color: var(--accent-c); }
+
+@media (max-width: 860px) {
+  [data-service="quantify"] .sv-sec__head,
+  [data-service="quantify"] .sv-out .sv-sec__head { margin-left: 0; max-width: none; }
+  .qsh { inset: 0 4px; }
+  .qsh b, .qsh u { display: none; }
+  .qtb { grid-template-columns: repeat(2, auto); justify-content: start; justify-items: start; }
+  .qtb div { justify-items: start; }
+}

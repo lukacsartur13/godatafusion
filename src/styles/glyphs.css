@@ -1,0 +1,333 @@
+/* ============================================================
+   GDF SYSTEM GLYPHS — presentation and behaviour
+   PHASE 10 §04 / §05 / §06 / §25 / §28
+   ============================================================ */
+
+.gl {
+  width: var(--gl-size, 24px);
+  height: var(--gl-size, 24px);
+  flex: none;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--gl-stroke, 1.5);
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  /* The family is drawn on a 24 grid at a 1,5 stroke. Below 24 the stroke
+     has to come down with the box or the counters fill in, and above it
+     the drawing goes wiry. §25 tested every core glyph at 16/20/24/32 and
+     these four values are what survived — they are NOT 1,5 scaled
+     linearly, because optical weight is not linear. */
+  overflow: visible;
+}
+.gl--16 { --gl-size: 16px; --gl-stroke: 1.35; }
+.gl--20 { --gl-size: 20px; --gl-stroke: 1.45; }
+.gl--24 { --gl-size: 24px; --gl-stroke: 1.5; }
+.gl--32 { --gl-size: 32px; --gl-stroke: 1.6; }
+.gl--40 { --gl-size: 40px; --gl-stroke: 1.7; }
+.gl--em { --gl-size: 1em; }
+
+/* The accent is ACTIVE DATA (§21). A glyph takes it only when the thing it
+   marks is the live one — never as decoration. */
+.gl--accent { color: var(--accent-c); }
+.gl--quiet  { color: var(--fg-50); }
+
+/* ============================================================
+   §06 — GLYPH ANIMATION
+
+   ONE grammar, three gestures, and nothing bounces, spins or scales.
+   Every glyph reads --gl-on: 0 at rest, 1 when the control that owns it
+   is hovered or focused. The host sets it; the glyph decides what that
+   means for its own parts.
+
+     CORNER    the four brackets close 1,25 units toward the centre
+     SENSOR    the point resolves — .6 radius-scale and .55 alpha at rest
+     DRAW      a measurement line completes along its own length
+     TICK      a datum tick resolves in place
+     MARK      a count marker resolves
+     SWEEP     a scan line crosses its field
+     FRAG      a plan fragment resolves
+
+   Nothing in that list is the difference between LEGIBLE and NOT. An
+   idle glyph is a complete drawing that is merely quiet; engaging it
+   sharpens the drawing, it does not finish it.
+
+   All of it is transform / opacity / stroke-dashoffset — three properties
+   the compositor can carry on its own, which is the Phase 8.3 rule and
+   the reason this phase adds no new render surfaces (§27).
+   ============================================================ */
+.gl {
+  --gl-on: 0;
+  --gl-t: var(--motion-ui);
+  --gl-e: var(--ease-out);
+}
+
+/* Only glyphs marked .gl--anim animate. A glyph in a paragraph of body
+   copy or in a static spec list is a drawing, and drawings hold still. */
+.gl--anim .g-corner,
+.gl--anim .g-sensor,
+.gl--anim .g-draw,
+.gl--anim .g-tick,
+.gl--anim .g-mark,
+.gl--anim .g-datum,
+.gl--anim .g-frag,
+.gl--anim .g-arrow,
+.gl--anim .g-field {
+  transition:
+    transform var(--gl-t) var(--gl-e),
+    opacity var(--gl-t) var(--gl-e),
+    stroke-dashoffset var(--gl-t) var(--ease-line);
+}
+
+/* CORNER — the brackets close on the subject. 1,25 units at a 24 grid is
+   1,25 px at 24 px and 0,83 px at 16 px, which is the brief's "1–2 px"
+   read as a proportion of the drawing rather than as a screen distance. */
+.gl--anim .g-corner { transform: translate(0, 0); }
+.gl--anim .g-corner--tl { transform: translate(calc(var(--gl-on) *  1.25px), calc(var(--gl-on) *  1.25px)); }
+.gl--anim .g-corner--tr { transform: translate(calc(var(--gl-on) * -1.25px), calc(var(--gl-on) *  1.25px)); }
+.gl--anim .g-corner--br { transform: translate(calc(var(--gl-on) * -1.25px), calc(var(--gl-on) * -1.25px)); }
+.gl--anim .g-corner--bl { transform: translate(calc(var(--gl-on) *  1.25px), calc(var(--gl-on) * -1.25px)); }
+
+/* SENSOR — resolves rather than appears. Scaling a 1-unit dot from .4 to 1
+   is 0,6 px of travel: it reads as focus pulling, not as a thing growing. */
+.gl--anim .g-sensor {
+  transform-box: fill-box; transform-origin: center;
+  transform: scale(calc(.6 + var(--gl-on) * .4));
+  opacity: calc(.55 + var(--gl-on) * .45);
+}
+
+/* DRAW / SWEEP — the two lines in the family that draw themselves. NOT
+   .g-line: the first cut animated every line in every glyph, and at rest
+   LOCATION lost its crosshair, ARROW lost its shaft and STATION lost its
+   legs. An idle glyph has to be a complete drawing — the resolve is a
+   change of state, not the difference between legible and not.
+
+   So a drawn line idles at 55% of its length and completes on engage, and
+   `--gl-len` is set per path because a dashoffset has to be given the
+   path's own length in user units. */
+.gl--anim .g-draw,
+.gl--anim .g-sweep {
+  stroke-dasharray: var(--gl-len, 20);
+  stroke-dashoffset: calc((1 - var(--gl-on)) * var(--gl-len, 20) * .45);
+  transition: stroke-dashoffset var(--gl-t) var(--ease-line);
+}
+.gl--anim .g-tick,
+.gl--anim .g-datum { opacity: calc(.42 + var(--gl-on) * .58); }
+.gl--anim .g-mark {
+  transform-box: fill-box; transform-origin: center;
+  transform: scale(calc(.55 + var(--gl-on) * .45));
+  opacity: calc(.3 + var(--gl-on) * .7);
+}
+.gl--anim .g-frag  { opacity: calc(.42 + var(--gl-on) * .58); }
+.gl--anim .g-field { opacity: calc(.35 + var(--gl-on) * .65); }
+.gl--anim .g-arrow { transform: translate(calc(var(--gl-on) * .9px), calc(var(--gl-on) * -.9px)); }
+
+/* §28 — REDUCED MOTION resolves immediately to the ENGAGED state rather
+   than to the idle one. A reader who has asked for no motion should get
+   the finished drawing, not the half-drawn one that only makes sense
+   once it has moved. */
+@media (prefers-reduced-motion: reduce) {
+  .gl--anim .g-corner, .gl--anim .g-sensor, .gl--anim .g-draw,
+  .gl--anim .g-tick, .gl--anim .g-mark, .gl--anim .g-datum,
+  .gl--anim .g-frag, .gl--anim .g-arrow, .gl--anim .g-field,
+  .gl--anim .g-sweep {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    stroke-dashoffset: 0 !important;
+  }
+}
+
+/* ============================================================
+   §07 — THE FOUR HOVER PRIMITIVES
+
+   Four reusable behaviours, applied deliberately. The audit that opened
+   this phase found colour-and-opacity hover on fifty-one controls and
+   nothing that felt authored; the fix is not more effects, it is four
+   effects with rules about where each one is allowed.
+
+   EVERY primitive answers :focus-visible identically to :hover (§28).
+   That is the whole reason each one is driven by a single custom
+   property: one state, two ways in.
+
+   AND :has(:focus-visible), which is not belt-and-braces — it is the
+   only thing that works for half the controls on this site. A .pick is a
+   <label> wrapping a visually-hidden radio: the label is not focusable,
+   so a keyboard user lands on the INPUT and `.hv-glyph:focus-visible`
+   never matches. qa/p10/a11y.mjs caught exactly this on the MEASURE and
+   QUANTIFY pages — glyph assembly answered the mouse and ignored the
+   keyboard — and the fix is one selector per primitive.
+   ============================================================ */
+
+/* ---------- A. SCAN REVEAL ----------
+   HIGH-VALUE ACTIONS ONLY: START PROJECT, VIEW IN PLAN, VIEW CAPTURE, a
+   service's primary CTA. One thin line crosses the control once. It is
+   deliberately scarce — a scan that happens on every link is wallpaper.
+
+   Implemented as a full-size overlay carrying a 1 px line at its own left
+   edge, translated by a PERCENTAGE of itself. A percentage translate
+   resolves against the element's own box, and the box is the control — so
+   0% puts the line on the leading edge and 100% puts it on the trailing
+   one, at every width, with no container query and no measurement. It
+   animates transform and opacity only, so the compositor carries it and
+   §27 stays intact. (A background-position sweep would have repainted the
+   control on every frame of every hover, which is exactly the class of
+   effect Phase 8.3 spent its budget removing.) */
+.hv-scan { position: relative; overflow: hidden; }
+.hv-scan::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, var(--accent-c) 0 1px, transparent 1px);
+  opacity: 0;
+  transform: translate3d(0, 0, 0);
+  pointer-events: none;
+  z-index: 1;
+}
+.hv-scan:hover::after,
+.hv-scan:focus-visible::after,
+.hv-scan:has(:focus-visible)::after {
+  animation: hv-scan-pass var(--motion-state) var(--ease-line) 1;
+}
+@keyframes hv-scan-pass {
+  0%   { opacity: 0;   transform: translate3d(0, 0, 0); }
+  14%  { opacity: .85; }
+  86%  { opacity: .85; }
+  100% { opacity: 0;   transform: translate3d(100%, 0, 0); }
+}
+
+/* ---------- B. TECHNICAL SHIFT ----------
+   NAVIGATION AND SECONDARY LINKS. A small index or arrow moves into a
+   resolved position. No scale, no colour flash on the label itself: the
+   index arrives, and that is the whole event. */
+.hv-shift { position: relative; }
+.hv-shift__i {
+  display: inline-block;
+  font-family: var(--ff-mono);
+  font-style: normal; font-weight: 400;
+  font-size: .78em;
+  letter-spacing: var(--ls-mono);
+  color: var(--fg-38);
+  opacity: 0;
+  transform: translate3d(-.28em, 0, 0);
+  transition: opacity var(--motion-ui) var(--ease-out),
+              transform var(--motion-ui) var(--ease-out),
+              color var(--motion-ui) var(--ease-out);
+}
+.hv-shift:hover .hv-shift__i,
+.hv-shift:focus-visible .hv-shift__i,
+.hv-shift:has(:focus-visible) .hv-shift__i,
+.hv-shift.is-on .hv-shift__i {
+  opacity: 1; transform: none; color: var(--accent-c);
+}
+
+/* ---------- C. GLYPH ASSEMBLY ----------
+   ICON-LED ACTIONS. The glyph's own geometry resolves. This primitive is
+   nothing but the switch: everything it triggers is in §06 above, so an
+   icon-led control and a standalone glyph behave identically. */
+.hv-glyph .gl { --gl-on: 0; }
+.hv-glyph:hover .gl,
+.hv-glyph:focus-visible .gl,
+.hv-glyph:has(:focus-visible) .gl,
+.hv-glyph.is-on .gl { --gl-on: 1; }
+
+/* ---------- D. DATA LINE ----------
+   REPRESENTATION LINKS — a control that opens another reading of the same
+   thing. The technical baseline under the label extends, and the value it
+   carries resolves with it:
+
+       VIEW IN PLAN
+       ────────────
+       L01-R07
+*/
+.hv-data { position: relative; display: inline-grid; gap: .42em; justify-items: start; }
+.hv-data__rule {
+  display: block; height: var(--rule-w); width: 100%;
+  background: var(--rule-measure);
+  transform: scaleX(var(--hv-data-x, .28));
+  transform-origin: left;
+  transition: transform var(--motion-ui) var(--ease-line),
+              background-color var(--motion-ui) var(--ease-out);
+}
+.hv-data__v {
+  font-family: var(--ff-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: var(--fg-38);
+  opacity: .55;
+  transition: opacity var(--motion-ui) var(--ease-out),
+              color var(--motion-ui) var(--ease-out);
+}
+.hv-data:hover .hv-data__rule,
+.hv-data:focus-visible .hv-data__rule,
+.hv-data:has(:focus-visible) .hv-data__rule { --hv-data-x: 1; background: var(--accent-c); }
+.hv-data:hover .hv-data__v,
+.hv-data:focus-visible .hv-data__v,
+.hv-data:has(:focus-visible) .hv-data__v { opacity: 1; color: var(--accent-c); }
+
+/* :has() is Baseline everywhere this site supports, but the fallback costs
+   one rule: without it a label-wrapped control simply keeps its resting
+   state on focus, which is quiet rather than broken. */
+@supports not selector(:has(*)) {
+  .hv-glyph:focus-within .gl { --gl-on: 1; }
+  .hv-shift:focus-within .hv-shift__i { opacity: 1; transform: none; color: var(--accent-c); }
+  .hv-data:focus-within .hv-data__rule { --hv-data-x: 1; background: var(--accent-c); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hv-scan:hover::after, .hv-scan:focus-visible::after,
+  .hv-scan:has(:focus-visible)::after { animation: none; }
+  .hv-shift__i { transition: none; }
+  .hv-data__rule { transition: none; }
+}
+
+/* ============================================================
+   §16 — THE DRAFTING MARKS
+
+   Four recurring marks, used instead of decorative lines. Each is the
+   same drawing at a different job, and each is one element.
+   ============================================================ */
+
+/* corner cross — a registration mark. The frame already uses it; this is
+   the same mark made available to any composition. */
+.mk-cross {
+  position: relative; display: block;
+  width: calc(var(--tick-m) * 2 + 1px); height: calc(var(--tick-m) * 2 + 1px);
+  color: var(--rule-measure);
+}
+.mk-cross::before, .mk-cross::after { content: ''; position: absolute; background: currentColor; }
+.mk-cross::before { left: 0; right: 0; top: 50%; height: var(--rule-w); }
+.mk-cross::after  { top: 0; bottom: 0; left: 50%; width: var(--rule-w); }
+
+/* datum tick — a level, read against a rule */
+.mk-datum {
+  display: block; width: var(--rule-w); height: var(--tick-l);
+  background: var(--rule-measure);
+}
+.mk-datum--active { background: var(--rule-active); }
+
+/* anchor dot — "here, exactly" */
+.mk-anchor {
+  display: block;
+  width: calc(var(--anchor-r) * 2); height: calc(var(--anchor-r) * 2);
+  background: currentColor; border-radius: 50%;
+  color: var(--rule-measure);
+}
+.mk-anchor--active { color: var(--accent-c); }
+
+/* measurement terminal — the tick that closes a dimension line */
+.mk-term {
+  display: block; width: var(--rule-w); height: var(--tick-m);
+  background: var(--rule-measure);
+}
+
+/* ============================================================
+   §15 — THE RULE CLASSES
+   The token values live in tokens.css; these are the four rules as
+   drawable elements, so a composition asks for a role rather than
+   picking an opacity.
+   ============================================================ */
+.rl        { display: block; height: var(--rule-w); background: var(--rule-secondary); border: 0; margin: 0; }
+.rl--pri   { background: var(--rule-primary); }
+.rl--meas  { background: var(--rule-measure); }
+.rl--act   { background: var(--rule-active); }
+.rl--v     { width: var(--rule-w); height: auto; align-self: stretch; }

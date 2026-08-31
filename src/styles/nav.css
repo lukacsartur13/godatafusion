@@ -1,0 +1,155 @@
+/* ============================================================
+   navigation
+   ============================================================ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 60;
+  height: var(--nav-h);
+  padding-inline: var(--gutter);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px;
+  border-bottom: var(--rule-w) solid var(--rule-secondary);
+  /* ------------------------------------------------------------------
+     PHASE 8.3 — NO BACKDROP FILTER.
+
+     This bar was `backdrop-filter: blur(7px)` over the full width of the
+     page. A backdrop filter cannot be composited as a quad: the compositor
+     has to flatten everything BEHIND the element into a render surface,
+     read that surface back, blur it, and only then draw the bar — and the
+     thing behind this one is the full-viewport WebGL canvas, which is new
+     every frame. Measured on this machine at 1440x900, hero at idle,
+     nothing hovered:
+
+       full page                        35,3 composited fps
+       this one declaration removed     46,4 composited fps
+
+     and, with the custom cursor's blend removed as well, 58,6 fps — a
+     locked 60 on a 60 Hz panel. The two effects are multiplicative: each
+     forces its own render surface, and together they serialise the frame.
+     See the layer inventory in qa/p83/.
+
+     What it bought was invisible. Behind this bar is a dark architectural
+     render at f/8 — there is no high-frequency detail for a 7 px blur to
+     soften. The gradient is doing all the separation work, so it carries
+     a little more of it and the blur is gone. Same reasoning as the
+     annotation panels in Phase 8.2.
+     ------------------------------------------------------------------ */
+  background: linear-gradient(180deg, rgba(8,10,11,.92), rgba(8,10,11,.55) 62%, rgba(8,10,11,0));
+}
+
+.nav__brand { display: inline-flex; align-items: center; gap: .6em; }
+.nav__word {
+  /* The wordmark is the one place the DISPLAY face appears at interface
+     size. It is the signature, so it is set in the signature face — and
+     at 550 rather than 500, because Instrument Sans at 16 px against
+     tracked Plex Sans caps needs the extra half-step to hold the corner. */
+  font-family: var(--ff-display);
+  font-size: clamp(.96rem, 1.15vw, 1.1rem);
+  font-weight: 550; letter-spacing: -.022em;
+}
+.nav__glyph {
+  position: relative; width: 15px; height: 15px; flex: none;
+}
+.nav__glyph::before, .nav__glyph::after {
+  content: ''; position: absolute; left: 0; right: 0; height: var(--rule-w);
+  background: var(--fg);
+  transition: transform var(--motion-state) var(--ease-io),
+              background-color var(--motion-state) var(--ease-io);
+}
+.nav__glyph::before { top: 4px; }
+.nav__glyph::after  { top: 10px; background: var(--accent-c); }
+.nav__brand:hover .nav__glyph::before { transform: translateY(3px); }
+.nav__brand:hover .nav__glyph::after  { transform: translateY(-3px); }
+
+/* ============================================================
+   §09 — NAVIGATION
+
+   Structure unchanged: wordmark left, sections right, one primary action.
+   What changed is that it stopped behaving like every other site's nav.
+
+   Phase 9 answered a pointer with a colour change and an underline that
+   grew from the right. That is the default gesture of the decade. The
+   nav now uses TECHNICAL SHIFT (§07 B): the section's INDEX resolves in
+   beside the label — 01 02 03 04, the same numbering the tracker rail
+   and the section eyebrows already use, so hovering the nav tells you
+   where in the document you are being sent.
+
+   The index is ABSOLUTELY POSITIONED in the gap to the left of its link,
+   so the idle bar carries no reserved space, nothing shifts when it
+   arrives, and the brief's "do not clutter the idle state" holds
+   literally: at rest this is four words and a wordmark.
+
+   The underline stayed, because a link needs an affordance that is not
+   only motion — but it is now a MEASUREMENT rule that extends from the
+   left, at the tick opacity, and goes accent only while engaged.
+   ============================================================ */
+.nav__links { display: flex; gap: clamp(22px, 2.5vw, 40px); margin-left: auto; }
+.nav__links a {
+  position: relative; color: var(--fg-60);
+  padding-block: 6px;
+  transition: color var(--motion-ui) var(--ease-out);
+}
+.nav__links a::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: var(--rule-w);
+  background: var(--rule-measure); transform: scaleX(0); transform-origin: left;
+  transition: transform var(--motion-ui) var(--ease-line),
+              background-color var(--motion-ui) var(--ease-out);
+}
+.nav__links a:hover, .nav__links a:focus-visible { color: var(--fg); }
+.nav__links a:hover::after, .nav__links a:focus-visible::after {
+  transform: scaleX(1); background: var(--accent-c);
+}
+/* the resolving index */
+.nav__links .hv-shift__i {
+  position: absolute; right: calc(100% + .48em); top: 50%;
+  transform: translate3d(-.3em, -50%, 0);
+  font-size: .74em;
+}
+.nav__links a:hover .hv-shift__i,
+.nav__links a:focus-visible .hv-shift__i { transform: translate3d(0, -50%, 0); }
+
+.nav__burger { display: none; width: 34px; height: 34px; position: relative; cursor: pointer; }
+.nav__burger i {
+  position: absolute; left: 7px; right: 7px; height: 1px; background: var(--fg);
+  transition: transform var(--t-state) var(--ease), opacity var(--t-state) var(--ease);
+}
+.nav__burger i:first-of-type { top: 14px; }
+.nav__burger i:last-of-type  { top: 20px; }
+.nav__burger[aria-expanded="true"] i:first-of-type { transform: translateY(3px) rotate(45deg); }
+.nav__burger[aria-expanded="true"] i:last-of-type  { transform: translateY(-3px) rotate(-45deg); }
+
+.nav__drawer {
+  position: fixed; z-index: 55; inset: var(--nav-h) 0 auto 0;
+  display: flex; flex-direction: column;
+  padding: 8px var(--gutter) 26px;
+  background: rgba(8,10,11,.97);
+  border-bottom: var(--rule-w) solid var(--rule-secondary);
+  /* PHASE 8.3 — the panel is 97% opaque. A 12 px blur of the 3% that
+     shows through is a render surface bought for nothing. */
+}
+.nav__drawer[hidden] { display: none; }
+.nav__drawer a {
+  display: flex; align-items: center; gap: .7em;
+  padding: 15px 0; border-bottom: var(--rule-w) solid var(--rule-secondary);
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: 1.42rem; font-weight: 500; letter-spacing: -.026em;
+}
+/* §24 — the drawer is where a phone meets the service names, so it is
+   also the one place a glyph carries a link on its own line. The glyph
+   is decoration beside a word that already says the same thing. */
+.nav__drawer a .gl { --gl-size: 20px; color: var(--fg-38); }
+.nav__drawer a i {
+  margin-left: auto; font-style: normal;
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); color: var(--fg-38);
+}
+.nav__drawer-cta {
+  font-family: var(--ff-label) !important; font-size: .74rem !important;
+  letter-spacing: var(--ls-micro) !important; text-transform: uppercase;
+  font-weight: 600 !important;
+  color: var(--accent-c); border-bottom: 0 !important; padding-top: 22px !important;
+}
+
+@media (max-width: 860px) {
+  .nav__links, .nav .btn--cta { display: none; }
+  .nav__burger { display: block; }
+}

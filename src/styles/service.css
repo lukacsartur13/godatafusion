@@ -1,0 +1,1323 @@
+/* ============================================================
+   THE SERVICE PAGES
+
+   Shared skeleton, three identities. Everything structural lives here;
+   the only per-route difference is which accent owns the page, which is
+   already the site's one colour rule. Nothing below hardcodes cyan,
+   lime or orange — they all read `--accent`.
+   ============================================================ */
+
+.sv { background: var(--bg); }
+
+/* The homepage veil is tuned for a wide editorial column that runs to 58%
+   of the frame. A service page's column stops around 40%, so the same
+   gradient crushes the middle of the canvas — which is where the terrain,
+   the stations and the drawing actually live. */
+.sv .stage__veil::before {
+  background: linear-gradient(96deg, rgba(8,10,11,.95) 0%, rgba(8,10,11,.80) 18%,
+    rgba(8,10,11,.42) 34%, rgba(8,10,11,.10) 48%, rgba(8,10,11,0) 60%);
+}
+.sv .stage__veil::after {
+  background: linear-gradient(264deg, rgba(8,10,11,.95) 0%, rgba(8,10,11,.80) 18%,
+    rgba(8,10,11,.42) 34%, rgba(8,10,11,.10) 48%, rgba(8,10,11,0) 60%);
+}
+.sv .stage__veil {
+  background: linear-gradient(180deg, rgba(8,10,11,0) 52%, rgba(8,10,11,.34) 76%,
+    rgba(8,10,11,.78) 93%, rgba(8,10,11,.92) 100%);
+}
+
+/* The canvas is fixed behind the document, exactly as on the homepage,
+   and every section below the demo paints over it. */
+.sv .sv-sec,
+.sv .sv-project { position: relative; padding-inline: var(--gutter); }
+/* The reading pools bleed sideways past the columns they sit under, and a
+   right-aligned column's pool ran off the page — a horizontal scrollbar on
+   MEASURE and QUANTIFY at every desktop width. `overflow-x: clip` bounds it
+   without creating a scroll container, so the sticky state rail still works
+   and vertical overflow is untouched. */
+.sv .sv-sec, .sv-hero { overflow-x: clip; }
+
+/* ---------------------------------------------------------------- hero */
+.sv-hero {
+  position: relative;
+  min-height: 100svh;
+  /* PATCH 9.1 — measured against the real header box (`--nav-safe`), not
+     against the bar's content height. */
+  padding: calc(var(--nav-safe) + clamp(40px, 9vh, 110px)) var(--gutter) clamp(64px, 12vh, 132px);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  align-content: space-between;
+}
+
+.sv-hero__content { max-width: min(56rem, 94vw); }
+
+.sv-crumb {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-50);
+  margin-bottom: clamp(22px, 4vh, 40px);
+  font-weight: 500;
+}
+.sv-crumb a { color: var(--fg-50); transition: color var(--t-hover) var(--ease); }
+.sv-crumb a:hover { color: var(--fg); }
+.sv-crumb span[aria-current] { color: var(--accent-c); }
+.sv-crumb span[aria-hidden] { color: var(--fg-28); }
+
+.sv-eyebrow {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-60);
+  margin-bottom: clamp(16px, 2.4vh, 26px);
+  font-weight: 500;
+}
+.sv-eyebrow span:first-child { color: var(--accent-c); }
+.sv-eyebrow::after {
+  content: ''; flex: 1; max-width: 90px; height: 1px;
+  background: linear-gradient(90deg, var(--accent-40), transparent);
+}
+
+.sv-hero__title {
+  /* Slightly under the homepage display size: a service headline is two
+     long lines rather than three short words, and at --fs-display it wraps
+     into four rows at 1440 and reads as a paragraph. */
+  /* DISPLAY L — PHASE 10 §02. */
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: clamp(2.22rem, 5.3vw, 6.2rem);
+  line-height: .91;
+  letter-spacing: var(--ls-dl);
+  font-weight: 500;
+  margin-bottom: clamp(20px, 3vh, 34px);
+}
+.sv-hero__title .line { display: block; overflow: hidden; }
+.sv-hero__title .line__in { display: block; }
+
+/* ---------------------------------------------------------------- PATCH 9.1
+   THE MASK HAS TO HOLD THE ACCENTS.
+
+   `.line` is a reveal mask — `overflow: hidden`, with the words translated
+   in from underneath it. Its box is one line box, and the display leading
+   here is .94 / .96, which is TIGHTER THAN THE FONT'S OWN ASCENT. So the
+   mask was cropping the ink it is supposed to reveal. Measured off the real
+   pages with the shipped Geist metrics (qa/p91/ink.mjs):
+
+     1920   81,4 px type   5,9 px shaved off the top of Á Ó Ú É Ő
+     1440   64,9 px type   4,8 px
+     1024   50,5 px type   3,6 px
+      390   33,6 px type   2,6 px
+
+   and 1,7–2,7 px off the BOTTOM of any line that ends in a comma. It is
+   why "A RAJZBÓL / STRUKTÚRA LESZ." and "ÁLLJON BE EGY / FELVÉTELI PONTBA."
+   read as headlines cut off by something above them: they were, by their
+   own mask, on a hard horizontal edge that looks exactly like the header's.
+
+   The type does not change. The BOX grows .12 em past the line box at each
+   end and is pulled back by the same .12 em, so the mask contains the ink
+   and the composition is unchanged to the pixel. Both headings become flex
+   columns for one reason: flex items do not collapse their margins, and a
+   collapsed pair would have cancelled only half the padding and loosened
+   the leading. The reveal's start offset is raised to match, in
+   modules/serviceSections.js — a taller mask needs the words parked lower
+   or a sliver of the next line shows through it before it plays. */
+.sv-hero__title,
+.sv-h { display: flex; flex-direction: column; }
+
+/* §02 / §26 — THE PHONE FLOOR ON A SERVICE HERO.
+
+   These headlines are authored as two lines and must stay two lines. At
+   the Phase 9 floor (2,22 rem, which binds below 520 px) the longest of
+   the three — "TO MEASURABLE DATA." — needs 380 px and has 319 at a 375
+   frame, so the browser broke it into a third row and left DATA. alone.
+
+   The floor is lowered only where the line genuinely cannot fit, and the
+   ramp is continuous with the value above it: at 519 px, 7,9vw exceeds
+   2,22 rem and the clamp returns the same size the wider ramp does, so
+   there is no step at the breakpoint. Measured at 375 / 390 / 430 / 519
+   in qa/p10/hu.mjs — two rows at all four.
+
+   The cost is a 17% smaller headline at 375. That is the right trade: an
+   authored composition at 30 px reads as designed, and a browser-chosen
+   three-row break at 35 px reads as broken. */
+@media (max-width: 519px) {
+  .sv-hero__title { font-size: clamp(1.85rem, 7.9vw, 2.22rem); }
+}
+
+/* §02 / §26 — BALANCE THE ROWS.
+   A single-line heading like "AMI AZ INDULÁSHOZ SEGÍT." wrapped to two
+   rows with SEGÍT. alone on the second at 1280 and 1440 — a widow, and
+   precisely the case §02 means by "do not let browser wrapping decide
+   important line breaks". `balance` applies inside each .line__in, which
+   is the block box the reveal mask animates, so the composition is
+   balanced without the authored two-line headings being re-broken. */
+.sv-hero__title .line__in,
+.sv-h .line__in { text-wrap: balance; }
+
+.sv-hero__title .line,
+.sv-h .line {
+  padding-block: .12em;
+  margin-block: -.12em;
+}
+
+.sv-lede {
+  max-width: 42ch;
+  font-size: var(--fs-lede);
+  line-height: 1.62;
+  color: var(--fg-60);
+}
+.sv-lede b { color: var(--fg); font-weight: 500; }
+
+.sv-cta {
+  display: flex; flex-wrap: wrap; gap: 12px;
+  margin-top: clamp(26px, 4vh, 44px);
+}
+
+/* The metadata baseline: the hero's lower third is a readout, not empty
+   space. This is the fix for the "underused bottom 30%" note. */
+.sv-meta {
+  display: flex; flex-wrap: wrap; gap: clamp(14px, 3vw, 42px);
+  padding-top: 14px;
+  border-top: var(--rule-w) solid var(--rule-secondary);
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); color: var(--fg-50);
+  font-variant-numeric: tabular-nums;
+}
+.sv-meta__i { position: relative; padding-left: 14px; }
+.sv-meta__i::before {
+  content: ''; position: absolute; left: 0; top: .55em;
+  width: 6px; height: 1px; background: var(--accent-40);
+}
+
+/* ---------------------------------------------------------------- sections */
+.sv-sec { padding-block: var(--sec-y); }
+/* Consecutive sections share a rhythm rather than colliding: enough air for
+   a heading to arrive clear of the one above it and clear of the fixed
+   header, without doubling the section gap. */
+.sv-sec + .sv-sec { padding-top: clamp(52px, 9vh, 118px); }
+.sv-sec[id] { scroll-margin-top: calc(var(--nav-safe) + clamp(20px, 3.4vh, 40px)); }
+
+/* ---------------------------------------------------------------- PATCH 9.1
+   THE NAVIGATION-SAFE ZONE FOR THE OPENING COMPOSITIONS.
+
+   `#story` and `#pano` on CAPTURE and `#analysis` on QUANTIFY are the three
+   blocks a visitor is DELIVERED to — by the hero's own ghost button, by a
+   `#hash`, by the cross-link out of the 360 viewer. The rhythm inset
+   (`9vh`) is a proportion of the window, so on a short window it collapsed
+   to 69 px and the display headline arrived a finger's width under a 57 px
+   bar. The inset is now the larger of the rhythm and a real header-derived
+   safe zone, so the clearance can never fall below the bar again — and on a
+   tall window nothing moves, because the rhythm still wins.
+
+   The floor is only ever a FLOOR: each rule keeps the inset it already had
+   inside a `max()`, so no composition that was already clear of the bar
+   moves by a pixel. */
+.sv-sec.sv-story,
+.sv-sec.sv-pano,
+.sv-sec.sv-analysis {
+  padding-top: max(var(--sec-y),
+                   calc(var(--nav-safe) + clamp(34px, 5.2vh, 66px)));
+}
+.sv-sec + .sv-sec.sv-story,
+.sv-sec + .sv-sec.sv-pano,
+.sv-sec + .sv-sec.sv-analysis {
+  padding-top: max(clamp(52px, 9vh, 118px),
+                   calc(var(--nav-safe) + clamp(34px, 5.2vh, 66px)));
+}
+
+/* The shared canvas belongs to the hero and to the state-driven block that
+   reads it. Everything after that paints over it — including the panorama,
+   which has 3D of its own and must never be read through a second scene. */
+.sv-pano, .sv-uses, .sv-input, .sv-sib, .sv-project,
+.sv-caps, .sv-sample { background: var(--bg); }
+/* QUANTIFY's OUTPUT block keeps the drawing behind it, because the drawing
+   is what the four outputs are pointing AT. */
+.sv-out:not(.sv-out--live) { background: var(--bg); }
+
+/* The hand-off: the canvas fades under the first opaque section instead of
+   ending at a hard edge. */
+.sv-pano::before, .sv-caps::before, .sv-out:not(.sv-out--live)::before, .sv-sample::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 20vh;
+  background: linear-gradient(180deg, rgba(8, 10, 11, 0), var(--bg) 80%);
+  transform: translateY(-100%); pointer-events: none;
+}
+
+.sv-sec__head { max-width: 44rem; margin-bottom: clamp(30px, 5vh, 62px); }
+
+.sv-h {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: var(--fs-dl); line-height: .93;
+  letter-spacing: var(--ls-dl); font-weight: 500;
+  margin-bottom: 20px;
+}
+.sv-h--s { font-size: var(--fs-dm); letter-spacing: var(--ls-dm); }
+.sv-h .line { display: block; overflow: hidden; }
+.sv-h .line__in { display: block; }
+
+.sv-note {
+  max-width: 52ch; margin-top: clamp(24px, 4vh, 44px);
+  font-size: var(--fs-lede); line-height: 1.6; color: var(--fg-60);
+}
+.sv-note b { color: var(--fg); font-weight: 500; }
+
+/* ---------------------------------------------------------------- legal
+   The survey disclaimer. Never a hover, never an accordion, never hidden on
+   a phone, always above the AA threshold — and, from Phase 4, set as what it
+   is: a measurement note on a drawing, under its own numbered rule. It used
+   to be a tinted box with an accent bar, which read as a legal warning
+   rather than as part of the document. */
+.sv-legal {
+  position: relative; z-index: 1;
+  margin-top: clamp(24px, 4vh, 44px);
+  padding-top: 12px;
+  border-top: var(--rule-w) solid var(--rule-primary);
+  font-family: var(--ff-text); font-size: var(--fs-mono);
+  line-height: 1.72; letter-spacing: .04em;
+  color: var(--fg-60);
+  max-width: 62ch;
+}
+.sv-legal::before {
+  content: attr(data-note);
+  display: block; margin-bottom: 8px;
+  font-size: var(--fs-micro); letter-spacing: var(--ls-micro);
+  color: var(--fg-50);
+}
+.sv-legal--strong { border-top-color: var(--accent-40); color: var(--fg-60); }
+.sv-legal--strong::before { color: var(--accent-70); }
+.sv-legal b { color: var(--fg); letter-spacing: var(--ls-micro); }
+/* It sits over the live scene on the terrain block, so it carries the same
+   pool of ground the copy beside it does. */
+.sv-terrain .sv-legal::after {
+  content: ''; position: absolute; inset: -70% -30% -90% -14%;
+  background: radial-gradient(56% 60% at 30% 50%,
+    rgba(8, 10, 11, .95) 0%, rgba(8, 10, 11, .86) 32%,
+    rgba(8, 10, 11, .5) 56%, rgba(8, 10, 11, 0) 88%);
+  z-index: -1; pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- states
+   Phase 3 set these as four bordered chips with a solid accent fill on the
+   active one — dashboard styling, and four more rectangles in a design
+   language that already repeats them. They are now positions on one
+   calibrated rule: the rule is continuous, each state owns a segment of it,
+   and the active segment is the only thing that carries the accent. */
+/* ---------- PHASE 8: the floor selector ----------
+   Above the state rule, and deliberately a different object from it: the
+   states are positions on one continuous scale, the floors are three
+   discrete plates of a building. Each button carries the level id, its name
+   and its REAL elevation — the same three facts the world-space labels
+   print, because they come from the same level table. */
+.sv-floors {
+  display: flex; flex-wrap: wrap; align-items: stretch; gap: 1px;
+  margin-bottom: clamp(14px, 2vh, 22px);
+  width: max-content; max-width: 100%;
+}
+.sv-floors__k {
+  display: flex; align-items: center; padding-right: 12px;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-38);
+  font-weight: 500;
+}
+.sv-floor {
+  appearance: none; cursor: pointer;
+  display: grid; gap: 1px; align-content: center;
+  padding: 8px clamp(12px, 1.4vw, 20px);
+  background: none; border: var(--rule-w) solid var(--rule-secondary);
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); text-align: left; color: var(--fg-50);
+  transition: color var(--t-hover) var(--ease), border-color var(--t-hover) var(--ease);
+  font-variant-numeric: tabular-nums;
+}
+.sv-floor b { font-weight: 400; font-size: var(--fs-mono); color: inherit; }
+.sv-floor i { font-style: normal; color: var(--fg-38); }
+.sv-floor u {
+  text-decoration: none; color: var(--fg-38);
+  font-variant-numeric: tabular-nums;
+}
+/* §08 TECHNICAL — a floor key is the type's canonical case: a label, a
+   name and a measured level, in one small data-oriented control. It gains
+   the technical button's own gesture — a measurement rule that extends
+   under the key — instead of only changing colour. The rule is a
+   pseudo-element so the three-row grid inside is untouched. */
+.sv-floor { position: relative; }
+.sv-floor::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -1px;
+  height: var(--rule-w); background: var(--accent-c);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--motion-ui) var(--ease-line);
+}
+.sv-floor:hover { color: var(--fg); border-color: var(--accent-40); }
+.sv-floor:hover::after, .sv-floor:focus-visible::after { transform: scaleX(1); }
+.sv-floor.is-on { color: var(--accent-c); border-color: var(--accent-40); }
+.sv-floor.is-on::after { transform: scaleX(1); }
+.sv-floor.is-on i, .sv-floor.is-on u { color: var(--fg-50); }
+.sv-floor:focus-visible { outline: 1px solid var(--accent-c); outline-offset: 2px; }
+.sv-floor--all { border-left-width: 1px; }
+
+.sv-tbl--floors { margin-bottom: clamp(20px, 3vh, 34px); }
+.sv-tbl--floors tfoot th, .sv-tbl--floors tfoot td {
+  color: var(--fg); border-top: var(--rule-w) solid var(--rule-measure);
+}
+
+.sv-states {
+  display: flex; flex-wrap: wrap;
+  margin-bottom: clamp(28px, 4.5vh, 52px);
+  border-top: var(--rule-w) solid var(--rule-primary);
+  width: max-content; max-width: 100%;
+}
+.sv-state {
+  position: relative;
+  padding: 12px clamp(14px, 1.6vw, 26px) 10px;
+  border: 0; background: none;
+  font-family: var(--ff-label); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-micro); color: var(--fg-50);
+  cursor: pointer;
+  transition: color var(--t-hover) var(--ease);
+  font-weight: 500;
+}
+/* the segment of the rule this state owns */
+.sv-state::before {
+  content: ''; position: absolute; left: 0; right: 0; top: -1px; height: 1px;
+  background: var(--accent-c);
+  transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform var(--t-state) var(--ease-io);
+}
+/* the index tick that marks where the rule is being read */
+.sv-state::after {
+  content: ''; position: absolute; left: 0; top: -1px;
+  width: 1px; height: 7px; background: var(--fg-16);
+}
+.sv-state:first-child::after { background: var(--fg-38); }
+.sv-state:hover { color: var(--fg); }
+.sv-state.is-on { color: var(--accent-c); }
+.sv-state.is-on::before { transform: scaleX(1); }
+.sv-state.is-on::after { background: var(--accent-c); height: 9px; }
+.sv-state:focus-visible { outline: 1px solid var(--accent-c); outline-offset: 3px; }
+
+.sv-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(48px, 9vh, 120px); }
+.sv-step {
+  max-width: 34rem;
+  padding-left: clamp(14px, 2vw, 26px);
+  border-left: var(--rule-w) solid var(--rule-secondary);
+  transition: border-color var(--t-commit) var(--ease), opacity var(--t-commit) var(--ease);
+}
+.sv-step.is-on { border-left-color: var(--accent-c); }
+.sv-step__i {
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); color: var(--accent-c);
+  margin-bottom: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.sv-step__k {
+  font-size: var(--fs-key); font-weight: 500; letter-spacing: -.015em;
+  margin-bottom: 10px;
+}
+.sv-step__c { font-size: var(--fs-lede); line-height: 1.62; color: var(--fg-60); }
+.sv-step__c b { color: var(--fg); font-weight: 500; }
+
+/* The steps alternate sides so the fixed canvas always has one clear half.
+   PHASE 4 — measured with a real wheel scroll, all four MEASURE states used
+   to be crossed inside about one and a third viewports: roughly a third of a
+   screen per state, so the scene changed three times while one paragraph was
+   being read. Each state now owns most of a viewport of scroll, which is the
+   difference between a sequence a reader follows and one that happens to
+   them. */
+@media (min-width: 900px) {
+  .sv-steps { max-width: 46%; gap: clamp(96px, 26vh, 300px); }
+  .sv-steps--m, .sv-steps--q { margin-left: auto; }
+}
+
+/* ---------------------------------------------------------------- data */
+.sv-data {
+  display: flex; flex-wrap: wrap; gap: 8px 26px;
+  margin-top: 18px; padding-top: 14px;
+  border-top: var(--rule-w) solid var(--rule-secondary);
+}
+.sv-data div { display: flex; flex-direction: column; gap: 3px; }
+.sv-data dt {
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-50);
+  font-weight: 500;
+}
+.sv-data dd {
+  font-family: var(--ff-mono); font-size: clamp(.82rem, 1.1vw, 1.05rem);
+  color: var(--fg); font-variant-numeric: tabular-nums;
+}
+.sv-data--live dd { color: var(--accent-c); }
+
+/* ---------------------------------------------------------------- cut
+   THE MEASUREMENT INSTRUMENT.
+
+   Phase 3 had a labelled range input with a three-cell readout under it,
+   which read as a control bolted to a demo. This is the same input — same
+   id, same label association, same aria-valuetext, same keyboard — dressed
+   as the instrument it actually is: one graduated scale, a level that rides
+   the blade, and cut and fill reading off either side of the index.
+   ------------------------------------------------------------------ */
+.cut {
+  --t: .5;
+  margin-top: clamp(24px, 3.4vh, 34px);
+  padding-top: clamp(16px, 2.2vh, 22px);
+  border-top: var(--rule-w) solid var(--rule-primary);
+}
+.cut__head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 14px;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro);
+  font-weight: 500;
+}
+.cut__l { color: var(--fg); }
+.cut__unit { color: var(--fg-50); }
+
+.cut__scale {
+  position: relative;
+  height: 62px;
+  margin-top: clamp(26px, 3.4vh, 38px);
+}
+/* The graduation. Fixed-period divisions, not percentage ones: a repeating
+   gradient with a fractional percentage period accumulates sub-pixel error
+   across the track and the staff comes out visibly uneven. */
+.cut__ticks {
+  position: absolute; left: 0; right: 0; top: 0; height: 11px;
+  background-image:
+    repeating-linear-gradient(90deg, var(--fg-38) 0 1px, transparent 1px 52px),
+    repeating-linear-gradient(90deg, var(--fg-16) 0 1px, transparent 1px 13px);
+  background-size: 100% 11px, 100% 6px;
+  background-repeat: no-repeat;
+  background-position: 0 0, 0 5px;
+}
+.cut__ticks::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 11px; height: 1px;
+  background: var(--fg-16);
+}
+/* how much of the scale is below the cut level */
+.cut__fill {
+  position: absolute; left: 0; top: 11px; height: 1px;
+  width: calc(var(--t) * 100%);
+  background: var(--accent-c);
+}
+/* the index blade, carrying its own reading */
+.cut__blade {
+  position: absolute; top: 4px; left: calc(var(--t) * 100%);
+  transform: translateX(-50%);
+  display: grid; justify-items: center; gap: 5px;
+  pointer-events: none;
+}
+.cut__blade::before {
+  content: ''; width: 1px; height: 22px; background: var(--accent-c);
+}
+.cut__blade b {
+  font-family: var(--ff-mono); font-weight: 400;
+  font-size: clamp(.86rem, 1.1vw, 1.12rem);
+  letter-spacing: .04em; color: var(--accent-c);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+
+/* the real control, laid over the graduation */
+.cut__r {
+  -webkit-appearance: none; appearance: none;
+  position: absolute; left: 0; top: 0;
+  width: 100%; height: 40px; margin: 0;
+  background: transparent; cursor: ew-resize;
+}
+.cut__r::-webkit-slider-runnable-track { height: 12px; background: transparent; }
+.cut__r::-moz-range-track { height: 12px; background: transparent; }
+.cut__r::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 13px; height: 26px; margin-top: -7px;
+  background: transparent;
+  border-left: 1px solid transparent; border-right: 1px solid transparent;
+}
+.cut__r::-moz-range-thumb {
+  width: 13px; height: 26px; background: transparent; border: 0;
+}
+.cut__r:focus-visible { outline: 1px solid var(--accent-c); outline-offset: 4px; }
+
+/* cut on one side of the index, fill on the other */
+.cut__out {
+  display: flex; justify-content: space-between; gap: 20px;
+  margin: 0; padding-top: 12px;
+  border-top: var(--rule-w) solid var(--rule-secondary);
+}
+.cut__o { display: grid; gap: 4px; }
+.cut__o--fill { text-align: right; }
+.cut__o dt {
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-50);
+  font-weight: 500;
+}
+.cut__o dd {
+  margin: 0;
+  font-family: var(--ff-mono); font-size: clamp(.94rem, 1.3vw, 1.25rem);
+  color: var(--fg); font-variant-numeric: tabular-nums;
+}
+.cut__o--cut dd { color: var(--accent-c); }
+
+/* ---------------------------------------------------------------- caps */
+.sv-caps__list {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 1px;
+  background: var(--fg-09);
+  border-block: var(--rule-w) solid var(--rule-secondary);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+.sv-cap {
+  display: flex; align-items: baseline; gap: 16px;
+  padding: 18px clamp(14px, 2vw, 22px);
+  background: var(--bg);
+}
+.sv-cap__u {
+  min-width: 2.6em;
+  font-family: var(--ff-mono); font-size: clamp(.9rem, 1.4vw, 1.3rem);
+  color: var(--accent-c); font-variant-numeric: tabular-nums;
+}
+.sv-cap__k { font-size: var(--fs-lede); color: var(--fg-60); line-height: 1.5; }
+
+/* ---------------------------------------------------------------- requirements */
+.sv-req { display: grid; gap: 1px; background: var(--fg-09); border-block: var(--rule-w) solid var(--rule-secondary); }
+.sv-req__row {
+  display: grid; gap: 6px 40px; padding: clamp(18px, 3vh, 30px) 0;
+  background: var(--bg);
+}
+@media (min-width: 760px) { .sv-req__row { grid-template-columns: 22rem 1fr; } }
+.sv-req__k {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px;
+  font-family: var(--ff-label); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-micro); color: var(--fg);
+  font-weight: 500;
+}
+.sv-req__k b {
+  font-weight: 400; font-size: var(--fs-micro);
+  color: var(--accent-c); letter-spacing: var(--ls-micro);
+}
+.sv-req__k i {
+  font-style: normal; font-size: var(--fs-micro);
+  color: var(--fg-50); letter-spacing: var(--ls-micro);
+}
+.sv-req__c { font-size: var(--fs-lede); line-height: 1.6; color: var(--fg-60); max-width: 52ch; }
+
+/* ---------------------------------------------------------------- rows */
+.sv-rows { display: grid; }
+.sv-row {
+  --rule: 1;
+  position: relative; display: grid; gap: 8px 48px;
+  padding: clamp(20px, 3.4vh, 34px) 0;
+  cursor: default;
+  transition: background var(--t-state) var(--ease);
+}
+.sv-row::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 1px;
+  background: var(--fg-16); transform: scaleX(var(--rule)); transform-origin: 0 50%;
+}
+.sv-row:last-child::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: var(--fg-16); transform: scaleX(var(--rule)); transform-origin: 0 50%;
+}
+@media (min-width: 820px) { .sv-row { grid-template-columns: 20rem 1fr; } }
+.sv-row.is-on { background: var(--accent-08); }
+.sv-row.is-on::before { background: var(--accent-40); }
+.sv-row:focus-visible { outline: 1px solid var(--accent-c); outline-offset: 2px; }
+.sv-row__k {
+  display: flex; align-items: baseline; gap: 14px;
+  font-family: var(--ff-label); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-micro); color: var(--fg);
+  font-weight: 500;
+}
+.sv-row__i { color: var(--accent-c); }
+.sv-row__c { font-size: var(--fs-lede); line-height: 1.62; color: var(--fg-60); max-width: 54ch; }
+.sv-row__c span { color: var(--accent-c); font-family: var(--ff-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------- table */
+.sv-tbl {
+  width: 100%; margin-top: clamp(34px, 6vh, 62px);
+  border-collapse: collapse;
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  max-width: 40rem;
+  font-variant-numeric: tabular-nums;
+}
+/* §03 — the table is data, its CAPTION is a sentence about the data. It
+   inherits the technical face from .sv-tbl and has to opt back out. */
+.sv-tbl__cap {
+  text-align: left; padding-bottom: 12px;
+  font-family: var(--ff-text); font-size: var(--fs-micro);
+  color: var(--fg-50); letter-spacing: -.002em; line-height: 1.7;
+  text-transform: none;
+}
+.sv-tbl__cap b { color: var(--fg-60); }
+.sv-tbl th, .sv-tbl td {
+  text-align: left; padding: 11px 14px 11px 0;
+  border-bottom: var(--rule-w) solid var(--rule-secondary);
+  font-weight: 400;
+}
+.sv-tbl thead th { color: var(--fg-50); letter-spacing: var(--ls-micro); }
+.sv-tbl tbody th { color: var(--accent-c); width: 5rem; }
+.sv-tbl td { color: var(--fg-60); }
+.sv-tbl td:last-child { color: var(--fg); text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---------------------------------------------------------------- sample */
+.sv-flow { display: grid; gap: clamp(26px, 4vw, 56px); }
+@media (min-width: 900px) { .sv-flow { grid-template-columns: 1fr minmax(18rem, 24rem); align-items: start; } }
+
+.sv-flow__l { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.sv-flow__l li {
+  display: grid; grid-template-columns: 3.2rem 1fr; gap: 14px;
+  padding: 16px 0; border-top: var(--rule-w) solid var(--rule-secondary);
+  font-size: var(--fs-lede); line-height: 1.55; color: var(--fg-60);
+}
+.sv-flow__l li:last-child { border-bottom: var(--rule-w) solid var(--rule-secondary); }
+.sv-flow__l span {
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); color: var(--accent-c);
+  font-variant-numeric: tabular-nums;
+}
+
+.sv-drop {
+  display: grid; place-items: center; gap: 8px;
+  min-height: clamp(200px, 30vh, 280px);
+  padding: 28px 22px; text-align: center;
+  border: 1px dashed var(--fg-16);
+  background: rgba(255, 255, 255, .012);
+  cursor: pointer;
+  transition: border-color var(--t-hover) var(--ease), background var(--t-hover) var(--ease);
+}
+.sv-drop:hover, .sv-drop:focus-visible, .sv-drop.is-over {
+  border-color: var(--accent-c); background: var(--accent-08);
+}
+.sv-drop__mark {
+  width: 34px; height: 34px;
+  border: 1px solid var(--accent-40);
+  position: relative;
+}
+.sv-drop__mark::before, .sv-drop__mark::after {
+  content: ''; position: absolute; background: var(--accent-c);
+}
+.sv-drop__mark::before { left: 50%; top: 9px; bottom: 9px; width: 1px; transform: translateX(-50%); }
+.sv-drop__mark::after { top: 50%; left: 9px; right: 9px; height: 1px; transform: translateY(-50%); }
+.sv-drop__k {
+  font-family: var(--ff-label); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-micro); color: var(--fg);
+  font-weight: 500;
+}
+.sv-drop__c { font-size: var(--fs-lede); color: var(--fg-50); }
+.sv-drop__f {
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); color: var(--fg-50);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------- siblings
+   SAME REALITY. ANOTHER VIEW.
+
+   Phase 3 set the two siblings as bordered cards with an arrow glyph, which
+   read as ordinary site navigation. They are now two readings hung off one
+   rule: each carries the destination mode's interpretation of the SAME
+   silhouette — sampled points, an elevation interval, drawn linework — and
+   takes on that mode's accent only while it is being considered, so the
+   page's own accent is never contested.
+   ------------------------------------------------------------------ */
+.sib {
+  display: grid; gap: clamp(30px, 4vw, 64px);
+  margin-top: clamp(24px, 4vh, 44px);
+  border-top: var(--rule-w) solid var(--rule-primary);
+}
+@media (min-width: 820px) { .sib { grid-template-columns: 1fr 1fr; } }
+
+.sib__a {
+  --sib: var(--accent);
+  position: relative;
+  display: grid; gap: 0; align-content: start;
+  padding-top: clamp(20px, 3vh, 30px);
+}
+.sib__a[data-service="capture"]  { --sib: var(--accent-capture); }
+.sib__a[data-service="measure"]  { --sib: var(--accent-measure); }
+.sib__a[data-service="quantify"] { --sib: var(--accent-quantify); }
+
+/* the segment of the rule this reading owns */
+.sib__a::before {
+  content: ''; position: absolute; left: 0; right: 0; top: -1px; height: 1px;
+  background: rgb(var(--sib));
+  transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform var(--t-state) var(--ease-io);
+}
+.sib__a:hover::before, .sib__a:focus-visible::before { transform: scaleX(1); }
+.sib__a:focus-visible { outline: 1px solid rgb(var(--sib)); outline-offset: 8px; }
+
+.sib__i {
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); color: var(--fg-50);
+  transition: color var(--t-hover) var(--ease);
+  font-variant-numeric: tabular-nums;
+}
+.sib__a:hover .sib__i { color: rgb(var(--sib)); }
+
+/* the destination's reading of the same object */
+.sib__fig { display: block; margin: clamp(16px, 2.4vh, 26px) 0 clamp(14px, 2vh, 22px); }
+.sib__g { display: block; width: clamp(108px, 15vw, 190px); height: auto; overflow: visible; }
+.sib__g path { fill: none; vector-effect: non-scaling-stroke; }
+.sp-line path { stroke: var(--fg-28); stroke-width: 1; transition: stroke var(--t-state) var(--ease); }
+.sp-dots path {
+  stroke: var(--fg-38); stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 0 6;
+  transition: stroke var(--t-state) var(--ease);
+}
+.sp-band path { stroke: var(--fg-16); stroke-width: 1; stroke-dasharray: 2 5; transition: stroke var(--t-state) var(--ease); }
+.sp-plan path { stroke: var(--fg-38); stroke-width: 1.6; transition: stroke var(--t-state) var(--ease); }
+.sp-dim  path { stroke: var(--fg-16); stroke-width: 1; transition: stroke var(--t-state) var(--ease); }
+.sib__a:hover .sp-dots path,
+.sib__a:hover .sp-plan path { stroke: rgb(var(--sib) / .9); }
+.sib__a:hover .sp-line path { stroke: rgb(var(--sib) / .55); }
+.sib__a:hover .sp-band path,
+.sib__a:hover .sp-dim path  { stroke: rgb(var(--sib) / .40); }
+
+.sib__k {
+  font-size: var(--fs-h3); font-weight: 500; letter-spacing: -.03em; line-height: 1;
+  transition: color var(--t-hover) var(--ease);
+}
+.sib__a:hover .sib__k { color: rgb(var(--sib)); }
+.sib__hu {
+  margin-top: 8px;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-50);
+  font-weight: 500;
+}
+.sib__c {
+  margin-top: 14px;
+  font-size: var(--fs-lede); line-height: 1.55; color: var(--fg-60); max-width: 38ch;
+}
+
+/* the commit: a rule that draws toward the destination, no arrow glyph */
+.sib__go {
+  display: flex; align-items: center; gap: 12px;
+  margin-top: clamp(18px, 2.6vh, 26px);
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-50);
+  transition: color var(--t-hover) var(--ease);
+  font-weight: 500;
+}
+/* §07 D — DATA LINE. These cards are the site's representation links:
+   the same project, read another way. The primitive is defined in
+   glyphs.css and this is its first application — the technical baseline
+   EXTENDS rather than merely recolouring, and it extends from a resting
+   fraction of its length so the idle state still shows a rule.
+
+   Phase 9 scaled it to 1.5x from full length, which grew the mark past
+   its own box and read as a stretch rather than as a measurement being
+   taken. It now travels 0,34 → 1 within a fixed width. */
+.sib__go-r {
+  width: clamp(44px, 7vw, 108px); height: var(--rule-w);
+  background: var(--rule-measure);
+  transform: scaleX(var(--hv-data-x, .34)); transform-origin: 0 50%;
+  transition: transform var(--motion-ui) var(--ease-line),
+              background-color var(--motion-ui) var(--ease-out);
+}
+.sib__a:hover .sib__go,
+.sib__a:focus-visible .sib__go { color: rgb(var(--sib)); }
+.sib__a:hover .sib__go-r,
+.sib__a:focus-visible .sib__go-r { --hv-data-x: 1; background: rgb(var(--sib)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sib__a::before, .sib__go-r { transition: none; }
+}
+
+/* ---------------------------------------------------------------- project */
+.sv-project { padding-block: var(--sec-y); }
+.sv-project__head { max-width: 44rem; margin-bottom: clamp(30px, 5vh, 58px); }
+
+/* ---------------------------------------------------------------- 404 */
+.nf {
+  min-height: 100svh; display: grid; align-content: center; gap: 20px;
+  padding: var(--nav-h) var(--gutter);
+}
+.nf__t {
+  font-size: var(--fs-h2); line-height: .96;
+  letter-spacing: var(--ls-display); font-weight: 500;
+}
+.nf__l { display: flex; flex-wrap: wrap; gap: 10px 28px; margin-top: 12px; }
+.nf__l a {
+  font-family: var(--ff-label); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-micro); color: var(--fg-60);
+  border-bottom: var(--rule-w) solid var(--rule-primary); padding-bottom: 3px;
+  transition: color var(--t-hover) var(--ease), border-color var(--t-hover) var(--ease);
+  font-weight: 500;
+}
+.nf__l a:hover { color: var(--accent-c); border-color: var(--accent-40); }
+.foot--slim { padding-block: 30px; }
+
+/* ---------------------------------------------------------------- mobile */
+@media (max-width: 899px) {
+  /* The canvas steps back to atmosphere the moment the type owns the
+     width — the same rule the homepage narrative applies. */
+  .sv .stage { opacity: .34; }
+  .sv-hero { min-height: 92svh; }
+  .sv-steps { gap: 44px; }
+  .sv-step { padding-left: 14px; }
+  /* One rule that scrolls, not a wrapped set of chips: the graduation has
+     to stay a single continuous scale or it stops reading as an instrument.
+     QUANTIFY's four states wrapped onto two rows at 390px and the active
+     segment landed under the wrong label. */
+  .sv-states {
+    position: sticky; top: calc(var(--nav-h) + 6px); z-index: 4;
+    flex-wrap: nowrap; width: auto; max-width: none;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    overflow-x: auto; overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .sv-states::-webkit-scrollbar { display: none; }
+  .sv-states::before {
+    content: ''; position: absolute; inset: -8px calc(var(--gutter) * -1);
+    background: var(--bg); z-index: -1;
+  }
+  .sv-state { padding: 10px 14px 9px; white-space: nowrap; flex: none; }
+  /* MOBILE (Part 21): floors scroll on one row and never wrap into a grid.
+     A phone shows ONE floor plan at a time — the selector is how you change
+     which, so it has to stay one horizontal rail whatever the width. */
+  .sv-floors {
+    flex-wrap: nowrap; width: auto; max-width: none;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .sv-floors::-webkit-scrollbar { display: none; }
+  .sv-floor { flex: none; min-height: 44px; white-space: nowrap; }
+  .sv-floor i { display: none; }
+  .sv-tbl--floors { font-size: var(--fs-micro); }
+
+  /* The extraction sheet paints over the drawing on a phone — there is no
+     second half of the frame to put it in. */
+  .qsheet { background: var(--bg); }
+  .qsheet::before {
+    display: block; inset: -40px calc(var(--gutter) * -1) -40px;
+    background: linear-gradient(180deg, rgba(8,10,11,0) 0, var(--bg) 40px,
+      var(--bg) calc(100% - 40px), rgba(8,10,11,0) 100%);
+  }
+  .sv-tbl { font-size: .68rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sv-hero__title .line__in, .sv-h .line__in { transform: none !important; }
+}
+
+/* ============================================================
+   PHASE 4 — CAPTURE: THE DOCUMENTATION TRACK
+
+   The lower half of /360-camera/ was three cards, three icons and a
+   paragraph hanging under the first column. It is now a horizontal
+   documentation track: one site plan read three times, with the capture
+   station in a different place in each reading, hung off one continuous
+   traverse rule. The three panels sit at different heights so the row
+   reads as slices through a site rather than as a card grid.
+   ============================================================ */
+.uses { position: relative; }
+
+/* the traverse — one rule across the whole reading */
+.uses__rail {
+  display: flex; align-items: center; gap: clamp(10px, 1.4vw, 20px);
+  margin-bottom: clamp(18px, 2.6vh, 30px);
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.uses__rail-k { color: var(--fg-50); }
+/* §03 — one row, two tiers. The key is a label, the traverse it names is a
+   pair of capture IDs, so only the VALUE keeps the technical face. */
+.uses__rail-v {
+  color: var(--accent-c); font-variant-numeric: tabular-nums;
+  font-family: var(--ff-mono); letter-spacing: var(--ls-mono); font-weight: 400;
+}
+.uses__rail-l {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--accent-40), var(--fg-09) 62%, transparent);
+}
+
+.uses__track {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: clamp(34px, 4vw, 56px);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+}
+@media (min-width: 1000px) {
+  /* Unequal weights and a stepped baseline: a spatial section should not
+     lay out like a three-up card grid. */
+  .uses__track { grid-template-columns: 1.06fr 1.22fr 1fr; align-items: start; }
+  .uses__v[data-view="access"]    { margin-top: clamp(28px, 4vh, 62px); }
+  .uses__v[data-view="reference"] { margin-top: clamp(56px, 8vh, 124px); }
+}
+
+.uses__v { display: grid; gap: 0; align-content: start; }
+.uses__i {
+  display: flex; align-items: baseline; gap: 10px;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-50);
+  padding-bottom: 12px; border-bottom: var(--rule-w) solid var(--rule-primary);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.uses__i b { font-weight: 400; color: var(--accent-c); font-variant-numeric: tabular-nums; }
+
+.uses__fig { margin: 0; padding-top: clamp(14px, 2vh, 22px); }
+.uses__fig svg { display: block; width: 100%; height: auto; }
+.uses__fig path, .uses__fig circle { fill: none; vector-effect: non-scaling-stroke; }
+
+.uv-plan path  { stroke: var(--fg-38); stroke-width: 1.2; }
+.uv-far        { stroke: var(--fg-09) !important; stroke-width: 1 !important; }
+.uv-thin path  { stroke: var(--fg-16); stroke-width: 1; }
+.uv-idx path   { stroke: var(--fg-16); stroke-width: 1; }
+.uv-frame path { stroke: var(--fg-38); stroke-width: 1.2; }
+.uv-crop path, .uv-crop { stroke: var(--fg-16); stroke-width: 1; }
+
+/* the station: the one thing that moves between the three readings */
+.uv-st { fill: var(--bg); stroke: var(--accent-c); stroke-width: 1.4; }
+.uv-st--on { fill: var(--accent-c); stroke: var(--accent-c); }
+.uv-cone { fill: rgb(var(--accent) / .12); stroke: rgb(var(--accent) / .40); stroke-width: 1; }
+.uv-cross path, .uv-cross { stroke: rgb(var(--accent) / .55); stroke-width: 1; }
+.uv-path {
+  stroke: var(--accent-c); stroke-width: 1.2;
+  stroke-dasharray: 5 5;
+}
+.uv-lbl text {
+  fill: var(--fg-50); font-family: var(--ff-mono);
+  font-size: 9px; letter-spacing: .12em;
+  font-variant-numeric: tabular-nums;
+}
+
+.uses__meta {
+  display: flex; flex-wrap: wrap; gap: 4px clamp(10px, 1.2vw, 18px);
+  margin-top: 12px; padding-top: 10px;
+  border-top: var(--rule-w) solid var(--rule-secondary);
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); color: var(--fg-50);
+  font-variant-numeric: tabular-nums;
+}
+.uses__meta span:first-child { color: var(--accent-70); }
+
+.uses__k {
+  margin-top: clamp(20px, 3vh, 30px);
+  font-family: var(--ff-label); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-micro); color: var(--fg); font-weight: 400;
+}
+.uses__c {
+  margin-top: 10px;
+  font-size: var(--fs-lede); line-height: 1.6; color: var(--fg-60);
+  max-width: 40ch;
+}
+
+/* The closing line belongs to the section, not to the first column. */
+.uses__note {
+  margin-top: clamp(40px, 6vh, 84px);
+  padding-top: clamp(16px, 2.4vh, 24px);
+  border-top: var(--rule-w) solid var(--rule-secondary);
+  max-width: 62ch;
+  font-size: var(--fs-lede); line-height: 1.6; color: var(--fg-60);
+}
+.uses__note b { color: var(--fg); font-weight: 500; }
+.uv-arrow path, .uv-arrow { stroke: var(--accent-c); stroke-width: 1.2; }
+.uv-lead { stroke: rgb(var(--accent) / .45); stroke-width: 1; stroke-dasharray: 3 3; }
+.uv-sel path, .uv-sel { stroke: var(--accent-c); stroke-width: 1.3; }
+
+/* ---------------- CAPTURE · the site briefing ----------------
+   PROJECT INPUT is shared markup (`.sv-req`) with a per-service wrapper.
+   Here the three requirements are anchored to the parcel they describe:
+   A is a position, B is a note pinned to a place, C is the drawing of the
+   building on it. Labels, leaders and spatial relationships — no icons. */
+.site { display: grid; gap: clamp(28px, 4vh, 52px); align-items: center; }
+@media (min-width: 960px) {
+  .site { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(34px, 5vw, 90px); }
+}
+.site__fig { margin: 0; }
+.site__fig svg { display: block; width: 100%; height: auto; max-height: 46vh; overflow: visible; }
+.site__fig path { fill: none; vector-effect: non-scaling-stroke; }
+.st-parcel path { stroke: var(--fg-38); stroke-width: 1.2; }
+.st-grid path   { stroke: var(--fg-09); stroke-width: 1; }
+.st-lead        { stroke: rgb(var(--accent) / .45); stroke-width: 1; stroke-dasharray: 3 4; }
+.st-node        { fill: var(--accent-c); stroke: none; }
+.st-cross       { stroke: rgb(var(--accent) / .55); stroke-width: 1; }
+.st-brief       { stroke: var(--fg-38); stroke-width: 1.2; }
+.st-thin        { stroke: var(--fg-16); stroke-width: 1; }
+.st-plan        { stroke: var(--accent-70); stroke-width: 1.2; }
+.st-dim         { stroke: var(--fg-16); stroke-width: 1; }
+.site__fig text {
+  fill: var(--accent-c); font-family: var(--ff-mono);
+  font-size: 12px; letter-spacing: .1em;
+  font-variant-numeric: tabular-nums;
+}
+.site__fig .st-dimt { fill: var(--fg-38); font-size: 9px; letter-spacing: .18em; }
+
+/* The requirement rows carry the same letters as the drawing. */
+.site__req .sv-req__row { position: relative; padding-left: clamp(30px, 3.4vw, 52px); }
+.site__req .sv-req__row::before {
+  content: attr(data-anchor);
+  position: absolute; left: 0; top: clamp(18px, 3vh, 30px);
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); color: var(--accent-c);
+  font-variant-numeric: tabular-nums;
+}
+@media (min-width: 760px) {
+  .site__req .sv-req__row { grid-template-columns: 1fr; gap: 8px; }
+  .site__req .sv-req__c { max-width: 46ch; }
+}
+
+/* ============================================================
+   PHASE 4 — READABLE TYPE OVER A LIVE SCENE
+
+   The directional veil is a cinematic falloff for the whole frame; it is
+   not tight enough to guarantee a paragraph. Measured on /teruletfelmeres/
+   at mSurface, the section lede sat at roughly 1.9:1 against a lit contour
+   mesh. Each text block that overlays the canvas now carries its own soft
+   pool of ground — a lighting gradient with no edge, never a panel.
+   ============================================================ */
+.sv-terrain .sv-sec__head,
+.sv-story .sv-sec__head,
+.sv-analysis .sv-sec__head,
+.sv-hero__content,
+.sv-steps { position: relative; z-index: 1; }
+
+.sv-terrain .sv-sec__head::before,
+.sv-story .sv-sec__head::before,
+.sv-analysis .sv-sec__head::before,
+.sv-hero__content::before,
+.sv-steps::before {
+  content: '';
+  position: absolute;
+  /* The box has to be considerably larger than the pool, or the gradient
+     stops short of its own edge and the scrim gets a visible seam. */
+  inset: -34% -46% -30% -24%;
+  background: radial-gradient(58% 62% at 30% 50%,
+    rgba(8, 10, 11, .95) 0%,
+    rgba(8, 10, 11, .88) 30%,
+    rgba(8, 10, 11, .55) 52%,
+    rgba(8, 10, 11, .18) 72%,
+    rgba(8, 10, 11, 0) 88%);
+  pointer-events: none;
+  z-index: -1;
+}
+/* The MEASURE and QUANTIFY step columns sit on the RIGHT, so their pool
+   has to fall the other way. */
+.sv-steps--m::before, .sv-steps--q::before {
+  inset: -30% -24% -30% -46%;
+  background: radial-gradient(58% 62% at 70% 50%,
+    rgba(8, 10, 11, .95) 0%,
+    rgba(8, 10, 11, .88) 30%,
+    rgba(8, 10, 11, .55) 52%,
+    rgba(8, 10, 11, .18) 72%,
+    rgba(8, 10, 11, 0) 88%);
+}
+/* Below 900px the canvas is already atmosphere at .34 and the pools would
+   only flatten the page. */
+@media (max-width: 899px) {
+  .sv-terrain .sv-sec__head::before,
+  .sv-story .sv-sec__head::before,
+  .sv-analysis .sv-sec__head::before,
+  .sv-hero__content::before,
+  .sv-steps::before { display: none; }
+}
+
+/* ---------------- QUANTIFY · the extraction sheet ----------------
+   The counts are the result of the four states, so the sheet sits in the
+   reading column beside the drawing rather than across it. It carries its
+   own ground because the drawing is still live behind it. */
+.qsheet {
+  position: relative; z-index: 1;
+  margin-top: clamp(38px, 6vh, 78px);
+  max-width: 40rem;
+}
+@media (min-width: 900px) { .qsheet { margin-left: auto; width: 46%; max-width: none; } }
+.qsheet::before {
+  content: ''; position: absolute; inset: -26% -30% -30% -26%;
+  background: radial-gradient(58% 62% at 62% 50%,
+    rgba(8, 10, 11, .95) 0%, rgba(8, 10, 11, .88) 32%,
+    rgba(8, 10, 11, .54) 56%, rgba(8, 10, 11, 0) 88%);
+  z-index: -1; pointer-events: none;
+}
+.qsheet__h {
+  display: flex; align-items: center; gap: 14px;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-50);
+  font-weight: 500;
+}
+.qsheet__h span:first-child { color: var(--accent-c); }
+.qsheet__r { flex: 1; height: var(--rule-w); background: var(--rule-primary); }
+.qsheet .sv-tbl { margin-top: 16px; max-width: none; }
+@media (max-width: 899px) {
+  .qsheet::before { display: none; }
+}
+
+/* ---------------- MEASURE · the requirements sheet ----------------
+   Four numbered rows against one calibrated column. The status is not a
+   badge floating in the row; it sits in its own graduated column, the way
+   a survey sheet is read. */
+.sv-input--sheet .sheet__h,
+.sv-input--doc .sheet__h {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 14px;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-50);
+  font-weight: 500;
+}
+.sheet__h span:first-child { color: var(--accent-c); }
+.sheet__r { flex: 1; height: var(--rule-w); background: var(--rule-primary); }
+
+.sheet__req { background: none; border-block: 0; gap: 0; }
+.sheet__req .sv-req__row {
+  position: relative;
+  border-top: var(--rule-w) solid var(--rule-secondary);
+  padding-left: clamp(34px, 4vw, 62px);
+}
+.sheet__req .sv-req__row:last-child { border-bottom: var(--rule-w) solid var(--rule-secondary); }
+.sheet__req .sv-req__row::before {
+  content: attr(data-row);
+  position: absolute; left: 0; top: clamp(18px, 3vh, 30px);
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); color: var(--fg-50);
+  font-variant-numeric: tabular-nums;
+}
+/* the graduation tick that ties each row to the column */
+.sheet__req .sv-req__row::after {
+  content: ''; position: absolute; left: 0; top: 0;
+  width: clamp(22px, 2.6vw, 40px); height: 1px; background: var(--accent-40);
+}
+
+/* ---------------- QUANTIFY · the document intake ----------------
+   Two documents, each with a sheet reference. The page is about turning
+   documents into data, so its input reads as a document record. */
+.doc__req { background: none; border-block: 0; gap: clamp(16px, 2.4vh, 26px); }
+.doc__req .sv-req__row {
+  position: relative;
+  border: 0; border-top: var(--rule-w) solid var(--rule-primary);
+  padding-top: clamp(18px, 2.6vh, 28px);
+}
+@media (min-width: 760px) {
+  .doc__req .sv-req__row { grid-template-columns: 22rem 1fr auto; }
+}
+.doc__req .sv-req__row::after {
+  content: attr(data-doc);
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); color: var(--accent-70);
+  align-self: start;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 759px) {
+  .doc__req .sv-req__row::after { position: absolute; right: 0; top: clamp(18px, 2.6vh, 28px); }
+}
+
+/* ---------------- QUANTIFY · OUTPUT over the drawing ----------------
+   The rows sit in the reading column so the plan keeps the other half of the
+   frame, and each row carries the same pool of ground the rest of the page
+   uses over a live scene. Hovering or focusing one moves the recognition
+   bracket onto the region of the drawing that output is read from. */
+.sv-out--live .out__col { position: relative; z-index: 1; }
+.sv-out--live .out__col::before {
+  content: ''; position: absolute; inset: -16% -24% -14% -46%;
+  background: radial-gradient(58% 62% at 70% 50%,
+    rgba(8, 10, 11, .95) 0%, rgba(8, 10, 11, .88) 30%,
+    rgba(8, 10, 11, .55) 52%, rgba(8, 10, 11, .18) 72%,
+    rgba(8, 10, 11, 0) 88%);
+  z-index: -1; pointer-events: none;
+}
+@media (min-width: 900px) {
+  .sv-out--live .out__col { width: 52%; margin-left: auto; }
+  .sv-out--live .sv-row { grid-template-columns: 14rem 1fr; }
+}
+@media (max-width: 899px) {
+  /* No second half of the frame on a phone: the rows own it outright. */
+  .sv-out--live { background: var(--bg); }
+  .sv-out--live .out__col::before { display: none; }
+}
+
+/* ================================================================
+   PHASE 9 Parts 22 and 36 — THE REFERENCE ROOM CARD
+
+   One room, on the floor it belongs to, quoting figures counted off its
+   own rectangle. It is deliberately quiet: it is evidence, not a feature
+   panel, and it must not compete with the floor selector above it.
+   ================================================================ */
+/* PATCH 9.1 — EVIDENCE, NOT A DASHBOARD.
+
+   The card was doing what the comment above says it must not: at 1920 it
+   ran 1801 px wide between a 624 px floor selector and a 532 px state
+   rail — a full-bleed slab three times the width of either instrument it
+   sits between, 141–200 px tall, with its four values flung to the far
+   right of four equal columns by `justify-content: space-between`. Read
+   as composition it was the loudest object in the block.
+
+   Nothing is removed. The panel is bounded to the same column family as
+   the two rails, its four values collapse onto ONE compact baseline
+   instead of a four-column grid, and its own caption steps back to the end
+   of the identity line. Roughly 40 % shorter and half as wide, saying
+   exactly as much. */
+.sv-ref {
+  margin: 18px 0 0;
+  padding: 10px 14px 11px;
+  /* Bounded to the same 44rem reading column as the section head above it,
+     so the block reads as one left-hand argument instead of a wide slab
+     between two narrow instruments. */
+  width: max-content; max-width: min(100%, 44rem);
+  border: var(--rule-w) solid var(--rule-secondary);
+  border-left: 2px solid rgba(var(--accent), .55);
+  /* Nearly solid, because this card is read OVER the live drawing. A 1%
+     white wash is a decoration; what a panel over a canvas needs is paint.
+     Flat colour, not a `backdrop-filter` — Phase 8.3 measured that at
+     11 fps on a page with a WebGL canvas behind it. */
+  background: rgba(8, 10, 11, .93);
+  cursor: pointer;
+  transition: border-color var(--t-hover) var(--ease);
+}
+.sv-ref:hover, .sv-ref.is-on { border-color: rgba(var(--accent), .42); }
+/* THE FIRST LINE: which room. The panel's own caption is the trailing note
+   on it — still there, still legible, no longer the thing read first. */
+.sv-ref__h {
+  margin: 0 0 7px; display: flex; align-items: baseline;
+  flex-wrap: wrap; gap: 4px 12px;
+}
+.sv-ref__h b {
+  font-family: var(--ff-label); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-micro); color: var(--accent-c); font-weight: 400;
+}
+.sv-ref__h i { font-style: normal; color: var(--fg); }
+.sv-ref__k {
+  margin-left: auto; padding-left: 12px;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-38);
+  font-weight: 500;
+}
+
+/* THE SECOND LINE: everything that was counted, on one baseline.
+   Key and value adjacent — a value driven to the far edge of its own
+   column by `space-between` stops reading as that key's number. */
+.sv-ref__d {
+  margin: 0; display: flex; flex-wrap: wrap;
+  align-items: baseline; gap: 3px clamp(16px, 1.7vw, 30px);
+}
+.sv-ref__d div { display: flex; align-items: baseline; gap: 8px; }
+.sv-ref__d dt, .sv-ref__d dd {
+  margin: 0; font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  font-variant-numeric: tabular-nums;
+}
+.sv-ref__d dt { color: var(--fg-38); }
+.sv-ref__d dd { color: var(--fg); font-variant-numeric: tabular-nums; }
+.sv-ref__x {
+  display: inline-block; margin-top: 9px;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--accent-c);
+  text-decoration: none; border-bottom: 1px solid rgba(var(--accent), .34);
+  font-weight: 500;
+}
+.sv-ref__x:hover, .sv-ref__x:focus-visible { border-bottom-color: var(--accent-c); }
+
+
+/* ============================================================
+   §19 / §04 — GLYPHS ON THE SERVICE PAGES
+
+   A requirement row and a process step both name a THING: a site, a
+   contour drawing, a PDF, a delivery. Those are the two places on a
+   service page where a glyph earns its space, and it takes the quiet
+   role in both — grey at rest, one step brighter when the row it sits in
+   is the live one, never the accent unless the row is.
+
+   §28: every one of these is aria-hidden. The word beside it says the
+   same thing, and an icon may not be the only name for anything.
+   ============================================================ */
+.sv-gl { color: var(--fg-38); flex: none; }
+.sv-step__k, .sv-req__k { display: flex; align-items: center; gap: .62em; }
+.sv-req__k .sv-gl { align-self: start; margin-top: .05em; }
+.sv-step.is-on .sv-gl { color: var(--accent-c); }
+.sv-req__row:hover .sv-gl { color: var(--fg-60); }

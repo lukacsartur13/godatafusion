@@ -1,0 +1,438 @@
+/* ============================================================
+   hero — 01 / INTRO
+   ============================================================ */
+main { position: relative; z-index: 2; }
+
+.hero {
+  position: relative;
+  z-index: 2;
+  min-height: 100svh;
+  padding: calc(var(--nav-h) + clamp(26px, 5.2vh, 74px)) var(--gutter) var(--strip-h);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  isolation: isolate;
+}
+
+/* ============================================================
+   THE STAGE — one fixed canvas for the whole narrative.
+   The hero, the manifesto, THE FUSION and the three service chapters
+   are transparent and let it through; PROCESS and everything after it
+   paint over it, which is also when the renderer suspends itself.
+   Opacity, blur and the veil direction are driven from narrative.js.
+   ============================================================ */
+/* ------------------------------------------------------------------
+   PHASE 8.3 — NO PERMANENT `will-change`.
+
+   `will-change: opacity, filter` was held for the whole session. The
+   `filter` half is the expensive one: it promises the compositor a
+   filter, so the compositor builds a RENDER SURFACE for this element and
+   holds it — and this element is the full-viewport WebGL canvas. The
+   canvas can then never be handed to macOS as a finished layer; it is
+   drawn into an intermediate surface first, every frame. Confirmed in
+   the layer tree: `WillChangeFilter` on a 2498x1502 layer.
+
+   Measured at 1440x900 on the 120 Hz panel, hero at idle, with the nav
+   and cursor surfaces already removed:
+
+     will-change: opacity, filter    50,8 composited fps   rAF p50 16,7 ms
+     will-change removed             71,4 composited fps   rAF p50  8,9 ms
+
+   The stage is fixed, so it has a layer of its own regardless — the hint
+   bought nothing but the surface. A blur is genuinely applied for a few
+   seconds deep in the narrative scroll, and modules/narrative.js sets
+   the hint for exactly that window and clears it afterwards.
+   ------------------------------------------------------------------ */
+.stage {
+  position: fixed; inset: 0; z-index: 1;
+  overflow: hidden; pointer-events: none;
+  --veil-l: 1;
+  --veil-r: 0;
+}
+.stage.is-off { opacity: 0 !important; visibility: hidden; }
+.stage__canvas { width: 100%; height: 100%; }
+
+/* Cinematic falloff. The base is the vertical one; the two directional
+   layers cross-fade as the object moves from one side of the page to the
+   other, so the live text column always wins against the geometry. */
+.stage__veil {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(8,10,11,0) 46%, rgba(8,10,11,.42) 74%,
+    rgba(8,10,11,.84) 92%, rgba(8,10,11,.95) 100%);
+}
+.stage__veil::before, .stage__veil::after {
+  content: ''; position: absolute; inset: 0;
+}
+.stage__veil::before {
+  background: linear-gradient(96deg, rgba(8,10,11,.97) 0%, rgba(8,10,11,.92) 22%,
+    rgba(8,10,11,.64) 42%, rgba(8,10,11,.22) 58%, rgba(8,10,11,0) 70%);
+  opacity: var(--veil-l);
+}
+.stage__veil::after {
+  background: linear-gradient(264deg, rgba(8,10,11,.97) 0%, rgba(8,10,11,.92) 22%,
+    rgba(8,10,11,.64) 42%, rgba(8,10,11,.22) 58%, rgba(8,10,11,0) 70%);
+  opacity: var(--veil-r);
+}
+@media (max-width: 900px) {
+  /* PHASE 4 opened a 10%-tall band at a hardcoded 46–56%, which is the whole
+     reason the object still read as texture behind the type: 84px of 26%
+     veil is not a window, it is a smudge.
+
+     PHASE 5 — the band is now the hero's signature window, and it is not
+     guessed. `--win-a` / `--win-b` are written by modules/heroWindow.js from
+     the MEASURED position of #heroWindow, so the veil opens exactly where
+     the composition says the object lives, at every phone height. Inside the
+     window the veil is effectively gone; the object is the subject there.
+     The fallbacks keep a sane band if the module never runs. */
+  .stage__veil {
+    background: linear-gradient(180deg,
+      rgba(8,10,11,.98) 0%,
+      rgba(8,10,11,.96) calc(var(--win-a, 42%) - 2.6%),
+      rgba(8,10,11,.30) calc(var(--win-a, 42%) + 0.4%),
+      rgba(8,10,11,var(--win-floor, .05)) calc(var(--win-a, 42%) + 2.4%),
+      rgba(8,10,11,var(--win-floor, .05)) calc(var(--win-b, 62%) - 3%),
+      rgba(8,10,11,.46) calc(var(--win-b, 62%) - 0.4%),
+      rgba(8,10,11,.93) calc(var(--win-b, 62%) + 2.6%),
+      rgba(8,10,11,.98) 100%);
+  }
+  .stage__veil::before, .stage__veil::after { display: none; }
+  /* IDLE is a dark mass and wants the window wide open. A service mode
+     lights every layer it owns at once, and on a phone the object fills the
+     window rather than sitting to one side of a wide frame — at a .05 floor
+     MEASURE floods the band and the caption stops being readable over it.
+     The floor lifts while a mode owns the scene; the object is still the
+     subject, it is just no longer the brightest thing on the page. */
+  body:not([data-mode='idle']) .stage__veil { --win-floor: .34; }
+  /* QUANTIFY is thin orange linework on black, not a lit surface — the same
+     floor that keeps MEASURE from flooding the band would erase it. */
+  body[data-mode='quantify'] .stage__veil { --win-floor: .14; }
+}
+
+.stage__fallback { display: none; position: absolute; inset: 0; place-items: center; padding: 6vh var(--gutter); }
+body.no-webgl .stage__canvas { display: none; }
+body.no-webgl .stage__fallback { display: grid; }
+.stage__fallback svg { width: min(78%, 760px); height: auto; overflow: visible; }
+.stage__fallback path, .stage__fallback circle { fill: none; vector-effect: non-scaling-stroke; }
+.fb-terrain path { stroke: var(--fg-16); stroke-width: 1; }
+.fb-grid path   { stroke: var(--fg-09); stroke-width: 1; }
+.fb-mass path   { stroke: var(--fg-60); stroke-width: 1; }
+.fb-accent path { stroke: var(--accent-70); stroke-width: 1; stroke-dasharray: 3 5; }
+.fb-accent circle { stroke: var(--accent-c); stroke-width: 1; }
+
+/* ---------- scan plane motif — fixed, re-aimed per beat ---------- */
+.scanplane {
+  position: fixed; left: 0; top: 0; z-index: 3;
+  width: 100vw; height: clamp(120px, 21vh, 230px);
+  opacity: 0; pointer-events: none;
+  transform: translate3d(0, -110%, 0);
+  will-change: transform, opacity;
+  /* Fixed and out of the flow already; containment keeps the one
+     geometry write a pass needs from reaching anything else's layout. */
+  contain: layout paint style;
+}
+.scanplane__field {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgb(var(--accent) / .035) 58%,
+    rgb(var(--accent) / .11) 100%);
+}
+.scanplane__line {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgb(var(--accent) / .75) 14%,
+    rgb(var(--accent) / .9) 50%, rgb(var(--accent) / .75) 86%, transparent 100%);
+}
+
+/* ---------- 3D-anchored annotations ---------- */
+.annos { position: absolute; inset: 0; pointer-events: none; }
+.anno {
+  position: absolute; top: 0; left: 0;
+  display: flex; align-items: center;
+  opacity: 0; will-change: transform, opacity;
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: .14em; white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.anno__dot {
+  width: 5px; height: 5px; margin-left: -3px; flex: none;
+  border: 1px solid var(--accent-c); border-radius: 50%;
+  box-shadow: 0 0 6px rgba(8,10,11,.9);
+}
+.anno__line { width: clamp(18px, 2.3vw, 36px); height: 1px; background: rgb(var(--accent) / .42); flex: none; }
+.anno__text {
+  padding-left: 9px;
+  /* the callouts sit over a lit point cloud — keep them legible */
+  text-shadow: 0 0 3px rgba(8,10,11,.95), 0 1px 10px rgba(8,10,11,.85);
+}
+.anno__text i { font-style: normal; color: var(--fg-42); }
+.anno__text b { font-weight: 400; color: var(--accent-c); font-variant-numeric: tabular-nums; }
+/* Extraction callouts: QUANTIFY reads one plan symbol at a time and the
+   label has to survive sitting directly on the drawing. */
+.anno--x .anno__line { width: clamp(26px, 3.4vw, 54px); }
+.anno--x .anno__text {
+  display: grid; gap: 3px; line-height: 1.25;
+  padding: 5px 9px 5px 11px;
+  background: rgba(8,10,11,.86);
+  border-left: 1px solid var(--accent-40);
+  /* No backdrop blur. What is behind these labels is a dark 3D render, not
+     text, so the blur was invisible — and each blurred element is a
+     compositor layer that has to be redone on every `--accent` write, which
+     is the most frequent style invalidation on the page. Measured: 2.1 ms of
+     a 5.7 ms accent write came from the nine blurred annotation panels. */
+}
+.anno--x .anno__text i { letter-spacing: .16em; }
+.anno--x .anno__text b { font-size: 1.05em; letter-spacing: .06em; }
+.anno--x.anno--flip .anno__text { border-left: 0; border-right: 1px solid var(--accent-40); padding: 5px 11px 5px 9px; text-align: right; }
+
+/* ---------- PHASE 8: the floor indicators ----------
+   L02  PROJECT  +7,60 m — three lines of type anchored to the storeys
+   themselves, so they travel with the plates in the exploded view. Held
+   quieter than the measurement callouts on purpose: they name what the
+   visitor is already looking at rather than telling them something new,
+   and Part 17 asks for an indicator, not a panel. */
+.anno--level .anno__dot { border-color: var(--fg-42); }
+.anno--level .anno__line {
+  width: clamp(22px, 2.8vw, 46px);
+  background: rgb(var(--accent) / .3);
+}
+.anno--level .anno__text {
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 3px 10px 3px 10px;
+  background: rgba(8,10,11,.80);
+  border-left: 1px solid var(--accent-40);
+}
+.anno--level .anno__text i { color: var(--accent-c); letter-spacing: .18em; }
+.anno--level .anno__text b { color: var(--fg-60); letter-spacing: .16em; }
+.anno--level .anno__text u {
+  text-decoration: none; color: var(--fg-42);
+  font-variant-numeric: tabular-nums; letter-spacing: .06em;
+}
+.anno--level.anno--flip .anno__text {
+  border-left: 0; border-right: 1px solid var(--accent-40); flex-direction: row-reverse;
+}
+
+/* PHASE 9 §17 — A FLIPPED CALLOUT HAS TO MOVE, NOT JUST REORDER.
+
+   `flex-direction: row-reverse` puts the label on the other side of its own
+   dot, and that was the whole of the flip — but the element is placed by a
+   translate whose origin is its LEFT edge, so the box stayed exactly where
+   it was and a label flipped at the right-hand edge still ran off it. On a
+   1024 portrait tablet the three QUANTIFY totals were cut in half by the
+   frame edge while carrying the class that was supposed to prevent it
+   (qa/p9/shots/probe-q-tab.png).
+
+   `translateX(-100%)` on the flipped element moves the box to the other
+   side of the anchor, which is what "flip" has to mean. It composes with
+   the inline translate3d because it is a separate declaration on a
+   different property in the cascade — the inline one is `transform`, so
+   this has to ride on `translate`, which is applied after it. */
+.anno--flip { flex-direction: row-reverse; translate: -100% 0; }
+.anno--flip .anno__dot { margin-left: 0; margin-right: -3px; }
+.anno--flip .anno__text { padding-left: 0; padding-right: 9px; }
+
+/* ---------- headline ---------- */
+.hero__content { position: relative; z-index: 3; max-width: var(--col-display); }
+
+.hero__title {
+  margin: clamp(16px, 2.4vw, 32px) 0 clamp(18px, 2.2vw, 30px);
+  /* DISPLAY XL — PHASE 10 §02. The one place on the site that uses it. */
+  font-family: var(--ff-display);
+  font-size: var(--fs-dxl);
+  font-weight: 500;
+  line-height: var(--lh-d);
+  letter-spacing: var(--ls-dxl);
+  text-wrap: balance;
+}
+.line { display: block; overflow: hidden; padding-bottom: .08em; margin-bottom: -.08em; }
+.line__in { display: block; will-change: transform; }
+.hero__title .dot { color: var(--accent-c); }
+
+.hero__lede {
+  max-width: 46ch;
+  margin-top: clamp(4px, 1.2vh, 18px);
+  font-size: var(--fs-lede);
+  line-height: 1.62;
+  color: var(--fg-60);
+  letter-spacing: -.004em;
+  text-wrap: pretty;
+}
+.hero__actions { display: flex; align-items: center; gap: clamp(10px, 1.3vw, 20px); margin-top: clamp(22px, 2.6vw, 36px); }
+
+/* ---------- telemetry ---------- */
+.telemetry {
+  position: absolute; z-index: 3;
+  right: var(--gutter);
+  top: calc(var(--nav-h) + clamp(26px, 5.2vh, 74px));
+  display: grid; gap: clamp(10px, 1.2vw, 16px);
+  text-align: right;
+}
+.telemetry__row { display: grid; gap: 5px; }
+.telemetry__k { color: var(--fg-28); }
+.telemetry__v { color: var(--fg); }
+.telemetry__v.num { font-variant-numeric: tabular-nums; color: var(--accent-c); }
+
+/* ---------- bottom instrument strip ---------- */
+.strip {
+  position: absolute; z-index: 3;
+  left: var(--gutter); right: var(--gutter); bottom: 0;
+  height: var(--strip-h);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  border-top: var(--rule-w) solid var(--rule-secondary);
+  color: var(--fg-28);
+}
+.strip__section { color: var(--fg-42); }
+.strip__scroll { display: inline-flex; align-items: center; gap: 10px; color: var(--fg-42); transition: color var(--t-state) var(--ease); }
+.strip__scroll:hover { color: var(--accent-c); }
+.strip__track { position: relative; display: block; width: clamp(34px, 4vw, 58px); height: var(--rule-w); background: var(--rule-primary); overflow: hidden; }
+.strip__track i { position: absolute; inset: 0; background: var(--accent-c); transform: translateX(-101%); animation: strip-run 2.8s var(--ease-io) infinite; }
+@keyframes strip-run {
+  0%   { transform: translateX(-101%); }
+  55%  { transform: translateX(0); }
+  100% { transform: translateX(101%); }
+}
+
+@media (max-width: 1180px) {
+  .hero__content { max-width: 72%; }
+}
+@media (max-width: 900px) {
+  .telemetry { display: none; }
+  .hero__content { max-width: 100%; }
+  .hero__lede { max-width: 40ch; }
+  .strip__scroll span:first-child { display: none; }
+}
+@media (max-width: 620px) {
+  /* PHASE 5 — the canvas is no longer dimmed as a whole. The veil is what
+     decides where the object may be seen, and dimming everything on top of
+     it was the second reason the phone hero read as texture. Floating
+     callouts still have nowhere safe to land on a 390px frame. */
+  .annos { display: none; }
+}
+@media (max-width: 560px) {
+  .hero { padding-top: calc(var(--nav-h) + 26px); }
+  .hero__actions { flex-wrap: wrap; }
+  .strip__coords { font-size: .55rem; }
+}
+
+/* ============================================================
+   PHASE 5 — THE PHONE HERO
+
+   Phase 4 made a defensible choice on a phone: give the type priority and
+   let the object be atmosphere. It produced a first viewport that is four
+   stacked blocks of text and no visible idea. This is a DEDICATED
+   composition, not the desktop hero at 390px:
+
+       brand / nav
+       TURN REALITY INTO DATA.
+       the signature window      <- the object is the subject here
+       01 02 03 service rail
+       state baseline
+       instrument strip
+
+   Everything below is scoped to <=700px and changes nothing above it.
+   ============================================================ */
+
+/* The window itself owns no ground, no border and no background: it is the
+   hole the veil opens, marked at its corners the way a frame is marked on a
+   drawing. Above 700px it does not exist at all. */
+.hwin { display: none; }
+
+@media (max-width: 700px) {
+  .hero {
+    /* row 1 headline · row 2 the window (takes the slack) · row 3 the rail */
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    padding-bottom: calc(var(--strip-h) + 4px);
+  }
+
+  /* ---- the headline block gives room back ---- */
+  .hero__content { display: grid; }
+  /* The eyebrow ran to two lines at 360px. Same text, same size — the
+     tracking and the rule are what were spending the width. */
+  .hero .eyebrow { gap: .55em; letter-spacing: .09em; }
+  .hero .eyebrow__rule { width: 18px; }
+  .hero__title { margin: clamp(12px, 2.2vh, 20px) 0 clamp(10px, 1.6vh, 18px); }
+  /* One clause, not five lines. Truncating with -webkit-line-clamp put an
+     ellipsis in the middle of a sentence, which reads as a bug rather than
+     as an edit; the clause is dropped instead. */
+  .hero__lede { max-width: 100%; margin-top: 0; }
+  .hero__lede-x { display: none; }
+  .hero__actions { margin-top: clamp(14px, 2vh, 22px); gap: 10px; }
+  .hero__actions .btn { padding: .8em 1.15em; }
+
+  /* ---- THE SIGNATURE WINDOW ---- */
+  .hwin {
+    display: block; position: relative;
+    /* Bleeds to the viewport edges: the window is a frame the composition
+       cuts, not a box inside the text column. Never past them — a negative
+       inset wider than the gutter is a horizontal scrollbar. */
+    margin: clamp(14px, 2.4vh, 26px) calc(var(--gutter) * -1) clamp(12px, 2vh, 20px);
+    min-height: clamp(150px, 25vh, 300px);
+    pointer-events: none;
+  }
+  /* Corner ticks — a registration mark, not a border. */
+  .hwin__tick {
+    position: absolute; width: 13px; height: 13px;
+    border: 0 solid var(--fg-16);
+  }
+  .hwin__tick--tl { top: 0; left: var(--gutter);  border-top-width: 1px; border-left-width: 1px; }
+  .hwin__tick--tr { top: 0; right: var(--gutter); border-top-width: 1px; border-right-width: 1px; }
+  .hwin__tick--bl { bottom: 26px; left: var(--gutter);  border-bottom-width: 1px; border-left-width: 1px; }
+  .hwin__tick--br { bottom: 26px; right: var(--gutter); border-bottom-width: 1px; border-right-width: 1px; }
+  /* One measured axis down the left edge of the window: the same
+     engineering language the rest of the site draws in. */
+  .hwin__axis {
+    position: absolute; left: var(--gutter); top: 20px; bottom: 46px; width: 1px;
+    background: linear-gradient(180deg, var(--fg-16), rgba(241,240,235,.03));
+  }
+
+  /* REALITY → DATA, written into the frame. This is the one line that has
+     to survive even if WebGL never loads, so it is DOM, not geometry. */
+  .hwin__cap {
+    position: absolute; left: var(--gutter); right: var(--gutter); bottom: 0;
+    display: flex; align-items: center; gap: 10px;
+    color: var(--fg-50);
+  }
+  /* The caption sits directly on the object, which can be a lit point
+     cloud. Same treatment the 3D callouts get. */
+  .hwin__cap-a, .hwin__cap-b { text-shadow: 0 0 4px rgba(8,10,11,.95), 0 1px 12px rgba(8,10,11,.9); }
+  .hwin__cap-a { color: var(--fg-50); }
+  .hwin__cap-b { color: var(--fg); }
+  /* The rule between them fills with the accent while the first-contact
+     transformation runs, then holds. It is the transformation, stated. */
+  .hwin__cap-r {
+    position: relative; flex: 1; height: var(--rule-w); background: var(--rule-secondary);
+    overflow: hidden;
+  }
+  .hwin__cap-r::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgb(var(--accent) / .25), var(--accent-c));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 2.6s var(--ease-io);
+  }
+  .hwin.is-run .hwin__cap-r::after { transform: scaleX(1); }
+  .hwin__cap-b::after {
+    content: ''; display: inline-block; vertical-align: middle;
+    width: 5px; height: 5px; margin-left: 7px;
+    background: var(--fg-16);
+    transition: background var(--t-commit) var(--ease);
+  }
+  .hwin.is-run .hwin__cap-b::after { background: var(--accent-c); }
+
+  /* The static fallback belongs in the window too, cropped the same way. */
+  body.no-webgl .stage__fallback { padding: 0; align-items: center; }
+  body.no-webgl .stage__fallback svg { width: 128%; max-width: none; }
+
+  /* ---- the strip ---- */
+  /* The window is the motion in this frame now; an infinite 2.8s loop under
+     it is one moving thing too many. The WORD comes back in its place —
+     hiding both left a focusable link with no content, no accessible name
+     and a 0x0 hit area. */
+  .strip__track { display: none; }
+  .strip__scroll span:first-child { display: inline; }
+  .strip__scroll { padding: 6px 0; }
+}
+
+@media (max-width: 400px) {
+  /* The coordinate pair wrapped the strip onto two rows at 360px, which
+     pushed the section index off the baseline. The index and the scroll
+     affordance are the two that have to survive. */
+  .strip__coords { display: none; }
+}

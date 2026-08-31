@@ -1,0 +1,633 @@
+{
+ "retrieved": {
+  "dining_chair_02": "2026-08-28",
+  "modern_arm_chair_01": "2026-08-28",
+  "side_table_01": "2026-08-28",
+  "steel_frame_shelves_03": "2026-08-28",
+  "modern_ceiling_lamp_01": "2026-08-28",
+  "potted_plant_02": "2026-08-28",
+  "potted_plant_04": "2026-08-28",
+  "white_stucco": "2026-08-28",
+  "concrete_wall_001": "2026-08-28",
+  "oak_veneer_02": "2026-08-28",
+  "poly_wool_herringbone": "2026-08-28",
+  "kloofendal_overcast_puresky": "2026-08-28"
+ },
+ "entries": {
+  "dining_chair_02": {
+   "kind": "models",
+   "name": "Dining Chair 02",
+   "authors": [
+    "James Ray Cock"
+   ],
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/dining_chair_02",
+   "api": "https://api.polyhaven.com/info/dining_chair_02",
+   "sourcePolycount": 22013,
+   "sourceMaxRes": [
+    8192,
+    8192
+   ],
+   "fetchedRes": "1k",
+   "attributes": {
+    "condition": [
+     "clean"
+    ],
+    "material": [
+     "leather",
+     "wood"
+    ]
+   },
+   "files": [
+    {
+     "file": "dining_chair_02/dining_chair_02.gltf",
+     "bytes": 2723,
+     "cached": false
+    },
+    {
+     "file": "dining_chair_02/dining_chair_02.bin",
+     "bytes": 544592,
+     "cached": false
+    },
+    {
+     "file": "dining_chair_02/textures/dining_chair_02_nor_gl_1k.jpg",
+     "bytes": 119612,
+     "cached": false
+    },
+    {
+     "file": "dining_chair_02/textures/dining_chair_02_diff_1k.jpg",
+     "bytes": 91518,
+     "cached": false
+    },
+    {
+     "file": "dining_chair_02/textures/dining_chair_02_arm_1k.jpg",
+     "bytes": 162630,
+     "cached": false
+    }
+   ],
+   "bytes": 921075
+  },
+  "modern_arm_chair_01": {
+   "kind": "models",
+   "name": "Modern Arm Chair 01",
+   "authors": [
+    "Vibrant Nordic"
+   ],
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/modern_arm_chair_01",
+   "api": "https://api.polyhaven.com/info/modern_arm_chair_01",
+   "sourcePolycount": 8916,
+   "sourceMaxRes": [
+    8192,
+    8192
+   ],
+   "fetchedRes": "1k",
+   "attributes": {
+    "condition": [
+     "worn"
+    ],
+    "material": [
+     "wood",
+     "leather"
+    ]
+   },
+   "files": [
+    {
+     "file": "modern_arm_chair_01/modern_arm_chair_01.gltf",
+     "bytes": 5121,
+     "cached": false
+    },
+    {
+     "file": "modern_arm_chair_01/textures/modern_arm_chair_01_pillow_nor_gl_1k.jpg",
+     "bytes": 302377,
+     "cached": false
+    },
+    {
+     "file": "modern_arm_chair_01/textures/modern_arm_chair_01_legs_nor_gl_1k.jpg",
+     "bytes": 560864,
+     "cached": false
+    },
+    {
+     "file": "modern_arm_chair_01/textures/modern_arm_chair_01_pillow_arm_1k.jpg",
+     "bytes": 321223,
+     "cached": false
+    },
+    {
+     "file": "modern_arm_chair_01/textures/modern_arm_chair_01_legs_diff_1k.jpg",
+     "bytes": 460937,
+     "cached": false
+    },
+    {
+     "file": "modern_arm_chair_01/textures/modern_arm_chair_01_legs_arm_1k.jpg",
+     "bytes": 577931,
+     "cached": false
+    },
+    {
+     "file": "modern_arm_chair_01/modern_arm_chair_01.bin",
+     "bytes": 240728,
+     "cached": false
+    },
+    {
+     "file": "modern_arm_chair_01/textures/modern_arm_chair_01_pillow_diff_1k.jpg",
+     "bytes": 228851,
+     "cached": false
+    }
+   ],
+   "bytes": 2698032
+  },
+  "side_table_01": {
+   "kind": "models",
+   "name": "Side Table 01",
+   "authors": [
+    "James Ray Cock"
+   ],
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/side_table_01",
+   "api": "https://api.polyhaven.com/info/side_table_01",
+   "sourcePolycount": 2756,
+   "sourceMaxRes": [
+    8192,
+    8192
+   ],
+   "fetchedRes": "1k",
+   "attributes": {
+    "condition": [
+     "clean"
+    ],
+    "material": [
+     "wood"
+    ]
+   },
+   "files": [
+    {
+     "file": "side_table_01/side_table_01.gltf",
+     "bytes": 2700,
+     "cached": false
+    },
+    {
+     "file": "side_table_01/side_table_01.bin",
+     "bytes": 117784,
+     "cached": false
+    },
+    {
+     "file": "side_table_01/textures/side_table_01_diff_1k.jpg",
+     "bytes": 183315,
+     "cached": false
+    },
+    {
+     "file": "side_table_01/textures/side_table_01_nor_gl_1k.jpg",
+     "bytes": 71744,
+     "cached": false
+    },
+    {
+     "file": "side_table_01/textures/side_table_01_arm_1k.jpg",
+     "bytes": 129725,
+     "cached": false
+    }
+   ],
+   "bytes": 505268
+  },
+  "steel_frame_shelves_03": {
+   "kind": "models",
+   "name": "Steel Frame Shelves 03",
+   "authors": [
+    "Ulan Cabanilla"
+   ],
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/steel_frame_shelves_03",
+   "api": "https://api.polyhaven.com/info/steel_frame_shelves_03",
+   "sourcePolycount": 8396,
+   "sourceMaxRes": [
+    4096,
+    4096
+   ],
+   "fetchedRes": "1k",
+   "attributes": {
+    "condition": [
+     "clean"
+    ],
+    "material": [
+     "steel",
+     "wood"
+    ]
+   },
+   "files": [
+    {
+     "file": "steel_frame_shelves_03/steel_frame_shelves_03.gltf",
+     "bytes": 9767,
+     "cached": false
+    },
+    {
+     "file": "steel_frame_shelves_03/textures/steel_frame_shelves_03_drawers_arm_1k.jpg",
+     "bytes": 543122,
+     "cached": false
+    },
+    {
+     "file": "steel_frame_shelves_03/textures/steel_frame_shelves_03_diff_1k.jpg",
+     "bytes": 375274,
+     "cached": false
+    },
+    {
+     "file": "steel_frame_shelves_03/steel_frame_shelves_03.bin",
+     "bytes": 259368,
+     "cached": false
+    },
+    {
+     "file": "steel_frame_shelves_03/textures/steel_frame_shelves_03_drawers_nor_gl_1k.jpg",
+     "bytes": 487786,
+     "cached": false
+    },
+    {
+     "file": "steel_frame_shelves_03/textures/steel_frame_shelves_03_arm_1k.jpg",
+     "bytes": 719712,
+     "cached": false
+    },
+    {
+     "file": "steel_frame_shelves_03/textures/steel_frame_shelves_03_drawers_diff_1k.jpg",
+     "bytes": 663476,
+     "cached": false
+    },
+    {
+     "file": "steel_frame_shelves_03/textures/steel_frame_shelves_03_nor_gl_1k.jpg",
+     "bytes": 504726,
+     "cached": false
+    }
+   ],
+   "bytes": 3563231
+  },
+  "modern_ceiling_lamp_01": {
+   "kind": "models",
+   "name": "Modern Ceiling Lamp 01",
+   "authors": [
+    "James Ray Cock"
+   ],
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/modern_ceiling_lamp_01",
+   "api": "https://api.polyhaven.com/info/modern_ceiling_lamp_01",
+   "sourcePolycount": 5602,
+   "sourceMaxRes": [
+    8192,
+    8192
+   ],
+   "fetchedRes": "1k",
+   "attributes": {
+    "condition": [
+     "clean"
+    ],
+    "material": [
+     "glass",
+     "metal"
+    ]
+   },
+   "files": [
+    {
+     "file": "modern_ceiling_lamp_01/modern_ceiling_lamp_01.gltf",
+     "bytes": 6177,
+     "cached": false
+    },
+    {
+     "file": "modern_ceiling_lamp_01/textures/modern_ceiling_lamp_01_arm_1k.jpg",
+     "bytes": 124022,
+     "cached": false
+    },
+    {
+     "file": "modern_ceiling_lamp_01/textures/modern_ceiling_lamp_01_diff_1k.jpg",
+     "bytes": 79705,
+     "cached": false
+    },
+    {
+     "file": "modern_ceiling_lamp_01/modern_ceiling_lamp_01.bin",
+     "bytes": 146828,
+     "cached": false
+    },
+    {
+     "file": "modern_ceiling_lamp_01/textures/modern_ceiling_lamp_01_nor_gl_1k.jpg",
+     "bytes": 79333,
+     "cached": false
+    }
+   ],
+   "bytes": 436065
+  },
+  "potted_plant_02": {
+   "kind": "models",
+   "name": "Potted Plant 02",
+   "authors": [
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/potted_plant_02",
+   "api": "https://api.polyhaven.com/info/potted_plant_02",
+   "sourcePolycount": 69806,
+   "sourceMaxRes": [
+    8192,
+    8192
+   ],
+   "fetchedRes": "1k",
+   "attributes": {
+    "condition": [
+     "weathered"
+    ],
+    "material": [
+     "ceramic"
+    ]
+   },
+   "files": [
+    {
+     "file": "potted_plant_02/potted_plant_02.gltf",
+     "bytes": 6653,
+     "cached": false
+    },
+    {
+     "file": "potted_plant_02/textures/potted_plant_02_leaves_diff_1k.jpg",
+     "bytes": 167700,
+     "cached": false
+    },
+    {
+     "file": "potted_plant_02/potted_plant_02.bin",
+     "bytes": 1852244,
+     "cached": false
+    },
+    {
+     "file": "potted_plant_02/textures/potted_plant_02_pot_rough_1k.jpg",
+     "bytes": 114886,
+     "cached": false
+    },
+    {
+     "file": "potted_plant_02/textures/potted_plant_02_leaves_rough_1k.jpg",
+     "bytes": 102396,
+     "cached": false
+    },
+    {
+     "file": "potted_plant_02/textures/potted_plant_02_pot_diff_1k.jpg",
+     "bytes": 155244,
+     "cached": false
+    },
+    {
+     "file": "potted_plant_02/textures/potted_plant_02_leaves_nor_gl_1k.jpg",
+     "bytes": 127232,
+     "cached": false
+    },
+    {
+     "file": "potted_plant_02/textures/potted_plant_02_pot_nor_gl_1k.jpg",
+     "bytes": 108343,
+     "cached": false
+    }
+   ],
+   "bytes": 2634698
+  },
+  "potted_plant_04": {
+   "kind": "models",
+   "name": "Potted Plant 04",
+   "authors": [
+    "James Ray Cock"
+   ],
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/potted_plant_04",
+   "api": "https://api.polyhaven.com/info/potted_plant_04",
+   "sourcePolycount": 6097,
+   "sourceMaxRes": [
+    8192,
+    8192
+   ],
+   "fetchedRes": "1k",
+   "attributes": {
+    "condition": [
+     "weathered"
+    ],
+    "material": [
+     "ceramic"
+    ]
+   },
+   "files": [
+    {
+     "file": "potted_plant_04/potted_plant_04.gltf",
+     "bytes": 7081,
+     "cached": true
+    },
+    {
+     "file": "potted_plant_04/potted_plant_04.bin",
+     "bytes": 241800,
+     "cached": true
+    },
+    {
+     "file": "potted_plant_04/textures/potted_plant_04_nor_gl_1k.jpg",
+     "bytes": 817786,
+     "cached": false
+    },
+    {
+     "file": "potted_plant_04/textures/potted_plant_04_arm_1k.jpg",
+     "bytes": 478413,
+     "cached": false
+    },
+    {
+     "file": "potted_plant_04/textures/potted_plant_04_diff_1k.jpg",
+     "bytes": 577545,
+     "cached": false
+    }
+   ],
+   "bytes": 2122625
+  },
+  "white_stucco": {
+   "kind": "texture",
+   "name": "White Stucco",
+   "authors": [
+    "Amal Kumar"
+   ],
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/white_stucco",
+   "api": "https://api.polyhaven.com/info/white_stucco",
+   "sourcePolycount": null,
+   "sourceMaxRes": [
+    8192,
+    8192
+   ],
+   "fetchedRes": "1k",
+   "attributes": {
+    "surface_use": "wall",
+    "condition": [
+     "clean"
+    ],
+    "origin": "man_made",
+    "setting": "outdoor"
+   },
+   "files": [
+    {
+     "file": "white_stucco/white_stucco_Diffuse_1k.jpg",
+     "bytes": 557550,
+     "cached": false
+    },
+    {
+     "file": "white_stucco/white_stucco_arm_1k.jpg",
+     "bytes": 323604,
+     "cached": false
+    },
+    {
+     "file": "white_stucco/white_stucco_nor_gl_1k.jpg",
+     "bytes": 932038,
+     "cached": false
+    }
+   ],
+   "bytes": 1813192
+  },
+  "concrete_wall_001": {
+   "kind": "texture",
+   "name": "Concrete Wall 001",
+   "authors": [
+    "Dimitrios Savva",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/concrete_wall_001",
+   "api": "https://api.polyhaven.com/info/concrete_wall_001",
+   "sourcePolycount": null,
+   "sourceMaxRes": [
+    8192,
+    8192
+   ],
+   "fetchedRes": "1k",
+   "attributes": {
+    "surface_use": "wall",
+    "condition": [
+     "painted",
+     "damaged",
+     "cracked"
+    ],
+    "origin": "man_made",
+    "setting": "outdoor"
+   },
+   "files": [
+    {
+     "file": "concrete_wall_001/concrete_wall_001_Diffuse_1k.jpg",
+     "bytes": 79320,
+     "cached": false
+    },
+    {
+     "file": "concrete_wall_001/concrete_wall_001_arm_1k.jpg",
+     "bytes": 108936,
+     "cached": false
+    },
+    {
+     "file": "concrete_wall_001/concrete_wall_001_nor_gl_1k.jpg",
+     "bytes": 179270,
+     "cached": false
+    }
+   ],
+   "bytes": 367526
+  },
+  "oak_veneer_02": {
+   "kind": "texture",
+   "name": "Oak Veneer 02",
+   "authors": [
+    "Jenelle van Heerden"
+   ],
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/oak_veneer_02",
+   "api": "https://api.polyhaven.com/info/oak_veneer_02",
+   "sourcePolycount": null,
+   "sourceMaxRes": [
+    8192,
+    8192
+   ],
+   "fetchedRes": "1k",
+   "attributes": {
+    "surface_use": "object",
+    "origin": "man_made",
+    "condition": [
+     "clean"
+    ]
+   },
+   "files": [
+    {
+     "file": "oak_veneer_02/oak_veneer_02_Diffuse_1k.jpg",
+     "bytes": 586151,
+     "cached": false
+    },
+    {
+     "file": "oak_veneer_02/oak_veneer_02_arm_1k.jpg",
+     "bytes": 846311,
+     "cached": false
+    },
+    {
+     "file": "oak_veneer_02/oak_veneer_02_nor_gl_1k.jpg",
+     "bytes": 306086,
+     "cached": false
+    }
+   ],
+   "bytes": 1738548
+  },
+  "poly_wool_herringbone": {
+   "kind": "texture",
+   "name": "Poly Wool Herringbone",
+   "authors": [
+    "colormass",
+    "Rico Cilliers"
+   ],
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/poly_wool_herringbone",
+   "api": "https://api.polyhaven.com/info/poly_wool_herringbone",
+   "sourcePolycount": null,
+   "sourceMaxRes": [
+    8216,
+    8387
+   ],
+   "fetchedRes": "1k",
+   "attributes": {
+    "surface_use": "object",
+    "origin": "man_made",
+    "condition": [
+     "clean"
+    ]
+   },
+   "files": [
+    {
+     "file": "poly_wool_herringbone/poly_wool_herringbone_Diffuse_1k.jpg",
+     "bytes": 942966,
+     "cached": false
+    },
+    {
+     "file": "poly_wool_herringbone/poly_wool_herringbone_arm_1k.jpg",
+     "bytes": 1223522,
+     "cached": false
+    },
+    {
+     "file": "poly_wool_herringbone/poly_wool_herringbone_nor_gl_1k.jpg",
+     "bytes": 1045151,
+     "cached": false
+    }
+   ],
+   "bytes": 3211639
+  },
+  "kloofendal_overcast_puresky": {
+   "kind": "hdri",
+   "name": "Kloofendal Overcast (Pure Sky)",
+   "authors": [
+    "Greg Zaal"
+   ],
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/kloofendal_overcast_puresky",
+   "api": "https://api.polyhaven.com/info/kloofendal_overcast_puresky",
+   "sourcePolycount": null,
+   "sourceMaxRes": [
+    24576,
+    12288
+   ],
+   "fetchedRes": "1k",
+   "attributes": {
+    "time_of_day": "afternoon",
+    "weather": "overcast",
+    "light_type": "natural",
+    "contrast": "low",
+    "environment": "outdoor",
+    "sky_view": "open"
+   },
+   "files": [
+    {
+     "file": "kloofendal_overcast_puresky/kloofendal_overcast_puresky_1k.hdr",
+     "bytes": 1174053,
+     "cached": false
+    }
+   ],
+   "bytes": 1174053
+  }
+ }
+}

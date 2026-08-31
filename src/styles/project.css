@@ -1,0 +1,483 @@
+/* ============================================================
+   07 / START PROJECT
+   A service-shaped inquiry. The selector is the same instrument as the
+   hero rail, one size up: picking a service rewrites the fields, the
+   upload and the page accent together.
+   ============================================================ */
+.project { z-index: 2; padding-block: 0 var(--sec-y); }
+.project__head { max-width: 1180px; margin-bottom: clamp(40px, 7vh, 90px); }
+.project__title {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: var(--fs-dl); font-weight: 500; line-height: var(--lh-d); letter-spacing: var(--ls-dl);
+}
+
+.pf { display: grid; gap: clamp(38px, 6vh, 78px); }
+.pf fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+
+.pf__legend {
+  display: flex; align-items: center; gap: .9em;
+  width: 100%; padding: 0 0 clamp(16px, 2vw, 24px);
+  color: var(--fg-42);
+}
+.pf__step { color: var(--fg); }
+.pf__legend::after {
+  content: ''; flex: 1; height: var(--rule-w); background: var(--rule-secondary);
+}
+
+/* §18 — THE ENTRY.
+   A contact form opens with a field. A project intake opens with a
+   QUESTION, at display size, because the answer decides everything the
+   form does next. This is the only legend on the site that is not a
+   micro label, and that is the point of it. */
+.pf__legend--entry {
+  align-items: baseline;
+  padding-bottom: clamp(22px, 3vw, 34px);
+}
+.pf__q {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: var(--fs-dm); letter-spacing: var(--ls-dm); line-height: .94;
+  font-weight: 500; color: var(--fg);
+  flex: none;
+}
+.pf__legend--entry::after { align-self: flex-start; margin-top: .9em; }
+.pf__legend--entry .pf__step { align-self: flex-start; margin-top: .55em; }
+
+/* ---------------- the three selectors ---------------- */
+.picks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: var(--rule-w) solid var(--rule-primary);
+}
+.pick {
+  position: relative;
+  display: grid; gap: 9px;
+  align-content: start;
+  padding: clamp(22px, 3vw, 40px) clamp(16px, 2vw, 30px) clamp(26px, 3.4vw, 44px);
+  cursor: pointer;
+  transition: background-color var(--t-commit) var(--ease);
+}
+.pick + .pick::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
+  background: var(--fg-09);
+}
+.pick:first-child { padding-left: 0; }
+.pick__idx {
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); color: var(--fg-28);
+  transition: color var(--t-state) var(--ease);
+  font-variant-numeric: tabular-nums;
+}
+.pick__top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 4px;
+}
+/* §19 — the glyph is SECONDARY: grey at rest, accent only when this is
+   the chosen input. It never carries the meaning on its own — the object
+   line and the service name both say it in words. */
+.pick__gl { color: var(--fg-38); transition: color var(--motion-ui) var(--ease-out); }
+.pick:hover .pick__gl { color: var(--fg-60); }
+.pick.is-on .pick__gl { color: var(--accent-c); }
+
+/* the OBJECT is what the question asked about, so it is answered first */
+.pick__obj {
+  font-family: var(--ff-text); font-size: var(--fs-lede);
+  color: var(--fg-60); line-height: 1.35; letter-spacing: -.004em;
+  transition: color var(--motion-ui) var(--ease-out);
+}
+.pick.is-on .pick__obj { color: var(--fg); }
+
+.pick__key {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: clamp(1.02rem, 1.68vw, 1.78rem);
+  font-weight: 500; letter-spacing: -.03em; line-height: 1.02;
+  transition: color var(--motion-ui) var(--ease-out);
+}
+/* The service is named in the SHORT key — CAPTURE, MEASURE, QUANTIFY —
+   not in the product name. The first cut set "MENNYISÉGSZÁMÍTÁS DRAWING"
+   here, which is 27 characters of display type in a 380 px column and
+   says the same thing twice in two languages. The product name moved
+   down to the .pick__hu line, where it belongs. */
+.pick__key { font-size: clamp(1.1rem, 1.9vw, 2.05rem); }
+.pick__hu {
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: .06em; color: var(--fg-42); line-height: 1.5;
+  transition: color var(--t-state) var(--ease);
+  font-weight: 500;
+}
+.pick__bar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: var(--accent-c);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--t-commit) var(--ease-io);
+}
+.pick:hover { background: linear-gradient(180deg, transparent 20%, var(--fg-05)); }
+.pick.is-on { background: linear-gradient(180deg, transparent 12%, rgb(var(--accent) / .06)); }
+.pick.is-on .pick__key { color: var(--accent-c); }
+.pick.is-on .pick__idx { color: var(--accent-c); }
+.pick.is-on .pick__hu { color: var(--fg-60); }
+.pick.is-on .pick__bar { transform: scaleX(1); }
+/* Keyboard focus only. :focus-within also fires on a mouse click, which drew
+   a full box around the chosen service — exactly the card look this rail is
+   meant to avoid. The selected state is the bar and the colour, not an outline. */
+.pick:has(input:focus-visible) { outline: 1px solid var(--accent-c); outline-offset: -3px; }
+@supports not selector(:has(*)) {
+  .pick:focus-within { outline: 1px solid var(--accent-c); outline-offset: -3px; }
+}
+
+.fld label { display: flex; align-items: center; gap: .55em; }
+.fld__gl { color: var(--fg-28); }
+.fld:focus-within .fld__gl { color: var(--accent-70); }
+
+.pf__sk { display: flex; align-items: center; gap: .6em; }
+
+.pf__hint {
+  margin-top: clamp(14px, 1.8vw, 20px);
+  font-family: var(--ff-text); font-size: var(--fs-micro); color: var(--fg-42);
+}
+
+/* ---------------- fields ---------------- */
+/* The form on the left, what happens next on the right — otherwise the
+   flagship section is one narrow column against half a screen of nothing. */
+.pf__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: clamp(30px, 5vw, 96px);
+  align-items: start;
+}
+.pf__main { display: grid; gap: clamp(38px, 6vh, 78px); min-width: 0; }
+
+.pf__side {
+  position: sticky; top: calc(var(--nav-h) + 5vh);
+  display: grid; gap: 18px;
+  padding-top: clamp(30px, 4vw, 46px);
+  border-top: var(--rule-w) solid var(--rule-primary);
+}
+.pf__sk {
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--accent-c);
+  font-weight: 500;
+}
+.pf__next { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.pf__next li {
+  display: grid; grid-template-columns: 3.4ch 1fr; gap: 12px;
+  padding-bottom: 14px; border-bottom: var(--rule-w) solid var(--rule-secondary);
+  font-size: clamp(.84rem, .95vw, .96rem); line-height: 1.55; color: var(--fg-60);
+}
+.pf__next span {
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: .12em; color: var(--fg-28);
+  font-weight: 500;
+}
+.pf__sn {
+  font-size: clamp(.82rem, .92vw, .92rem); line-height: 1.6; color: var(--fg-42);
+}
+
+.pf__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(20px, 2.6vw, 34px) clamp(24px, 3.4vw, 56px);
+}
+.pf__fields .pf__legend { grid-column: 1 / -1; }
+.fld { display: grid; gap: 9px; align-content: start; }
+.fld--wide { grid-column: 1 / -1; max-width: 74ch; }
+.fld[hidden] { display: none; }
+
+.fld label {
+  display: flex; align-items: baseline; gap: .6em;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); text-transform: uppercase;
+  color: var(--fg-42);
+  font-weight: 500;
+}
+.fld label b { color: var(--accent-c); font-weight: 400; }
+.fld label i { font-style: normal; color: var(--fg-50); letter-spacing: .08em; }
+
+.fld input, .fld textarea {
+  width: 100%;
+  padding: 13px 0;
+  font-family: var(--ff-display);
+  font-size: clamp(.95rem, 1.1vw, 1.1rem);
+  color: var(--fg);
+  background: none;
+  border: 0; border-bottom: var(--rule-w) solid var(--rule-primary);
+  border-radius: 0;
+  transition: border-color var(--t-state) var(--ease);
+  resize: vertical;
+}
+.fld textarea { line-height: 1.55; }
+.fld input:hover, .fld textarea:hover { border-bottom-color: var(--fg-28); }
+/* A one-pixel colour change is a state, not a focus indicator. The field's
+   own rule doubles and takes the accent, which is the same "the instrument
+   is reading here" gesture the state rail and the cut scale use. */
+.fld input:focus-visible, .fld textarea:focus-visible {
+  outline: none;
+  border-bottom-color: var(--accent-c);
+  box-shadow: 0 1px 0 0 var(--accent-c);
+}
+.fld input:focus, .fld textarea:focus { outline: none; border-bottom-color: var(--accent-c); }
+.fld input::placeholder, .fld textarea::placeholder { color: var(--fg-16); }
+.fld.is-bad input, .fld.is-bad textarea { border-bottom-color: rgb(255, 104, 70); }
+
+.fld__err {
+  font-family: var(--ff-text); font-size: var(--fs-micro);
+  letter-spacing: .08em; color: rgb(255, 132, 104); line-height: 1.5;
+}
+.fld__err[hidden] { display: none; }
+
+/* ---------------- upload ---------------- */
+.pf__files { display: grid; gap: 16px; }
+.pf__uphint {
+  font-size: clamp(.84rem, .95vw, .96rem);
+  line-height: 1.6; color: var(--fg-42); max-width: 58ch;
+}
+
+/* THE DOCUMENT INTAKE.
+   Phase 3 drew a dashed rectangle — the same generic dropzone every upload
+   widget has, and one more bordered box in a language that already repeats
+   them. It is now a registration frame: four crop marks and one rule, which
+   is how a sheet is placed on a drawing board. The element underneath is
+   still a real <input type="file"> with a real label and a real focus ring. */
+.drop {
+  position: relative;
+  display: grid; gap: 4px clamp(18px, 2.2vw, 30px);
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center; justify-items: start;
+  padding: clamp(20px, 3vh, 30px) clamp(20px, 2.4vw, 34px);
+  cursor: pointer;
+  background: linear-gradient(180deg, rgba(255,255,255,.018), transparent 70%);
+  transition: background-color var(--t-state) var(--ease);
+}
+/* crop marks — a registration frame, not a border */
+.drop::before, .drop::after {
+  content: ''; position: absolute; width: 16px; height: 16px;
+  border: var(--rule-w) solid var(--rule-primary); pointer-events: none;
+  transition: border-color var(--t-state) var(--ease);
+}
+.drop::before { left: 0; top: 0; border-right: 0; border-bottom: 0; }
+.drop::after  { right: 0; bottom: 0; border-left: 0; border-top: 0; }
+.drop:hover::before, .drop:hover::after,
+.drop:focus-visible::before, .drop:focus-visible::after { border-color: var(--accent-70); }
+.drop.is-over { background: rgb(var(--accent) / .07); }
+.drop.is-over::before, .drop.is-over::after { border-color: var(--accent-c); }
+.drop:focus-visible { outline: 1px solid var(--accent-c); outline-offset: 4px; }
+.drop.has-files { padding-block: clamp(18px, 2.6vh, 28px); }
+
+/* §19 — the hand-drawn sheet mark is the GDF UPLOAD glyph now. It was the
+   last bespoke icon on the site, and it was drawn to a different system
+   from everything around it: a 26x32 box at a 1 px stroke with a
+   box-shadow standing in for three body lines. */
+.drop__gl {
+  grid-row: 1 / 4; grid-column: 1;
+  color: var(--accent-40);
+  transition: color var(--motion-ui) var(--ease-out);
+}
+.drop:hover .drop__gl, .drop:focus-visible .drop__gl,
+.drop.is-over .drop__gl { color: var(--accent-c); }
+.drop__k {
+  font-family: var(--ff-label); font-size: clamp(.68rem, .85vw, .8rem);
+  letter-spacing: .16em; text-transform: uppercase; color: var(--fg);
+  font-weight: 500;
+}
+.drop__c { font-size: .86rem; color: var(--fg-42); }
+.drop__k, .drop__c, .drop__f { grid-column: 2; text-align: left; }
+.drop__f {
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: .14em; color: var(--fg-28);
+  font-variant-numeric: tabular-nums;
+}
+
+.files { list-style: none; margin: 0; padding: 0; display: grid; }
+.file {
+  display: grid;
+  grid-template-columns: 5ch minmax(0, 1fr) auto auto 32px;
+  align-items: center; gap: clamp(10px, 1.4vw, 20px);
+  padding: 13px 0;
+  border-bottom: var(--rule-w) solid var(--rule-secondary);
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: .1em;
+  font-variant-numeric: tabular-nums;
+}
+.file__t { color: var(--accent-70); }
+.file__n {
+  font-family: var(--ff-display); font-size: .92rem; letter-spacing: -.006em;
+  color: var(--fg); text-transform: none;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.file__s { color: var(--fg-42); font-variant-numeric: tabular-nums; }
+/* "READY" means selected and named — never a faked upload progress bar. */
+.file__st { color: var(--fg-28); }
+.file__x {
+  width: 32px; height: 32px; cursor: pointer;
+  color: var(--fg-42); font-size: 17px; line-height: 1;
+  transition: color var(--t-state) var(--ease);
+}
+.file__x:hover { color: var(--accent-c); }
+
+.pf__large {
+  padding: 16px 0 0 16px;
+  border-left: 1px solid var(--accent-40);
+  font-size: clamp(.84rem, .95vw, .96rem);
+  line-height: 1.62; color: var(--fg-60); max-width: 62ch;
+}
+.pf__large[hidden] { display: none; }
+
+/* ---------------- submit ---------------- */
+.pf__foot {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: clamp(16px, 2.4vw, 34px);
+  padding-top: clamp(20px, 3vh, 34px);
+  border-top: var(--rule-w) solid var(--rule-secondary);
+}
+.pf__backend {
+  max-width: 46ch;
+  font-family: var(--ff-text); font-size: var(--fs-micro);
+  letter-spacing: .08em; line-height: 1.65; color: var(--fg-28);
+}
+
+/* ---------------- the assembled request ---------------- */
+/* THE RECEIPT.
+   No celebration, no tick, no tinted panel: the request is a record now, so
+   it is set as one — a rule, a state, a reference. */
+.pfout {
+  display: grid; gap: clamp(14px, 2vh, 20px);
+  padding-top: clamp(18px, 2.6vh, 26px);
+  border-top: 1px solid var(--accent-c);
+}
+.pfout[hidden] { display: none; }
+.pfout:focus { outline: none; }
+.pfout__k {
+  display: flex; align-items: center; gap: 14px;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--accent-c);
+  font-weight: 500;
+}
+.pfout__k::after { content: ''; flex: 1; height: var(--rule-w); background: var(--rule-secondary); }
+.pfout__lede { font-size: var(--fs-lede); line-height: 1.62; color: var(--fg-60); max-width: 54ch; }
+.pfout__ref {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 18px;
+  max-width: 34rem; padding: 11px 0;
+  border-top: var(--rule-w) solid var(--rule-secondary); border-bottom: var(--rule-w) solid var(--rule-secondary);
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); color: var(--fg-50);
+  font-variant-numeric: tabular-nums;
+}
+.pfout__ref b { font-weight: 400; color: var(--fg); letter-spacing: .1em; }
+.pfout__dev {
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: .08em; line-height: 1.7; color: rgb(var(--accent) / .8); max-width: 62ch;
+  font-variant-numeric: tabular-nums;
+}
+.pfout__acts { display: flex; flex-wrap: wrap; gap: 12px; }
+.pfout__acts a.btn { cursor: pointer; }
+.pfout__note {
+  font-family: var(--ff-text); font-size: var(--fs-micro);
+  letter-spacing: .08em; line-height: 1.7; color: var(--fg-42); max-width: 60ch;
+}
+.pfout__note[hidden] { display: none; }
+
+/* ---------------- contact alternative (secondary by design) ---------- */
+.alt {
+  margin-top: clamp(40px, 7vh, 90px);
+  padding-top: clamp(20px, 3vh, 32px);
+  border-top: var(--rule-w) solid var(--rule-secondary);
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: clamp(10px, 2vw, 32px);
+}
+.alt__k {
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--fg-28);
+  font-weight: 500;
+}
+.alt__c { font-size: .92rem; color: var(--fg-42); max-width: 46ch; }
+.alt__mail {
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: .14em; color: var(--accent-c);
+  border-bottom: 1px solid var(--accent-40); padding-bottom: 3px;
+  transition: border-color var(--t-state) var(--ease);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.alt__mail:hover { border-color: var(--accent-c); }
+
+@media (max-width: 1080px) {
+  .pf__grid { grid-template-columns: 1fr; gap: 40px; }
+  .pf__side { position: static; }
+}
+@media (max-width: 860px) {
+  .picks { grid-template-columns: 1fr; }
+  .pick { padding: 18px 0; border-top: var(--rule-w) solid var(--rule-secondary); }
+  .pick:first-child { border-top: 0; }
+  .pick + .pick::before { display: none; }
+  .pick.is-on { background: linear-gradient(90deg, rgb(var(--accent) / .08), transparent 70%); }
+  .pf__fields { grid-template-columns: 1fr; }
+  .fld--wide { max-width: none; }
+  .file { grid-template-columns: 4.5ch minmax(0, 1fr) auto 32px; }
+  .file__st { display: none; }
+  .pf__foot { flex-direction: column; align-items: stretch; }
+  .pf__foot .btn { justify-content: center; }
+}
+
+/* ============================================================
+   PHASE 3 — the form actually submits, so it needs states.
+   ============================================================ */
+
+/* The honeypot. Off-screen rather than display:none, because some bots
+   skip hidden fields and a real person must never reach it either. */
+.pf__trap {
+  position: absolute; left: -9999px; top: auto;
+  width: 1px; height: 1px; overflow: hidden;
+}
+
+.pf__limits {
+  margin-top: 10px;
+  font-family: var(--ff-text); font-size: var(--fs-micro); color: var(--fg-50);
+}
+
+.pf__noscript {
+  padding: 18px 20px;
+  border: var(--rule-w) solid var(--rule-primary);
+  font-size: var(--fs-lede); color: var(--fg-60);
+}
+.pf__noscript a { color: var(--accent-c); border-bottom: 1px solid var(--accent-40); }
+
+/* ---- submitting ---- */
+.pf__send { position: relative; }
+.pf__send[disabled] { cursor: progress; opacity: .72; }
+.pf__spin {
+  position: absolute; right: 14px; top: 50%;
+  width: 11px; height: 11px; margin-top: -6px;
+  border: 1px solid currentColor; border-top-color: transparent;
+  border-radius: 50%;
+  opacity: 0;
+}
+.pf.is-sending .pf__spin { opacity: 1; animation: pf-spin .7s linear infinite; }
+@keyframes pf-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .pf.is-sending .pf__spin { animation: none; border-top-color: currentColor; opacity: .5; }
+}
+.pf.is-sending .pf__body { opacity: .62; pointer-events: none; }
+
+/* ---- result ---- */
+.pfout.is-ok { border-left: 2px solid var(--accent-c); }
+.pfout.is-bad { border-left: 2px solid #FF6846; }
+
+.pfout__lede {
+  margin-top: 10px; max-width: 54ch;
+  font-size: var(--fs-lede); line-height: 1.62; color: var(--fg-60);
+}
+.pfout__ref {
+  margin-top: 14px;
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); color: var(--fg-50);
+  font-variant-numeric: tabular-nums;
+}
+.pfout__ref b { color: var(--accent-c); font-weight: 400; }
+
+/* The development transport must be impossible to mistake for a delivery. */
+.pfout__dev {
+  margin-top: 14px; padding: 10px 12px;
+  border: 1px dashed rgba(255, 104, 70, .5);
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: .08em; line-height: 1.7; color: rgba(255, 150, 120, .9);
+  font-variant-numeric: tabular-nums;
+}

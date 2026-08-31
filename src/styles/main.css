@@ -1,0 +1,50 @@
+@import './tokens.css';
+@import './base.css';
+@import './glyphs.css';
+@import './nav.css';
+@import './hero.css';
+@import './modes.css';
+@import './manifesto.css';
+@import './fusion.css';
+@import './descent.css';
+@import './services.css';
+@import './process.css';
+@import './project.css';
+@import './footer.css';
+@import './tracker.css';
+@import './cursor.css';
+@import './service.css';
+@import './rhythm.css';
+@import './panorama.css';
+
+/* ============================================================
+   pre-boot state — everything animated starts hidden so the
+   intro can choreograph it. Removed by JS (and by the
+   no-JS / reduced-motion guards below).
+   ============================================================ */
+html.is-preload .hero__content > *,
+html.is-preload .telemetry,
+html.is-preload .modes,
+html.is-preload .strip { opacity: 0; }
+html.is-preload .line__in { transform: translate3d(0, 105%, 0); }
+html.is-preload .frame__rule { transform: scaleY(0); }
+html.is-preload .frame__mark { opacity: 0; }
+
+/* If the module never boots, show everything anyway. */
+html.no-js .hero__content > *,
+html.no-js .telemetry,
+html.no-js .modes,
+html.no-js .strip { opacity: 1; }
+html.no-js .line__in { transform: none; }
+html.no-js .frame__rule { transform: none; }
+html.no-js .frame__mark { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .strip__track i { animation: none; transform: translateX(0); opacity: .5; }
+  .modes__rail.is-hinted .mode__bar { animation: none; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: var(--t-hover) !important;
+  }
+}

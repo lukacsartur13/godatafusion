@@ -1,0 +1,678 @@
+/* ============================================================
+   05 / PROCESS + 06 / WHY + 08 / ABOUT
+   The opaque half of the page. No canvas behind these — which is
+   exactly why they must carry their own structure.
+   ============================================================ */
+.process { z-index: 2; padding-block: var(--sec-y); }
+.process__head { max-width: 1180px; }
+.process__title {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: var(--fs-dl); font-weight: 500; line-height: var(--lh-d); letter-spacing: var(--ls-dl);
+}
+.process__lede {
+  margin-top: clamp(20px, 2.6vw, 34px); max-width: 54ch;
+  font-size: var(--fs-body); line-height: 1.62;
+  color: var(--fg-60); letter-spacing: -.006em; text-wrap: pretty;
+}
+
+/* ============================================================
+   THE JOURNEY OF PROJECT INFORMATION
+
+   Not a timeline. A stable reading field on the left holding ONE project
+   token, and the six stages passing it on the right. The token changes at
+   every stage and carries fewer marks at the end than at the start — the
+   same complexity → clarity argument the WHY chain makes, told about one
+   project instead of about the method.
+
+   The two sections must not tell it the same WAY, which is why PROCESS is
+   a held object with copy moving past it and WHY is four static frames on
+   a spine. One is a story; the other is a principle.
+   ============================================================ */
+.pj {
+  position: relative;
+  margin-top: clamp(44px, 8vh, 96px);
+  display: grid;
+  gap: clamp(26px, 4vw, 84px);
+}
+@media (min-width: 900px) {
+  .pj { grid-template-columns: minmax(0, 44%) minmax(0, 1fr); }
+}
+
+/* ---------------- the reading field ---------------- */
+.pj__field { position: relative; display: none; }
+@media (min-width: 900px) {
+  .pj__field {
+    display: block;
+    position: sticky;
+    top: calc(var(--nav-h) + clamp(40px, 11vh, 130px));
+    align-self: start;
+  }
+}
+.pj__frame { position: relative; }
+/* PHASE 4's §20 lesson, applied here: a very wide frame is not a 1440 frame
+   with more margin. The DRAWING stops growing past this point and the meta
+   line below it keeps running the full column, so the extra width becomes a
+   measured span rather than a bigger picture. */
+@media (min-width: 1700px) { .pj__frame { max-width: 46rem; } }
+/* Two registration marks, not four: the frame is a reading field, and a
+   closed rectangle around it would be the card this section is not. */
+.pj__tick { position: absolute; width: 14px; height: 14px; border: 0 solid var(--fg-16); }
+.pj__tick--tl { top: -10px; left: -10px; border-top-width: 1px; border-left-width: 1px; }
+.pj__tick--br { bottom: -10px; right: -10px; border-bottom-width: 1px; border-right-width: 1px; }
+
+.pj__meta {
+  display: flex; align-items: center; gap: clamp(10px, 1.2vw, 18px);
+  margin-top: clamp(16px, 2.2vh, 26px);
+}
+.pj__token { color: var(--fg); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pj__rule { flex: 1; height: 1px; background: linear-gradient(90deg, var(--fg-16), var(--fg-09)); }
+.pj__state { color: var(--accent-c); white-space: nowrap; }
+
+/* ---------------- the drawing ---------------- */
+/* One figure, seven states. Every layer is opacity and transform only, with
+   a defined visible end state in CSS — nothing here is ever left holding an
+   inline style a script forgot to clear. */
+.pf { display: block; width: 100%; height: auto; overflow: visible; }
+.pf path, .pf rect, .pf circle { fill: none; vector-effect: non-scaling-stroke; }
+/* Anything below that has to PAINT must out-specify that blanket rule.
+   A bare `.pf-scan-f { fill: ... }` is one specificity point short of
+   `.pf rect` and is silently dropped — the same shape of defect as the
+   Phase 4 rgba() family, and equally invisible in the source. */
+.pf > g {
+  opacity: 0;
+  transition: opacity var(--t-commit) var(--ease), transform .82s var(--ease-io);
+}
+.pf-sys path      { stroke: var(--fg-09); stroke-width: 1; }
+.pf-sheet path    { stroke: var(--fg-60); stroke-width: 1; }
+.pf-sheet .pf-body { stroke: var(--fg-16); }
+.pf-raw path      { stroke: var(--fg-38); stroke-width: 1; }
+.pf-dim path      { stroke: var(--fg-50); stroke-width: 1; }
+.pf-dim .pf-lead  { stroke: var(--fg-16); }
+.pf-sel path      { stroke: var(--accent-70); stroke-width: 1.4; }
+.pf-set path      { stroke: var(--fg-50); stroke-width: 1; }
+.pf-set .pf-body  { stroke: var(--fg-16); }
+.pf-noise path    { stroke: var(--fg-38); stroke-width: 1; }
+.pf-scan-l        { stroke: var(--accent-c); stroke-width: 1.4; }
+/* Two stacked bands instead of a gradient: an id-based <linearGradient>
+   would be duplicated by every cloned figure on a phone, and duplicate ids
+   are exactly the kind of thing that works until it silently does not. */
+.pf rect.pf-scan-f  { fill: rgb(var(--accent) / .10); stroke: none; }
+.pf rect.pf-scan-f2 { fill: rgb(var(--accent) / .035); stroke: none; }
+/* The resolved marks are FOREGROUND, not accent: the same decision the WHY
+   chain's final frame makes. PROCESS carries no service colour — it is not
+   a service — so an accent-70 underline here is grey on grey and the last
+   state stops reading as resolved. */
+.pf-out path      { stroke: var(--fg); stroke-width: 1.3; }
+.pf-out .pf-out-r { stroke: var(--fg-38); stroke-width: 1; }
+.pf circle.pf-out-n { stroke: var(--fg); fill: var(--bg); stroke-width: 1.4; }
+
+/* The set starts folded onto the sheet's own footprint and opens out of it,
+   so stage 04 reads as the document BECOMING a set rather than as a second
+   picture cutting in. */
+.pf-set { transform-box: fill-box; transform-origin: center; transform: scale(.46); }
+.pf-scan { transform: translateY(0); }
+
+.pf[data-stage='1'] .pf-sys,   .pf[data-stage='1'] .pf-sheet { opacity: 1; }
+.pf[data-stage='1'] .pf-raw    { opacity: 1; }
+
+.pf[data-stage='2'] .pf-sys,   .pf[data-stage='2'] .pf-sheet { opacity: 1; }
+.pf[data-stage='2'] .pf-raw    { opacity: .38; }
+.pf[data-stage='2'] .pf-dim    { opacity: 1; }
+
+.pf[data-stage='3'] .pf-sys,   .pf[data-stage='3'] .pf-sheet { opacity: 1; }
+.pf[data-stage='3'] .pf-dim    { opacity: .42; }
+.pf[data-stage='3'] .pf-sel    { opacity: 1; }
+
+.pf[data-stage='4'] .pf-sys    { opacity: 1; }
+.pf[data-stage='4'] .pf-set    { opacity: 1; transform: scale(1); }
+.pf[data-stage='4'] .pf-noise  { opacity: 1; }
+
+.pf[data-stage='5'] .pf-sys    { opacity: 1; }
+.pf[data-stage='5'] .pf-set    { opacity: 1; transform: scale(1); }
+.pf[data-stage='5'] .pf-noise  { opacity: .72; }
+.pf[data-stage='5'] .pf-scan   { opacity: 1; transform: translateY(304px); transition: opacity .3s var(--ease), transform 1.5s var(--ease-io); }
+
+.pf[data-stage='6'] .pf-sys    { opacity: 1; }
+.pf[data-stage='6'] .pf-set    { opacity: 1; transform: scale(1); }
+.pf[data-stage='6'] .pf-out    { opacity: 1; }
+
+/* ---------------- the stages ---------------- */
+.pj__stages { list-style: none; margin: 0; padding: 0; display: grid; }
+
+.pstage {
+  position: relative;
+  padding: clamp(26px, 4.4vh, 58px) 0;
+  border-top: var(--rule-w) solid var(--rule-secondary);
+  /* The Phase 4 dimmed value, kept exactly: a stage the token has not
+     reached is quiet, not hidden, and it lights before it reaches the
+     reading area. Under reduced motion and on a phone every stage is at
+     full strength from the start. */
+  opacity: .34;
+  transition: opacity var(--t-commit) var(--ease);
+}
+@media (min-width: 900px) {
+  /* Long enough that the field has time to be read at each state, short
+     enough that six of them are not six screens of scroll. Capped in px as
+     well as in vh: on a 1366-tall portrait tablet a pure 30vh stage is
+     410px holding 150px of copy, which is a column of holes rather than a
+     rhythm. */
+  .pstage { min-height: min(30vh, 340px); }
+}
+@media (min-width: 900px) and (min-height: 1100px) {
+  /* A tall frame otherwise parks the field in its top third with two
+     thirds of the column empty under it. */
+  .pj__field { top: calc(var(--nav-h) + 20vh); }
+}
+/* No closing border: the hand-off block below opens with the rule that
+   closes the sequence, and two hairlines 50px apart is a seam. */
+.pstage.is-on { opacity: 1; }
+/* The rule above a stage draws itself as the token arrives at it. */
+.pstage::before {
+  content: ''; position: absolute; left: 0; top: -1px; height: 1px; width: 100%;
+  background: var(--accent-c);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--t-commit) var(--ease-io);
+}
+.pstage.is-on::before { transform: scaleX(1); }
+
+/* index and STATE are separate registers: one is the step, the other is
+   what the project information IS at that step. */
+.pstage__k {
+  display: flex; align-items: baseline; gap: .7em;
+  color: var(--fg-50);
+}
+.pstage__i { color: var(--fg); font-variant-numeric: tabular-nums; }
+.pstage__sep { color: var(--fg-16); }
+.pstage__state { color: var(--fg-50); transition: color var(--t-commit) var(--ease); }
+.pstage.is-now .pstage__state { color: var(--accent-c); }
+
+.pstage__t {
+  margin-top: clamp(12px, 1.8vh, 20px);
+  font-size: clamp(1.42rem, 2.05vw + .2rem, 2.95rem);
+  font-weight: 500; letter-spacing: -.032em; line-height: 1.02;
+  text-wrap: balance;
+}
+.pstage__c {
+  margin-top: clamp(11px, 1.6vh, 18px);
+  max-width: 46ch;
+  font-size: var(--fs-lede); line-height: 1.62;
+  color: var(--fg-60); letter-spacing: -.004em; text-wrap: pretty;
+}
+
+/* ---------------- the phone / reduced-motion sequence ---------------- */
+/* PROCESS must not become a second scroll trap on a phone, and no content
+   may depend on animation state. Below 900px — and under reduced motion at
+   any width — the field is replaced by ONE figure per stage, already in its
+   own state. Nothing is pinned and nothing has to move for the sequence to
+   be read. */
+.pstage__fig { display: none; margin: 0 0 clamp(14px, 2vh, 22px); }
+.pstage__fig .pf { max-width: 420px; }
+@media (max-width: 899px) {
+  .pstage__fig { display: block; }
+  /* Held to a band rather than to the drawing's own aspect: six figures at
+     full width is 240px each, and PROCESS is not allowed to become the
+     section a phone visitor gives up inside. The drawing centres itself in
+     the band and stays completely legible — it is a diagram, not an image
+     that needs to be big. */
+  .pstage__fig .pf { height: clamp(146px, 21vh, 188px); width: 100%; }
+  /* A static figure cannot show a pass, so it shows a CROSSING: the plane
+     parked mid-drawing, as a single line. Parked at the end of its travel
+     with its field behind it — which is correct while it is moving — it
+     reads as a grey block sitting on the set rather than as a scan. */
+  .pstage__fig .pf[data-stage='5'] .pf-scan { transform: translateY(152px); transition: none; }
+  .pstage__fig .pf-scan-f, .pstage__fig .pf-scan-f2 { display: none; }
+  .pstage { opacity: 1; min-height: 0; padding: clamp(22px, 3vh, 36px) 0; }
+  .pstage__c { max-width: 100%; }
+}
+body.rm-static .pj__field { display: none; }
+body.rm-static .pstage__fig .pf[data-stage='5'] .pf-scan { transform: translateY(152px); transition: none; }
+body.rm-static .pstage__fig .pf-scan-f, body.rm-static .pstage__fig .pf-scan-f2 { display: none; }
+body.rm-static .pstage { opacity: 1; }
+body.rm-static .pstage__fig { display: block; }
+@media (min-width: 900px) {
+  body.rm-static .pj { grid-template-columns: minmax(0, 1fr); }
+  body.rm-static .pstage__fig { max-width: 420px; }
+}
+
+/* ============================================================
+   THE HAND-OFF — PROCESS releases, WHY begins
+
+   The field lets the object go here. What is left on the page is the
+   resolved output, and the rule under it descends into the WHY spine at
+   the same x, so the two sections read as one continuous argument rather
+   than as two sections that happen to be adjacent.
+   ============================================================ */
+.phand {
+  position: relative;
+  margin-top: clamp(40px, 7vh, 92px);
+  padding-top: clamp(22px, 3vh, 34px);
+  border-top: var(--rule-w) solid var(--rule-primary);
+  padding-bottom: clamp(48px, 8vh, 104px);
+}
+.phand__k {
+  display: flex; align-items: baseline; gap: .7em; color: var(--fg-50);
+}
+.phand__k span:first-child { color: var(--fg); font-variant-numeric: tabular-nums; }
+.phand__k span:nth-child(2) { color: var(--fg-16); }
+
+.phand__out {
+  list-style: none; margin: clamp(18px, 2.6vh, 30px) 0 0; padding: 0;
+  display: grid; gap: clamp(14px, 2.4vw, 40px);
+  grid-template-columns: repeat(auto-fit, minmax(clamp(9rem, 15vw, 15rem), max-content));
+}
+.phand__out li {
+  display: grid; gap: 7px;
+  padding-top: 14px;
+  border-top: 1px solid var(--accent-40);
+}
+.phand__out b {
+  font-size: clamp(1.05rem, 1.35vw + .1rem, 1.9rem);
+  font-weight: 500; letter-spacing: -.028em; line-height: 1;
+}
+.phand__out i { font-style: normal; color: var(--fg-50); }
+.phand__note {
+  margin-top: clamp(18px, 2.6vh, 30px);
+  max-width: 52ch;
+  font-family: var(--ff-text); font-size: var(--fs-mono);
+  letter-spacing: .05em; line-height: 1.7; color: var(--fg-50);
+}
+/* The rule that carries the resolved project into WHY. It is the same line
+   the WHY chain opens on, at the same x — the sections are padded from the
+   same gutter, so the continuation is exact rather than approximate. */
+.phand__drop {
+  position: absolute; left: 0; bottom: 0; width: 1px;
+  height: clamp(56px, 10vh, 120px);
+  background: linear-gradient(180deg, rgba(241, 240, 235, .04), rgba(241, 240, 235, .30));
+}
+
+/* ============================================================
+   06 / WHY
+   ============================================================ */
+.why {
+  z-index: 2; padding-block: 0 var(--sec-y); overflow-x: clip;
+  /* One value, used by both the head's own margin and the rule that runs
+     through it, so the line from PROCESS reaches the chain exactly. */
+  --why-gap: clamp(34px, 6vh, 78px);
+}
+/* PHASE 5 — the hand-off. PROCESS ends on a resolved project and drops a
+   rule at the gutter; this continues that same rule down through the WHY
+   head and hands it to the chain spine, which starts at the same x because
+   both sections are padded from the same gutter. One argument, two halves:
+   PROCESS tells one project's story, WHY generalises the method. */
+.why__head {
+  position: relative;
+  max-width: 1180px;
+  margin-bottom: var(--why-gap);
+  padding-top: clamp(30px, 5vh, 66px);
+}
+.why__head::before {
+  content: ''; position: absolute; left: 0; top: 0;
+  bottom: calc(var(--why-gap) * -1); width: 1px;
+  background: linear-gradient(180deg, rgba(241, 240, 235, .30), rgba(241, 240, 235, .30));
+}
+.why__head > * { padding-left: clamp(22px, 3vw, 56px); }
+.why__title {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: var(--fs-dl); font-weight: 500; line-height: var(--lh-d); letter-spacing: var(--ls-dl);
+}
+
+/* ---------------- THE CHAIN ----------------
+   Phase 2 listed four adjectives in four rows. Phase 3 gave them a spine.
+   Phase 4 makes the section perform what it describes: each stage carries
+   a figure whose mark COUNT falls as the information resolves — 26 scattered
+   marks, then 12 pulled onto a capture line, then a set grid, then one rule
+   and one node — and the copy column narrows with it. Complexity → clarity,
+   read rather than claimed. Nothing is promised that the copy does not say.
+   ------------------------------------------------------------------ */
+.chain {
+  list-style: none; margin: 0; padding: 0;
+  display: grid;
+  counter-reset: chain;
+}
+
+.chain__s {
+  --rule: 1;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 10ch) minmax(0, 1fr);
+  gap: clamp(12px, 2.4vw, 40px);
+  align-items: start;
+  padding: clamp(22px, 3.6vh, 46px) 0 clamp(22px, 3.6vh, 46px) clamp(26px, 3vw, 56px);
+}
+@media (min-width: 900px) {
+  /* The figure column holds its width; the COPY column is what narrows,
+     so the frame tightens toward the resolved state. */
+  .chain__s {
+    grid-template-columns: minmax(0, 10ch) minmax(0, 46ch) minmax(0, 18rem);
+    justify-content: start;
+    /* Held as one block. Left unbounded, the narrowing copy and the pinned
+       figure column open a 900px hole in the middle of the frame at 1920. */
+    max-width: min(100%, 88rem);
+  }
+  /* The COPY narrows; the figure column holds its position, so the four
+     drawings sit on one line and the tightening is legible as a decision
+     rather than as drift. */
+  .chain__b { max-width: calc(46ch - var(--stage, 0) * 5ch); }
+}
+
+/* The spine. One continuous line down the left edge, with a node per
+   stage — the same engineering-drawing language as the Scan Plane. */
+.chain__s::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
+  background: linear-gradient(180deg, rgba(241, 240, 235, .30), rgba(241, 240, 235, .10));
+  transform: scaleY(var(--rule)); transform-origin: top;
+}
+.chain__s::after {
+  content: '';
+  position: absolute; left: -3px; top: clamp(26px, 4.4vh, 54px);
+  width: 7px; height: 7px;
+  background: var(--bg);
+  border: 1px solid var(--fg-60);
+  transform: rotate(45deg) scale(var(--rule));
+}
+.chain__s--end::before { background: linear-gradient(180deg, var(--fg-16), transparent 78%); }
+
+.chain__t {
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-50);
+  font-variant-numeric: tabular-nums;
+  padding-top: .35em;
+  font-weight: 500;
+}
+.chain__s--end .chain__t { color: var(--fg); }
+
+.chain__b { display: grid; gap: 0; }
+
+.chain__k {
+  font-size: clamp(1.05rem, 1.55vw + .1rem, 2.1rem);
+  font-weight: 500; letter-spacing: -.028em; line-height: 1.06;
+  margin-bottom: clamp(10px, 1.4vh, 16px);
+}
+
+.chain__c {
+  font-size: var(--fs-lede);
+  line-height: 1.62; color: var(--fg-60); letter-spacing: -.004em;
+  text-wrap: pretty;
+}
+
+/* What each stage actually handles. Phase 3 set these as bordered chips —
+   six repeated rectangles per screen, which is the one shape this design
+   language should never repeat. They are now a hairline-separated run:
+   the same information, no boxes. */
+.chain__m {
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: 6px clamp(10px, 1.2vw, 18px);
+  margin-top: clamp(14px, 2vh, 22px);
+  padding-top: 10px;
+  border-top: var(--rule-w) solid var(--rule-secondary);
+}
+.chain__m span {
+  position: relative;
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); color: var(--fg-50);
+  padding-left: clamp(10px, 1.2vw, 18px);
+  font-variant-numeric: tabular-nums;
+}
+.chain__m span:first-child { padding-left: 0; }
+.chain__m span + span::before {
+  content: ''; position: absolute; left: 0; top: .1em; bottom: .1em;
+  width: var(--rule-w); background: var(--rule-primary);
+}
+.chain__s--end .chain__m span { color: var(--fg); }
+.chain__s--end::after { background: var(--fg); border-color: var(--fg); }
+
+/* ---- the density figures ---- */
+/* PHASE 4 / §20 — at 2560 the block sat in the left 43% of the frame with
+   nothing holding the rest. Each stage's drawing now trails a measure line
+   into the open canvas and fades out in it, so the extra width is a span the
+   composition uses rather than margin it is floating in. */
+.chain__f { position: relative; margin: 0; align-self: start; }
+@media (min-width: 1600px) {
+  .chain__s {
+    grid-template-columns: minmax(0, 10ch) minmax(0, 52ch) minmax(0, 26rem);
+    max-width: none;
+  }
+  .chain__f svg { max-width: 26rem; }
+  .chain__f::after {
+    content: ''; position: absolute; left: calc(100% + 26px); top: 46%;
+    width: 60vw; height: 1px; pointer-events: none;
+    background: linear-gradient(90deg, var(--fg-16), rgba(241,240,235,.04) 46%, transparent 74%);
+  }
+  .chain__s--end .chain__f::after {
+    background: linear-gradient(90deg, var(--fg-38), rgba(241,240,235,.06) 52%, transparent 80%);
+  }
+}
+.chain__f svg {
+  display: block; width: 100%; height: auto;
+  max-width: 18rem; overflow: visible;
+}
+.chain__f path, .chain__f circle {
+  fill: none; vector-effect: non-scaling-stroke;
+}
+.cf-raw path    { stroke: var(--fg-38); stroke-width: 1; }
+.cf-sheet path  { stroke: var(--fg-16); stroke-width: 1; }
+.cf-scan path, .cf-scan { stroke: var(--accent-c); stroke-width: 1.4; }
+.cf-lead path   { stroke: var(--fg-16); stroke-width: 1; }
+.cf-grid path   { stroke: var(--fg-09); stroke-width: 1; }
+.cf-set path    { stroke: var(--fg-50); stroke-width: 1; }
+.cf-final       { stroke: var(--fg); stroke-width: 1.4; }
+.cf-tick        { stroke: var(--fg-38); stroke-width: 1; }
+/* PHASE 5 — this was `\.cf-node`, one specificity point below the
+   `.chain__f path, .chain__f circle { fill: none }` blanket above it, so the
+   RESULT stage's node has been drawn as an empty ring rather than as the one
+   solid mark the whole chain resolves to. Caught by the computed-style
+   assertion, not by reading the source, which is exactly why that assertion
+   exists. */
+.chain__f circle.cf-node { fill: var(--accent-c); stroke: var(--bg); stroke-width: 3; paint-order: stroke; }
+
+@media (max-width: 899px) {
+  .chain__s {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding-left: 22px;
+  }
+  .chain__t { padding-top: 0; }
+  /* On a phone the four figures would be four more things to scroll past;
+     the copy already carries the sequence. Only the resolved frame stays,
+     so the section still ends on its one clear mark. */
+  .chain__f { display: none; }
+  .chain__s--end .chain__f { display: block; margin-top: 18px; }
+}
+
+/* ============================================================
+   08 / ABOUT — one reality, three interpretations.
+
+   Phase 3 set this as two equal columns with the headline alone on the
+   left, which left a screen-high void under it that read as an unfinished
+   section rather than as negative space. It is now a deliberate asymmetry:
+   a narrow identity rail on the left carrying the index, the statement
+   large on the right, and beneath it ONE silhouette read in three vertical
+   slices — points, contours, plan linework. The edges continue across
+   every slice boundary, which is the whole claim: not three products, one
+   object interpreted three ways.
+   ============================================================ */
+.about { z-index: 2; padding-block: 0 var(--sec-y); }
+.about__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(30px, 5vh, 58px) clamp(28px, 5vw, 96px);
+  align-items: stretch;
+  padding-top: clamp(28px, 4vh, 52px);
+  border-top: var(--rule-w) solid var(--rule-secondary);
+}
+@media (min-width: 900px) {
+  /* The rail is narrow on purpose — the statement owns the frame, and the
+     leftover width becomes tension rather than a hole. */
+  .about__grid { grid-template-columns: minmax(15rem, 24%) minmax(0, 1fr); }
+}
+
+/* Statement top-left, index bottom-left: the rail is pinned to both edges
+   of the block, which is what turns the leftover width into a held frame
+   rather than a gap under a paragraph. */
+.about__side {
+  display: grid; gap: clamp(22px, 3.4vh, 38px);
+  align-content: space-between;
+}
+.about__lede {
+  font-size: var(--fs-lede); line-height: 1.66;
+  color: var(--fg-60); letter-spacing: -.004em; text-wrap: pretty;
+  max-width: 34ch;
+}
+
+/* The technical index. Three facts about the system, set as an instrument
+   readout rather than as more prose. */
+.about__idx { display: grid; gap: 0; margin: 0; }
+.about__idx div {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+  padding: 10px 0; border-top: var(--rule-w) solid var(--rule-secondary);
+}
+.about__idx div:last-child { border-bottom: var(--rule-w) solid var(--rule-secondary); }
+.about__idx dt {
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-50);
+  font-weight: 500;
+}
+.about__idx dd {
+  margin: 0;
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); color: var(--fg-60);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.about__main { display: grid; gap: clamp(22px, 3.4vh, 46px); align-content: start; }
+.about__title {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: var(--fs-dm);
+  font-weight: 500; line-height: .94; letter-spacing: var(--ls-dm);
+  max-width: 20ch;
+}
+.about__title .line { display: block; overflow: hidden; padding-bottom: .06em; margin-bottom: -.06em; }
+.about__title .line__in { display: block; }
+
+/* ---------------- the object ---------------- */
+/* The object is pushed to the outer edge and the caption holds the inner
+   one, so the width between them is a measured span rather than a gap. */
+.about__fig { margin: 0; display: grid; gap: 14px; }
+@media (min-width: 900px) {
+  .about__fig { grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr); align-items: center; gap: clamp(18px, 2.4vw, 44px); }
+}
+.about__figc {
+  display: grid; gap: 8px; align-content: center;
+  font-family: var(--ff-text); font-size: var(--fs-micro);
+}
+.about__figc-k { color: var(--fg); }
+.about__figc-v { color: var(--fg-50); }
+/* A measured span, not a rule under a label: it runs the whole distance
+   between the caption and the object it names. */
+.about__figc-r {
+  position: relative; height: 1px; width: 100%;
+  background: linear-gradient(90deg, var(--fg-38) 0%, var(--fg-16) 55%, var(--fg-09) 100%);
+}
+.about__figc-r::before, .about__figc-r::after {
+  content: ''; position: absolute; top: -3px; width: 1px; height: 7px;
+  background: var(--fg-38);
+}
+.about__figc-r::before { left: 0; }
+.about__figc-r::after { right: 0; background: var(--fg-16); }
+.about__fig svg {
+  display: block; width: 100%; height: auto;
+  max-height: clamp(190px, 34vh, 460px);
+  overflow: visible;
+}
+.ab-slice path, .ab-slice use { fill: none; vector-effect: non-scaling-stroke; }
+.about__fig use { stroke-width: 1; }
+
+/* CAPTURE — the object as sampled points. */
+/* The one place on the site where all three accents appear together, and a
+   deliberate exception to "never two accents at full strength": the subject
+   here IS that there are three readings of one object. None of them is at
+   full strength, the page accent stays idle, and the shared silhouette — not
+   the colour — is what carries the figure. */
+.ab-slice--cap use {
+  stroke: rgb(var(--accent-capture) / .68);
+  stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 0 7;
+}
+/* MEASURE — the object as a surface with an elevation interval through it. */
+.ab-slice--mea use { stroke: rgb(var(--accent-measure) / .56); stroke-width: 1; }
+.ab-band {
+  fill: none; stroke: rgb(var(--accent-measure) / .30);
+  stroke-width: 1; stroke-dasharray: 2 6; vector-effect: non-scaling-stroke;
+}
+/* QUANTIFY — the object as drawn linework. */
+.ab-slice--qua use { stroke: rgb(var(--accent-quantify) / .70); stroke-width: 1.25; }
+
+/* The two slice edges: a reading boundary, not a border. */
+.ab-cut {
+  fill: none; stroke: var(--fg-09); stroke-width: 1;
+  stroke-dasharray: 1 9; vector-effect: non-scaling-stroke;
+}
+
+/* ---------------- the system line ----------------
+   Three points on ONE continuous rule. No cards, no boxes: the rule IS
+   the statement, and each node is the link into that reading. */
+.about__sys {
+  position: relative;
+  display: grid; gap: clamp(20px, 3vh, 30px);
+  padding-top: clamp(20px, 3vh, 30px);
+}
+.about__sys::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 1px;
+  background: linear-gradient(90deg,
+    rgb(var(--accent-capture) / .55) 0%,
+    rgb(var(--accent-measure) / .55) 50%,
+    rgb(var(--accent-quantify) / .55) 100%);
+}
+@media (min-width: 700px) {
+  .about__sys { grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 3vw, 48px); }
+}
+.about__sys a {
+  position: relative;
+  display: grid; gap: 6px;
+  padding-top: 20px;
+  align-content: start;
+}
+/* the node on the line */
+.about__sys a::before {
+  content: ''; position: absolute; left: 0; top: -3.5px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--bg); border: var(--rule-w) solid var(--rule-measure);
+  transition: border-color var(--t-hover) var(--ease), background var(--t-hover) var(--ease);
+}
+.about__sys a:nth-child(1)::before { border-color: rgb(var(--accent-capture) / .8); }
+.about__sys a:nth-child(2)::before { border-color: rgb(var(--accent-measure) / .8); }
+.about__sys a:nth-child(3)::before { border-color: rgb(var(--accent-quantify) / .8); }
+.about__sys a:nth-child(1):hover::before { background: rgb(var(--accent-capture)); }
+.about__sys a:nth-child(2):hover::before { background: rgb(var(--accent-measure)); }
+.about__sys a:nth-child(3):hover::before { background: rgb(var(--accent-quantify)); }
+.about__sys-i {
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); color: var(--fg-28);
+  font-variant-numeric: tabular-nums;
+}
+.about__sys b {
+  font-family: var(--ff-label); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-micro); font-weight: 400; color: var(--fg);
+  transition: color var(--t-hover) var(--ease);
+}
+.about__sys a:nth-child(1):hover b { color: rgb(var(--accent-capture)); }
+.about__sys a:nth-child(2):hover b { color: rgb(var(--accent-measure)); }
+.about__sys a:nth-child(3):hover b { color: rgb(var(--accent-quantify)); }
+.about__sys i {
+  font-style: normal;
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); color: var(--fg-50);
+  font-variant-numeric: tabular-nums;
+}
+
+.about__end {
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: .06em; line-height: 1.7; color: var(--fg-50);
+  max-width: 62ch;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 899px) {
+  .about__fig svg { max-height: 200px; }
+}

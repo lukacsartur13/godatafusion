@@ -1,0 +1,204 @@
+/* ============================================================
+   04 / SERVICES — three chapters of one system.
+   Each chapter is a two-column spread: a sticky rail that holds the
+   claim while the specification scrolls past it. The object alternates
+   sides between chapters, which is also what drives the camera offset.
+   ============================================================ */
+.services { z-index: 2; padding-block: var(--sec-y) 0; }
+
+.services__head { max-width: 1180px; margin-bottom: clamp(50px, 9vh, 120px); }
+.services__title {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: var(--fs-dl);
+  font-weight: 500; line-height: var(--lh-d); letter-spacing: var(--ls-dl);
+}
+.services__lede {
+  margin-top: clamp(20px, 2.6vw, 34px); max-width: 50ch;
+  font-size: var(--fs-body); line-height: 1.62;
+  color: var(--fg-60); letter-spacing: -.006em; text-wrap: pretty;
+}
+
+/* The trailing space is not padding for its own sake: it is where the object
+   morphs from this service into the next one, with no type competing. */
+.chapter {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(30px, 5vw, 90px);
+  padding-block: 16vh 26vh;
+  min-height: 190svh;
+}
+/* All the type lives in ONE column so the object can own the other half
+   outright. Splitting the claim and the specification across both columns
+   put the specification directly on top of a lit point cloud. */
+.chapter__col { grid-column: 1; }
+.chapter--a .chapter__col,
+.chapter--c .chapter__col { grid-column: 2; }
+
+/* Deliberately NOT sticky. A pinned claim above its own scrolling
+   specification — in one column, over a transparent canvas — simply draws
+   the two on top of each other, and the fix for that is a solid panel this
+   design does not want. The constant element here is the object behind the
+   type; the type itself is editorial and flows. */
+.chapter__rail { position: relative; }
+.chapter__hold {
+  max-width: 40ch;
+  pointer-events: auto;
+  /* Scroll-driven, so only one chapter ever holds the eye. */
+  opacity: var(--rail-o, 1);
+  will-change: opacity;
+}
+
+.chapter__eyebrow {
+  display: flex; align-items: center; gap: .8em;
+  color: var(--accent-c);
+  margin-bottom: clamp(18px, 2.4vw, 30px);
+}
+.chapter__eyebrow span { color: var(--fg-28); }
+
+.chapter__title {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: var(--fs-dm);
+  font-weight: 500; line-height: .93; letter-spacing: var(--ls-dm);
+}
+/* §03 — the Hungarian service name. A NAME, not a value: label face. */
+.chapter__hu {
+  margin-top: clamp(14px, 1.8vw, 22px);
+  font-family: var(--ff-label); font-size: var(--fs-micro); font-weight: 500;
+  letter-spacing: var(--ls-micro); text-transform: uppercase;
+  color: var(--fg-42);
+}
+.chapter__lede {
+  margin-top: clamp(16px, 2vw, 26px);
+  max-width: 42ch;
+  font-size: clamp(.88rem, 1vw, 1.04rem);
+  line-height: 1.62; color: var(--fg-60); letter-spacing: -.004em;
+}
+
+.chapter__values {
+  display: flex; flex-wrap: wrap; gap: clamp(18px, 2.6vw, 44px);
+  margin-top: clamp(24px, 3.4vw, 44px);
+  padding-top: clamp(14px, 1.8vw, 22px);
+  border-top: var(--rule-w) solid var(--rule-secondary);
+}
+.chapter__values > div { display: grid; gap: 7px; }
+.chapter__values dt {
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--fg-28);
+  font-weight: 500;
+}
+.chapter__values dd {
+  font-size: clamp(.86rem, 1.05vw, 1.05rem);
+  color: var(--accent-c); font-variant-numeric: tabular-nums; letter-spacing: .02em;
+}
+.chapter__demo {
+  margin-top: 12px;
+  font-family: var(--ff-text); font-size: var(--fs-micro); color: var(--fg-50);
+}
+
+/* ---------------- the specification column ---------------- */
+.chapter__spec {
+  padding-top: clamp(38px, 6vh, 72px);
+  display: grid; gap: clamp(34px, 5vh, 62px);
+  max-width: 46ch;
+}
+.spec { display: grid; gap: 0; }
+.spec__k {
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); text-transform: uppercase;
+  color: var(--fg-42); font-weight: 400;
+  padding-bottom: 12px; border-bottom: var(--rule-w) solid var(--rule-primary);
+}
+.spec__list { list-style: none; margin: 0; padding: 0; }
+.spec__list li {
+  display: flex; align-items: baseline; gap: 14px;
+  padding: clamp(10px, 1.3vh, 15px) 0;
+  border-bottom: var(--rule-w) solid var(--rule-secondary);
+  font-size: clamp(.88rem, 1vw, 1.02rem);
+  color: var(--fg-60); letter-spacing: -.004em;
+}
+.spec__list li::before {
+  content: ''; width: 14px; height: 1px; flex: none;
+  background: var(--accent-40);
+  transform: translateY(-.35em);
+}
+
+.spec__legal, .spec__note {
+  font-family: var(--ff-text); font-size: var(--fs-micro); line-height: 1.7;
+  max-width: 42ch;
+}
+/* The claim limit is not a footnote — it is typographically secondary,
+   but it is always on the surface, never inside a tooltip. */
+.spec__legal {
+  color: rgb(var(--accent) / .62);
+  padding-left: 14px; border-left: 1px solid var(--accent-40);
+}
+.spec__legal::before { content: '⚠ '; }
+.spec__note { color: var(--fg-28); }
+
+/* Two destinations, ranked. The page is the primary move now that there
+   is a page to go to; the form stays one click away as the quiet option. */
+.chapter__acts {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: clamp(12px, 1.6vw, 22px);
+  margin-top: 4px;
+}
+.chapter__cta { justify-self: start; }
+.chapter__alt {
+  font-family: var(--ff-text); font-size: var(--fs-micro);
+  color: var(--fg-50);
+  border-bottom: var(--rule-w) solid var(--rule-primary);
+  padding-bottom: 3px;
+  transition: color var(--t-hover) var(--ease), border-color var(--t-hover) var(--ease);
+}
+.chapter__alt:hover { color: var(--fg); border-color: var(--accent-40); }
+
+@media (max-width: 1024px) {
+  .chapter { min-height: 170svh; padding-block: 12vh 20vh; }
+}
+@media (max-width: 900px) {
+  /* One column. The rail states the claim, the spec follows it, and the
+     object is atmosphere behind both rather than a competing column. */
+  .chapter {
+    grid-template-columns: 1fr;
+    gap: clamp(30px, 6vh, 56px);
+    min-height: 0;
+    padding-block: clamp(48px, 9vh, 90px) clamp(60px, 12vh, 120px);
+  }
+  .chapter--a .chapter__col,
+  .chapter--c .chapter__col { grid-column: 1; }
+  .chapter__rail { position: static; }
+  .chapter__hold { max-width: none; opacity: 1 !important; }
+  .chapter__spec { padding-top: 0; padding-bottom: 0; max-width: none; }
+}
+
+
+/* ---------------- the chapter baseline ----------------
+   Phase 2 QA measured the bottom ~30% of some chapter viewports as unused.
+   Rather than stretching the copy to fill it, the chapter now closes on a
+   readout line: what this chapter produced, in the same engineering
+   register as the hero telemetry. Whitespace above it is preserved — the
+   goal was balanced tension, not a filled page. */
+.chapter__base {
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: 6px clamp(12px, 1.8vw, 28px);
+  margin-top: clamp(30px, 6vh, 72px);
+  padding-top: clamp(12px, 1.8vh, 20px);
+  border-top: var(--rule-w) solid var(--rule-secondary);
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+/* §03 — one strip, two tiers. The keys name things (a label); the values
+   are counts, IDs and measurements (data). Only the values are technical. */
+.chapter__bv {
+  font-family: var(--ff-mono); letter-spacing: var(--ls-mono);
+  font-weight: 400; text-transform: none;
+}
+.chapter__bk { color: var(--fg-50); }
+.chapter__bv { color: var(--accent-c); font-variant-numeric: tabular-nums; }
+
+@media (max-width: 899px) {
+  .chapter__base { font-size: 9px; gap: 5px 12px; }
+}

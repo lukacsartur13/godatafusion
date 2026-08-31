@@ -1,0 +1,171 @@
+/* ============================================================
+   §17 — THE CURSOR, IN THE GDF SYSTEM
+
+   Phase 9 drew a 26 px ring and a dot. A circle is the one shape the
+   drafting system does not use for a position: the whole family marks a
+   point with a CROSS and a sensor, and the cursor was the only mark on
+   the site that did not know that.
+
+   Five states, and four of them are silent:
+
+     DEFAULT    a registration cross with a sensor point at its centre —
+                the same mark as .mk-cross and as the LOCATION glyph
+     LINK       the cross gains the system's 45 degree arrow. No word.
+     CAPTURE    EXPLORE  ┐ the cross opens and a sensor ring resolves
+     MEASURE    SCAN     │ around it — the CAPTURE glyph's own gesture,
+     QUANTIFY   ANALYZE  ┘ at pointer scale — plus one word
+     PRESSED    the cross closes
+
+   Only the three service states and START carry text, which is what
+   keeps the brief's "do not let text-heavy cursor states become
+   distracting" true: on an ordinary link this cursor says nothing, it
+   just points.
+
+   PHASE 8.3 — NO `mix-blend-mode: difference`.
+
+   This element sits at z-index 120 over the whole page and moves every
+   frame. `mix-blend-mode` blends against the BACKDROP, so the compositor
+   had to flatten the entire page underneath it — the full-viewport WebGL
+   canvas included — into a render surface, every frame, to blend a 26 px
+   ring against it. Measured at 1440x900, hero idle, pointer stationary:
+
+     full page                                    35,3 composited fps
+     this one declaration removed                 38,4
+     removed WITH the nav's backdrop-filter       58,6   <- locked 60
+
+   The two are multiplicative. Neither is expensive on its own; a page
+   carrying both spends its frame budget building render surfaces.
+
+   What `difference` bought was legibility over light surfaces. This page
+   has exactly one — the solid START PROJECT button — and every mark below
+   keeps its reading there through a dark hairline under a light one,
+   which costs a shadow instead of a page-wide readback. Phase 10 changed
+   the SHAPE of these marks and nothing about that budget: still two
+   promoted elements, still transform and opacity only.
+   ============================================================ */
+.cursor { display: none; }
+
+@media (hover: hover) and (pointer: fine) {
+  body.cursor-on .cursor {
+    display: block;
+    position: fixed; top: 0; left: 0; z-index: 120;
+    pointer-events: none;
+    transform: translate3d(-50px, -50px, 0);
+    will-change: transform;
+    --cx-arm: 7px;      /* half-length of a cross arm */
+    --cx-ring: 0;       /* 0 idle, 1 when a service state is engaged */
+  }
+  .cursor__ring, .cursor__dot, .cursor__label { position: absolute; }
+
+  /* ---- the registration cross ---- */
+  .cursor__ring {
+    width: 1px; height: 1px;
+    border: 0; border-radius: 0; box-shadow: none;
+  }
+  .cursor__ring::before, .cursor__ring::after {
+    content: ''; position: absolute;
+    background: rgba(241, 240, 235, .78);
+    /* light mark, dark hairline: reads on the dark scene AND on the one
+       light element the pointer ever crosses. */
+    box-shadow: 0 0 0 1px rgba(8, 10, 11, .42);
+    transition: width var(--motion-ui) var(--ease-out),
+                height var(--motion-ui) var(--ease-out),
+                transform var(--motion-ui) var(--ease-out),
+                opacity var(--motion-fast) var(--ease-out);
+  }
+  /* horizontal arm */
+  .cursor__ring::before {
+    left: calc(var(--cx-arm) * -1); top: 0;
+    width: calc(var(--cx-arm) * 2); height: 1px;
+  }
+  /* vertical arm */
+  .cursor__ring::after {
+    top: calc(var(--cx-arm) * -1); left: 0;
+    width: 1px; height: calc(var(--cx-arm) * 2);
+  }
+
+  /* ---- the sensor point ---- */
+  .cursor__dot {
+    width: 3px; height: 3px; margin: -1.5px 0 0 -1.5px;
+    background: #F1F0EB; border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(8, 10, 11, .45);
+    transition: opacity var(--motion-ui) var(--ease-out),
+                transform var(--motion-ui) var(--ease-out);
+  }
+
+  /* ---- the sensor ring — only in a service state ---- */
+  .cursor::before {
+    content: ''; position: absolute;
+    width: 34px; height: 34px; margin: -17px 0 0 -17px;
+    border: 1px solid rgba(241, 240, 235, .8);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(8, 10, 11, .35);
+    opacity: 0;
+    transform: scale(.62);
+    transition: opacity var(--motion-ui) var(--ease-out),
+                transform var(--motion-ui) var(--ease-out);
+  }
+
+  /* ---- LINK — the system's 45 degree arrow, drawn at pointer scale ---- */
+  .cursor::after {
+    content: ''; position: absolute;
+    width: 7px; height: 7px;
+    margin: -13px 0 0 5px;
+    border-top: 1px solid rgba(241, 240, 235, .85);
+    border-right: 1px solid rgba(241, 240, 235, .85);
+    /* §27 — NO drop-shadow. A filter on the one element that moves every
+       frame is a render surface bought for a 7 px mark, which is the exact
+       class of effect Phase 8.3 removed. It is not needed: the arrow only
+       appears in the LINK state, and every light-ground control on this
+       site carries `data-cursor` and is therefore in the LABELLED state,
+       where this pseudo-element is at opacity 0. */
+    opacity: 0;
+    /* NOT rotated. A box carrying only its top and right borders already
+       IS the corner bracket the ARROW glyph uses as its head — `M8.5 5H19
+       v10.5`, apex top-right. The first cut rotated it -45deg and got a
+       chevron pointing straight up, which is a different mark from a
+       different system. */
+    transform: translate3d(-2.5px, 2.5px, 0);
+    transition: opacity var(--motion-fast) var(--ease-out),
+                transform var(--motion-ui) var(--ease-out);
+  }
+  body.cursor-link .cursor::after { opacity: 1; transform: none; }
+  body.cursor-link .cursor { --cx-arm: 5px; }
+
+  /* ---- the word ---- */
+  .cursor__label {
+    left: 0; top: 0;
+    transform: translate3d(20px, -50%, 0);
+    font-family: var(--ff-label); font-size: 10px;
+    letter-spacing: var(--ls-micro); font-weight: 600; text-transform: uppercase;
+    color: #F1F0EB; white-space: nowrap;
+    text-shadow: 0 0 4px rgba(8, 10, 11, .95), 0 1px 8px rgba(8, 10, 11, .8);
+    opacity: 0;
+    transition: opacity var(--motion-fast) var(--ease-out),
+                transform var(--motion-ui) var(--ease-out);
+  }
+
+  /* ---- ENGAGED: the cross opens, the sensor ring resolves ---- */
+  body.cursor-labelled .cursor { --cx-arm: 11px; }
+  body.cursor-labelled .cursor::before { opacity: 1; transform: scale(1); }
+  body.cursor-labelled .cursor::after { opacity: 0; }
+  body.cursor-labelled .cursor__dot { transform: scale(1.35); }
+  body.cursor-labelled .cursor__label { opacity: 1; transform: translate3d(26px, -50%, 0); }
+
+  /* ---- PRESSED: the cross closes on the point ---- */
+  body.cursor-pressed .cursor { --cx-arm: 4px; }
+  body.cursor-pressed .cursor::before { transform: scale(.8); }
+
+  /* §21 — the ACTIVE service owns the cursor's accent while a mode is
+     live. Idle grey the rest of the time; the cursor is not decoration. */
+  body[data-accent="capture"]  .cursor::before,
+  body[data-accent="measure"]  .cursor::before,
+  body[data-accent="quantify"] .cursor::before { border-color: var(--accent-c); }
+  body[data-accent="capture"]  .cursor__label,
+  body[data-accent="measure"]  .cursor__label,
+  body[data-accent="quantify"] .cursor__label { color: var(--accent-c); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor { display: none !important; }
+}

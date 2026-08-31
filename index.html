@@ -1,0 +1,1403 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>GoDataFusion — Turn reality into data.</title>
+<meta name="description" content="A GoDataFusion építőipari környezeteket, helyszíneket és tervrajzokat alakít mérhető, felhasználható digitális adattá. 360° dokumentáció, területfelmérés, digitális mennyiségszámítás." />
+<meta name="theme-color" content="#080A0B" />
+<link rel="preload" href="/fonts/gdf-display.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/gdf-text.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/gdf-mono-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23080A0B'/%3E%3Cpath d='M6 20h20M6 12h20' stroke='%23F1F0EB' stroke-width='1.5'/%3E%3C/svg%3E" />
+<meta property="og:title" content="GoDataFusion — Turn reality into data." />
+<meta property="og:description" content="Építőipari valóság → mérhető digitális adat." />
+<meta property="og:type" content="website" />
+<script>
+  /* Pre-boot: hide the choreographed elements only when JS can actually animate
+     them back in. A watchdog guarantees the page is never left blank. */
+  document.documentElement.classList.add('is-preload');
+  setTimeout(function () { document.documentElement.classList.remove('is-preload'); }, 3500);
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#intro">Ugrás a tartalomhoz</a>
+
+<!-- ============ ambient layers (decorative) ============ -->
+<div class="atmos" aria-hidden="true">
+  <div class="atmos__wash"></div>
+  <div class="atmos__accent atmos__accent--capture"></div>
+  <div class="atmos__accent atmos__accent--measure"></div>
+  <div class="atmos__accent atmos__accent--quantify"></div>
+  <div class="atmos__vignette"></div>
+  <div class="atmos__grain"></div>
+</div>
+
+<!-- ============ engineering frame / grid ============ -->
+<div class="frame" aria-hidden="true">
+  <span class="frame__rule" style="--i:0"></span>
+  <span class="frame__rule" style="--i:1"></span>
+  <span class="frame__rule" style="--i:2"></span>
+  <span class="frame__rule" style="--i:3"></span>
+  <span class="frame__rule" style="--i:4"></span>
+  <b class="frame__mark frame__mark--tl"></b>
+  <b class="frame__mark frame__mark--tr"></b>
+  <b class="frame__mark frame__mark--bl"></b>
+  <b class="frame__mark frame__mark--br"></b>
+</div>
+
+<!-- ============ custom cursor (desktop pointer only) ============ -->
+<div class="cursor" id="cursor" aria-hidden="true">
+  <span class="cursor__ring"></span>
+  <span class="cursor__dot"></span>
+  <span class="cursor__label" id="cursorLabel"></span>
+</div>
+
+<!-- ============================================================
+     THE STAGE — one WebGL scene for the whole narrative.
+     Fixed, behind the document. Hero, Fusion and the three service
+     chapters are transparent and let it through; every later section
+     paints over it and the renderer is suspended.
+     ============================================================ -->
+<div class="stage" id="stage" data-stage="hero">
+  <canvas class="stage__canvas" id="gl" aria-hidden="true"></canvas>
+
+  <!-- static, intentional composition when WebGL is unavailable -->
+  <div class="stage__fallback" id="stageFallback" aria-hidden="true">
+    <svg viewBox="0 0 720 520" preserveAspectRatio="xMidYMid meet" role="img" aria-label="GoDataFusion helyszín-fragmentum, axonometrikus drótváz">
+      <g class="fb-terrain">
+        <path d="M60 366 300 226 660 366 420 506Z"/>
+        <path d="M110 366 300 256 610 366 420 476Z"/>
+        <path d="M160 366 300 286 560 366 420 446Z"/>
+        <path d="M210 366 300 316 510 366 420 416Z"/>
+      </g>
+      <g class="fb-grid">
+        <path d="M60 366 300 226M660 366 420 506M300 226 660 366M60 366 420 506"/>
+      </g>
+      <g class="fb-mass">
+        <path d="M258 322 366 260 474 322 366 384Z"/>
+        <path d="M258 322v-92l108-62 108 62v92l-108 62Z"/>
+        <path d="M366 260v124M258 230l108 62 108-62"/>
+        <path d="M290 206 366 162l76 44v-58l-76-44-76 44Z"/>
+        <path d="M486 340 540 309l40 23v46l-40 23-54-31Z"/>
+        <path d="M486 340v46l54 31v-46M540 309v108"/>
+      </g>
+      <g class="fb-accent">
+        <path d="M150 402h420"/>
+        <circle cx="366" cy="162" r="4"/>
+        <circle cx="540" cy="309" r="3"/>
+        <circle cx="258" cy="322" r="3"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- 3D-anchored annotations (decorative; the same values are in the readout panels) -->
+  <div class="annos" id="annos" aria-hidden="true"></div>
+
+  <!-- cinematic falloff, re-aimed per narrative state -->
+  <div class="stage__veil" aria-hidden="true"></div>
+</div>
+
+<!-- ============ THE SCAN PLANE — DOM half, crosses the whole layout ============ -->
+<div class="scanplane" id="scanplane" aria-hidden="true">
+  <span class="scanplane__field"></span>
+  <span class="scanplane__line"></span>
+</div>
+
+<!-- ============ navigation ============ -->
+<header class="nav" id="nav">
+  <a class="nav__brand" href="#intro" aria-label="GoDataFusion — kezdőlap">
+    <span class="nav__glyph" aria-hidden="true"></span>
+    <span class="nav__word">GoDataFusion</span>
+  </a>
+
+  <!-- §09 — the index resolves on hover (TECHNICAL SHIFT, §07 B). It is
+       absolutely positioned in the gutter to the left of its own link, so
+       the idle bar is four words and nothing else. -->
+  <nav class="nav__links" aria-label="Fő navigáció">
+    <a class="hv-shift" href="#services"><i class="hv-shift__i" aria-hidden="true">01</i>Services</a>
+    <a class="hv-shift" href="#process"><i class="hv-shift__i" aria-hidden="true">02</i>Process</a>
+    <a class="hv-shift" href="#about"><i class="hv-shift__i" aria-hidden="true">03</i>About</a>
+    <a class="hv-shift" href="#contact"><i class="hv-shift__i" aria-hidden="true">04</i>Contact</a>
+  </nav>
+
+  <a class="btn btn--cta btn--primary hv-scan" href="#project" data-cursor="start">
+    <span>START PROJECT</span>
+    {{glyph:arrow gl--16}}
+  </a>
+
+  <button class="nav__burger" id="navBurger" type="button" aria-expanded="false" aria-controls="navLinksMobile">
+    <span class="sr-only">Menü</span><i aria-hidden="true"></i><i aria-hidden="true"></i>
+  </button>
+</header>
+
+<nav class="nav__drawer" id="navLinksMobile" aria-label="Mobil navigáció" hidden>
+  <a href="/360-camera/">{{glyph:capture gl--20}}360° kamera<i aria-hidden="true">01</i></a>
+  <a href="/teruletfelmeres/">{{glyph:measure gl--20}}Területfelmérés<i aria-hidden="true">02</i></a>
+  <a href="/mennyisegszamitas/">{{glyph:quantify gl--20}}Mennyiségszámítás<i aria-hidden="true">03</i></a>
+  <a href="#process">{{glyph:layers gl--20}}Process<i aria-hidden="true">06</i></a>
+  <a href="#about">{{glyph:data gl--20}}About<i aria-hidden="true">09</i></a>
+  <a href="#contact">{{glyph:location gl--20}}Contact<i aria-hidden="true">09</i></a>
+  <a class="nav__drawer-cta" href="#project" data-no-transition>START PROJECT {{glyph:arrow gl--16}}</a>
+</nav>
+
+<!-- ============ section tracker ============ -->
+<aside class="tracker" id="tracker" aria-label="Szakasz-navigáció">
+  <a class="tk" href="#intro"     data-track="01"><i>01</i><b>INTRO</b></a>
+  <a class="tk" href="#manifesto" data-track="02"><i>02</i><b>MANIFESTO</b></a>
+  <a class="tk" href="#descent"   data-track="03"><i>03</i><b>DESCENT</b></a>
+  <a class="tk" href="#fusion"    data-track="04"><i>04</i><b>OUTPUT</b></a>
+  <a class="tk" href="#services"  data-track="05"><i>05</i><b>SERVICES</b></a>
+  <a class="tk" href="#process"   data-track="06"><i>06</i><b>PROCESS</b></a>
+  <a class="tk" href="#why"       data-track="07"><i>07</i><b>WHY</b></a>
+  <a class="tk" href="#project"   data-track="08"><i>08</i><b>PROJECT</b></a>
+  <a class="tk" href="#about"     data-track="09"><i>09</i><b>ABOUT</b></a>
+</aside>
+
+<main id="main">
+
+  <!-- ================= 01 / INTRO — HERO ================= -->
+  <section class="hero" id="intro" data-section="01" data-section-name="INTRO" data-track="01">
+
+    <!-- headline block -->
+    <div class="hero__content">
+      <p class="eyebrow" data-reveal="eyebrow">
+        <span class="eyebrow__idx">01</span>
+        <span class="eyebrow__rule" aria-hidden="true"></span>
+        <span>CONSTRUCTION DATA &amp; DIGITAL SURVEYING</span>
+      </p>
+
+      <h1 class="hero__title">
+        <span class="line"><span class="line__in">TURN REALITY</span></span>
+        <span class="line"><span class="line__in">INTO DATA<span class="dot">.</span></span></span>
+      </h1>
+
+      <!-- The trailing clause is method detail; the phone hero drops it
+           rather than truncating the sentence with an ellipsis. It is said
+           again in the manifesto and in ABOUT, so nothing is lost. -->
+      <p class="hero__lede" data-reveal="lede">
+        A GoDataFusion építőipari környezeteket, helyszíneket és tervrajzokat alakít
+        mérhető, felhasználható digitális adattá<span class="hero__lede-x"> — modern
+        felmérési eszközökkel és strukturált feldolgozással</span>.
+      </p>
+
+      <div class="hero__actions" data-reveal="actions">
+        <a class="btn btn--solid hv-scan" href="#project" data-cursor="start">
+          <span>START PROJECT</span>
+          {{glyph:arrow gl--16}}
+        </a>
+        <a class="btn btn--ghost hv-shift" href="#services"><i class="hv-shift__i" aria-hidden="true">04</i>Szolgáltatások</a>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         THE SIGNATURE WINDOW — phone only (<=700px).
+
+         Not a card and not a device mockup: a compositional area with no
+         ground of its own. The fixed WebGL stage is already behind the
+         whole page; this element tells the veil where to OPEN and tells the
+         camera where to aim, so on a phone the object stops being texture
+         behind the type and becomes the subject of one framed band.
+         Hidden outright above 700px, where the desktop hero already lets
+         headline and environment coexist spatially.
+         ============================================================ -->
+    <div class="hwin" id="heroWindow" data-reveal="window">
+      <span class="hwin__tick hwin__tick--tl" aria-hidden="true"></span>
+      <span class="hwin__tick hwin__tick--tr" aria-hidden="true"></span>
+      <span class="hwin__tick hwin__tick--bl" aria-hidden="true"></span>
+      <span class="hwin__tick hwin__tick--br" aria-hidden="true"></span>
+      <span class="hwin__axis" aria-hidden="true"></span>
+      <p class="hwin__cap" aria-hidden="true">
+        <span class="hwin__cap-a" id="heroWinFrom">REALITY</span>
+        <span class="hwin__cap-r"></span>
+        <span class="hwin__cap-b" id="heroWinTo">DATA</span>
+      </p>
+    </div>
+
+    <!-- telemetry column -->
+    <!-- Decorative system telemetry: interface storytelling, not data the
+         user needs. Hidden from assistive tech rather than announced as fact. -->
+    <aside class="telemetry" data-reveal="telemetry" aria-hidden="true">
+      <div class="telemetry__row">
+        <span class="telemetry__k">SCAN STATUS</span>
+        <span class="telemetry__v" id="tScan">STANDBY</span>
+      </div>
+      <div class="telemetry__row">
+        <span class="telemetry__k">DATA POINTS</span>
+        <span class="telemetry__v num" id="tPoints">0</span>
+      </div>
+      <div class="telemetry__row">
+        <span class="telemetry__k">PROCESS</span>
+        <span class="telemetry__v num" id="tProcess">0.0%</span>
+      </div>
+    </aside>
+
+    <!-- ============ service operating modes ============ -->
+    <div class="modes" id="modes" data-reveal="modes">
+      <div class="modes__rail" role="tablist" aria-label="Szolgáltatási üzemmódok" aria-orientation="horizontal">
+
+        <button class="mode hv-glyph" type="button" role="tab" id="tab-capture"
+                aria-selected="false" aria-controls="panel-capture" tabindex="0"
+                data-mode="capture" data-cursor="EXPLORE">
+          <span class="mode__rule" aria-hidden="true"></span>
+          <span class="mode__head">
+            <span class="mode__idx">01</span>
+            {{glyph:capture mode__gl gl--24 gl--anim}}
+          </span>
+          <span class="mode__body">
+            <span class="mode__key">CAPTURE</span>
+            <span class="mode__hu">360° kamera — állapotfelmérés</span>
+          </span>
+          <span class="mode__bar" aria-hidden="true"></span>
+        </button>
+
+        <button class="mode hv-glyph" type="button" role="tab" id="tab-measure"
+                aria-selected="false" aria-controls="panel-measure" tabindex="-1"
+                data-mode="measure" data-cursor="SCAN">
+          <span class="mode__rule" aria-hidden="true"></span>
+          <span class="mode__head">
+            <span class="mode__idx">02</span>
+            {{glyph:measure mode__gl gl--24 gl--anim}}
+          </span>
+          <span class="mode__body">
+            <span class="mode__key">MEASURE</span>
+            <span class="mode__hu">Területfelmérés — tömeg &amp; szintvonal</span>
+          </span>
+          <span class="mode__bar" aria-hidden="true"></span>
+        </button>
+
+        <button class="mode hv-glyph" type="button" role="tab" id="tab-quantify"
+                aria-selected="false" aria-controls="panel-quantify" tabindex="-1"
+                data-mode="quantify" data-cursor="ANALYZE">
+          <span class="mode__rule" aria-hidden="true"></span>
+          <span class="mode__head">
+            <span class="mode__idx">03</span>
+            {{glyph:quantify mode__gl gl--24 gl--anim}}
+          </span>
+          <span class="mode__body">
+            <span class="mode__key">QUANTIFY</span>
+            <span class="mode__hu">Mennyiségszámítás — tervrajz alapján</span>
+          </span>
+          <span class="mode__bar" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <!-- readouts: the same demo values shown on the canvas, but readable & accessible -->
+      <div class="readouts" id="readouts">
+        <div class="readouts__idle" id="readoutIdle">
+          <b>SELECT AN OPERATING MODE</b>
+          <span data-hint="hover">Vigye az egeret egy üzemmódra — a teljes felület átvált.</span>
+        </div>
+
+        <div class="readout" id="panel-capture" role="tabpanel" aria-labelledby="tab-capture" hidden>
+          <!-- The audience sentence is dropped on a phone rather than the
+               paragraph being truncated mid-word; the split is a sentence
+               boundary, so nothing reads as broken. -->
+          <p class="readout__desc">Virtuális bejárás és referenciafotó-dokumentáció meglévő környezetről.<span class="readout__desc-x"> Ingatlanosoknak, kivitelezőknek, hoteleknek.</span></p>
+          <dl class="readout__data" aria-label="Interfész demó adatok">
+            <div><dt>CAPTURE POINTS</dt><dd data-q="stations">—</dd></div>
+            <div><dt>RESOLUTION</dt><dd>8K / 360°</dd></div>
+            <!-- PHASE 9 Part 10 — the round, BY FLOOR.
+                 A capture job is organised storey by storey, so a single
+                 total says less than it looks like it does. This cell
+                 replaced "WALKTHROUGH · READY", which was the one line in
+                 the readout that carried no information at all. Written by
+                 modules/quantities.js out of webgl/stations.js; the em-dash
+                 is what a browser that never runs it keeps. -->
+            <div><dt>L00 / L01 / L02</dt><dd data-q="stationsByFloor">—</dd></div>
+          </dl>
+          <p class="readout__note">Szükséges: projekt helyszín · feladat leírás · nagyobb projektnél alaprajz.</p>
+        </div>
+
+        <div class="readout" id="panel-measure" role="tabpanel" aria-labelledby="tab-measure" hidden>
+          <p class="readout__desc">Földtömeg-, terület- és folyóméter-számítás, 3D terepmodell és szintvonalrajz, integrálható 3D tervezőprogramokba.</p>
+          <dl class="readout__data" aria-label="Interfész demó adatok">
+            <div><dt>AREA</dt><dd>1 248,62 m²</dd></div>
+            <div><dt>VOLUME</dt><dd>684,30 m³</dd></div>
+            <div><dt>ELEVATION</dt><dd>+3,42 m</dd></div>
+          </dl>
+          <p class="readout__note">Szükséges: helyszínrajz · kertterv · útterv.</p>
+          <p class="readout__note readout__note--legal">A felmérés nem minősül hivatalos földmérésnek.</p>
+        </div>
+
+        <div class="readout" id="panel-quantify" role="tabpanel" aria-labelledby="tab-quantify" hidden>
+          <p class="readout__desc">Digitális mennyiségszámítás tervrajz alapján: konszignáció, helyiségkönyv, rétegrend, padlóburkolat.</p>
+          <dl class="readout__data" aria-label="Interfész demó adatok">
+            <div><dt>DOORS</dt><dd data-q="doors">—</dd></div>
+            <div><dt>WINDOWS</dt><dd data-q="windows">—</dd></div>
+            <div><dt>FLOOR</dt><dd data-q="area">—</dd></div>
+          </dl>
+          <p class="readout__note">Szükséges: PDF alaprajzok · feladat leírás. Nagyobb munkánál minta-tervrajz, majd dedikált projekt-tárhely.</p>
+        </div>
+      </div>
+      <p class="modes__disclaimer">Az itt látható értékek interfész-demó adatok.</p>
+    </div>
+
+    <!-- bottom instrument strip -->
+    <div class="strip" data-reveal="strip">
+      <span class="strip__coords" aria-hidden="true">47°41'12.8"N &nbsp;/&nbsp; 17°38'05.4"E</span>
+      <span class="strip__section" id="sectionIndex" aria-hidden="true">01 / INTRO</span>
+      <a class="strip__scroll" href="#manifesto" data-cursor="down">
+        <span>SCROLL</span>
+        <span class="strip__track" aria-hidden="true"><i></i></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ================= 02 / MANIFESTO ================= -->
+  <section class="manifesto" id="manifesto" data-section="02" data-section-name="MANIFESTO" data-track="02">
+    <div class="manifesto__head">
+      <p class="eyebrow eyebrow--section">
+        <span class="eyebrow__idx">02</span>
+        <span class="eyebrow__rule" aria-hidden="true"></span>
+        <span>MANIFESTO</span>
+      </p>
+
+      <h2 class="manifesto__title">
+        <span class="line"><span class="line__in">BUILT FOR A NEW WAY</span></span>
+        <span class="line"><span class="line__in">OF BUILDING.</span></span>
+      </h2>
+
+      <p class="manifesto__lede">
+        Az építőipari döntések nagy részét ma is papíron vagy PDF-ben született
+        információ hajtja. A mi munkánk az, hogy ebből mérhető, kereshető,
+        táblázatba tehető adat legyen.
+      </p>
+    </div>
+
+    <div class="mwords" id="mwords">
+
+      <div class="mword" data-w="1" data-accent="none">
+        <div class="mword__type">
+          <span class="mword__layer mword__layer--outline" aria-hidden="true">AI.</span>
+          <span class="mword__layer mword__layer--solid" aria-hidden="true">AI.</span>
+          <span class="mword__layer mword__layer--grid" aria-hidden="true">AI.</span>
+          <span class="mword__band" aria-hidden="true"></span>
+          <h3 class="sr-only">AI.</h3>
+        </div>
+        <div class="mword__meta">
+          <span class="mword__idx" aria-hidden="true">01 / 06</span>
+          <p class="mword__copy">Nem önmagáért. Ott használjuk, ahol a feldolgozás gyorsabb és strukturáltabb lesz tőle.</p>
+        </div>
+      </div>
+
+      <div class="mword" data-w="2" data-accent="none">
+        <div class="mword__type">
+          <span class="mword__layer mword__layer--outline" aria-hidden="true">ÉPÍTŐIPAR.</span>
+          <span class="mword__layer mword__layer--solid" aria-hidden="true">ÉPÍTŐIPAR.</span>
+          <span class="mword__layer mword__layer--grid" aria-hidden="true">ÉPÍTŐIPAR.</span>
+          <span class="mword__band" aria-hidden="true"></span>
+          <h3 class="sr-only">ÉPÍTŐIPAR.</h3>
+        </div>
+        <div class="mword__meta">
+          <span class="mword__idx" aria-hidden="true">02 / 06</span>
+          <p class="mword__copy">Valós projektek. Valós helyszínek. Valós mennyiségek. Nem absztrakt technológiai demó.</p>
+        </div>
+      </div>
+
+      <div class="mword" data-w="3" data-accent="capture">
+        <div class="mword__type">
+          <span class="mword__layer mword__layer--outline" aria-hidden="true">DIGITALIZÁCIÓ.</span>
+          <span class="mword__layer mword__layer--solid" aria-hidden="true">DIGITALIZÁCIÓ.</span>
+          <span class="mword__layer mword__layer--grid" aria-hidden="true">DIGITALIZÁCIÓ.</span>
+          <span class="mword__band" aria-hidden="true"></span>
+          <h3 class="sr-only">DIGITALIZÁCIÓ.</h3>
+        </div>
+        <div class="mword__meta">
+          <span class="mword__idx" aria-hidden="true">03 / 06</span>
+          <p class="mword__copy">A fizikai és a tervalapú információból használható digitális adat.</p>
+        </div>
+      </div>
+
+      <div class="mword" data-w="4" data-accent="measure">
+        <div class="mword__type">
+          <span class="mword__layer mword__layer--outline" aria-hidden="true">OPTIMALIZÁLÁS.</span>
+          <span class="mword__layer mword__layer--solid" aria-hidden="true">OPTIMALIZÁLÁS.</span>
+          <span class="mword__layer mword__layer--grid" aria-hidden="true">OPTIMALIZÁLÁS.</span>
+          <span class="mword__band" aria-hidden="true"></span>
+          <h3 class="sr-only">OPTIMALIZÁLÁS.</h3>
+        </div>
+        <div class="mword__meta">
+          <span class="mword__idx" aria-hidden="true">04 / 06</span>
+          <p class="mword__copy">Kevesebb manuális adatkezelés, áttekinthetőbb projektinformáció.</p>
+        </div>
+      </div>
+
+      <div class="mword" data-w="5" data-accent="quantify">
+        <div class="mword__type">
+          <span class="mword__layer mword__layer--outline" aria-hidden="true">GAZDASÁGOS.</span>
+          <span class="mword__layer mword__layer--solid" aria-hidden="true">GAZDASÁGOS.</span>
+          <span class="mword__layer mword__layer--grid" aria-hidden="true">GAZDASÁGOS.</span>
+          <span class="mword__band" aria-hidden="true"></span>
+          <h3 class="sr-only">GAZDASÁGOS.</h3>
+        </div>
+        <div class="mword__meta">
+          <span class="mword__idx" aria-hidden="true">05 / 06</span>
+          <p class="mword__copy">A szükséges adathoz a szükséges eszköz — nem több, nem drágább.</p>
+        </div>
+      </div>
+
+      <div class="mword" data-w="6" data-accent="none">
+        <div class="mword__type">
+          <span class="mword__layer mword__layer--outline" aria-hidden="true">MODERN ESZKÖZÖK.</span>
+          <span class="mword__layer mword__layer--solid" aria-hidden="true">MODERN ESZKÖZÖK.</span>
+          <span class="mword__layer mword__layer--grid" aria-hidden="true">MODERN ESZKÖZÖK.</span>
+          <span class="mword__band" aria-hidden="true"></span>
+          <h3 class="sr-only">MODERN ESZKÖZÖK.</h3>
+        </div>
+        <div class="mword__meta">
+          <span class="mword__idx" aria-hidden="true">06 / 06</span>
+          <p class="mword__copy">360° capture, digitális téradat és tervalapú feldolgozás — egy munkafolyamatban.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       03 / THE DATA DESCENT — PHASE 11
+
+       One continuous journey through the digital twin. It replaces the
+       "EGY HELY. NÉGY OLVASAT." block and the five-state FUSION pipeline,
+       and it deliberately abandons the grammar both of those used: there
+       is no representation selector, no left copy / right object split,
+       nothing enters from the side and there are no panels.
+
+       WHAT THE MARKUP IS. Thirteen blocks in reading order, each of which
+       owns a span of the journey's scroll — `--span` is that span as a
+       fraction, and it is the SAME number webgl/descent.js keys its camera
+       path to, so the pacing map exists once. Each block holds one sticky
+       viewport of type, and the type inside it is placed on the block's own
+       12x12 field rather than on the site's editorial grid (PART 16).
+
+       WHAT IT IS NOT. The camera lives in webgl/descent.js and the frame
+       lives in the WebGL stage that is already fixed behind the whole
+       document. Nothing here is a second canvas, a second scroll authority
+       or a second copy of the building's data — every number in this
+       section is written by modules/descent.js from webgl/levels.js and
+       data/terrain-metrics.js.
+
+       ACCESSIBILITY. Document order is reading order everywhere, including
+       the fragments that are visually scattered across a floor plan: the
+       heading "FROM DRAWING TO DATA." is one element with four spans in
+       sequence, and only their POSITION is moved. With JavaScript off or
+       reduced motion on, every block collapses to a normal stacked
+       section and the whole narrative is still there to read.
+       ================================================================== -->
+  <section class="dsc" id="descent" data-section="03" data-section-name="THE DESCENT" data-track="03">
+
+    <!-- ONE sticky viewport for the whole journey, with the thirteen
+         states stacked inside it.
+
+         The first shape tried was one sticky pane per state, each in its
+         own block. It does not work and the reason is worth writing down:
+         a sticky child can only travel as far as its parent is TALLER
+         than it, so a state whose block is shorter than the viewport —
+         GLASS is 4% of the journey, which is less than half a screen —
+         never sticks at all and simply scrolls past. The states are not
+         equal lengths and must not be, so the pane cannot belong to the
+         state.
+
+         One pane for the section, then, and the states are absolutely
+         positioned inside it. Document order is untouched, so the reading
+         order is untouched; only the compositing changes. A state that is
+         not being read carries `visibility: hidden` and is not composited
+         at all — thirteen full-screen layers would be exactly the kind of
+         cost Phase 8.3 removed. -->
+    <div class="dsc__stick">
+
+    <!-- ---------- 01 · EXTERIOR + APPROACH ---------- -->
+    <div class="dsc__ch" data-dsc="entry" style="--span:.100">
+      <div class="dsc__hold">
+        <p class="dsc__tag dsc__tag--a">SITE / 001</p>
+        <h2 class="dsc__lock">
+          <span class="dsc__go">GO</span>
+          <span class="dsc__in">INSIDE.</span>
+        </h2>
+        <p class="dsc__tag dsc__tag--b" data-dsc-fill="site">L00–L02</p>
+        <p class="dsc__hu dsc__hu--entry">Egy épület. Egy folyamatos út a valóságtól az adatig.</p>
+      </div>
+    </div>
+
+    <!-- ---------- 02 · GLASS ---------- -->
+    <div class="dsc__ch" data-dsc="glass" style="--span:.040">
+      <div class="dsc__hold">
+        <p class="dsc__tag dsc__tag--g1">GLAZING</p>
+        <p class="dsc__tag dsc__tag--g2">L01-W01-04</p>
+      </div>
+    </div>
+
+    <!-- ---------- 03 · INTERIOR ---------- -->
+    <div class="dsc__ch" data-dsc="interior" style="--span:.090">
+      <div class="dsc__hold">
+        <p class="dsc__tag dsc__tag--i1">L01 / +4.00 M</p>
+        <p class="dsc__tag dsc__tag--i2">CP-11</p>
+        <p class="dsc__word dsc__word--presence">PRESENCE.</p>
+        <p class="dsc__hu dsc__hu--interior" data-dsc-fill="room">Tárgyaló 01</p>
+      </div>
+    </div>
+
+    <!-- ---------- 04 · CAPTURE ----------
+         PART 06 asks for three independent fragments rather than one text
+         block. They are three elements, spatially composed — and they are
+         still one sentence in document order, so a screen reader is read
+         "EVERY VIEW REMAINS." in that order. -->
+    <div class="dsc__ch" data-dsc="capture" style="--span:.100">
+      <div class="dsc__hold">
+        <p class="dsc__frag dsc__frag--1">EVERY</p>
+        <p class="dsc__frag dsc__frag--2">VIEW</p>
+        <p class="dsc__frag dsc__frag--3">REMAINS.</p>
+        <p class="dsc__hu dsc__hu--capture">A helyszín később is visszanézhető.</p>
+        <p class="dsc__tag dsc__tag--c1" data-dsc-fill="round">360°</p>
+      </div>
+    </div>
+
+    <!-- ---------- 05 · FLOOR CROSSING ----------
+         PART 07 is explicit that a layer build-up must not be invented.
+         The model knows the structural slab and it knows that a level has
+         a finish; it does not know a rétegrend. So the section says the
+         two things that are true and nothing else. -->
+    <div class="dsc__ch" data-dsc="floor" style="--span:.055">
+      <div class="dsc__hold">
+        <ul class="dsc__sect" aria-label="Födémszerkezet">
+          <li><b>FINISH</b><i>—</i></li>
+          <li><b>SLAB</b><i data-dsc-fill="slab">—</i></li>
+        </ul>
+        <p class="dsc__hu dsc__hu--floor">Általános szerkezeti megnevezés — nem rétegrend.</p>
+      </div>
+    </div>
+
+    <!-- ---------- 06 · THE UNDERWORLD ----------
+         The datum ladder is written by modules/descent.js from the terrain's
+         own contour set. It is TERRAIN-RELATIVE and says so: the parcel's
+         metres per world unit and the building's are two different numbers,
+         and this phase does not print a figure that pretends otherwise. -->
+    <div class="dsc__ch" data-dsc="under" style="--span:.112">
+      <div class="dsc__hold">
+        <div class="dsc__datum">
+          <p class="dsc__datum-k">TEREP · RELATÍV DATUM</p>
+          <ol class="dsc__ladder" id="dscLadder" aria-label="Terepszintek"></ol>
+          <p class="dsc__datum-n">A terep saját datumja. Az épület szintkótái külön
+            rendszerben — a két lépték összehangolása még nem történt meg.</p>
+        </div>
+        <p class="dsc__word dsc__word--depth">DEPTH.</p>
+      </div>
+    </div>
+
+    <!-- ---------- 07 · VOLUME ---------- -->
+    <div class="dsc__ch" data-dsc="volume" style="--span:.078">
+      <div class="dsc__hold">
+        <p class="dsc__vol">
+          <span class="dsc__vol-n" data-dsc-fill="cut">—</span>
+          <span class="dsc__vol-u">M³</span>
+        </p>
+        <p class="dsc__tag dsc__tag--v1">CUT</p>
+        <p class="dsc__tag dsc__tag--v2" data-dsc-fill="fill">—</p>
+        <p class="dsc__hu dsc__hu--volume">Demonstrációs parcella — a felületre
+          számított földtömeg, nem beépített érték.</p>
+      </div>
+    </div>
+
+    <!-- ---------- 08/09/10 · ASCENT ----------
+         PART 10. Three level marks at extreme scale, encountered rather
+         than presented: each one is allowed to leave the frame. -->
+    <div class="dsc__ch" data-dsc="ascent" style="--span:.098">
+      <div class="dsc__hold">
+        <ol class="dsc__levels" aria-label="Szintek">
+          <li data-level="L00"><b>L00</b><i>GROUND</i><u>±0,00</u></li>
+          <li data-level="L01"><b>L01</b><i>WORK</i><u>+4,00</u></li>
+          <li data-level="L02"><b>L02</b><i>PROJECT</i><u>+7,60</u></li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- ---------- 11 · PERSPECTIVE COLLAPSE ---------- -->
+    <div class="dsc__ch" data-dsc="collapse" style="--span:.073">
+      <div class="dsc__hold">
+        <p class="dsc__proj">
+          <span class="dsc__proj-k">PROJECTION</span>
+          <span class="dsc__proj-v" id="dscProj">PERSPECTIVE</span>
+        </p>
+        <p class="dsc__hu dsc__hu--collapse">A tér rajzzá lapul. A vetítés
+          változik — a hely nem.</p>
+      </div>
+    </div>
+
+    <!-- ---------- 12 · THE PLAN IS THE GRID ----------
+         PART 12. The four words are ONE heading in reading order; what is
+         scattered is their position, and their position comes from the
+         actual room rectangles of L01 projected to screen each frame by
+         modules/descent.js. If the projector cannot run, the CSS fallback
+         places them on the block's own field and the phrase still reads. -->
+    <div class="dsc__ch" data-dsc="plan" style="--span:.075">
+      <div class="dsc__hold">
+        <h3 class="dsc__phrase" id="dscPhrase">
+          <span class="dsc__pw" data-room="0">FROM</span>
+          <span class="dsc__pw" data-room="1">DRAWING</span>
+          <span class="dsc__pw" data-room="2">TO</span>
+          <span class="dsc__pw dsc__pw--end" data-room="3">DATA.</span>
+        </h3>
+        <p class="dsc__tag dsc__tag--p1" data-dsc-fill="sheet">L01</p>
+      </div>
+    </div>
+
+    <!-- ---------- 13 · DISASSEMBLY ---------- -->
+    <div class="dsc__ch" data-dsc="apart" style="--span:.048">
+      <div class="dsc__hold">
+        <ol class="dsc__layers" id="dscLayers" aria-label="Rajzi rétegek"></ol>
+      </div>
+    </div>
+
+    <!-- ---------- 14 · THE DATA FIELD ---------- -->
+    <div class="dsc__ch" data-dsc="field" style="--span:.048">
+      <div class="dsc__hold">
+        <ul class="dsc__field" id="dscField" aria-label="Kinyert adat"></ul>
+      </div>
+    </div>
+
+    <!-- ---------- 15/16 · RESOLUTION + FINAL STATEMENT ---------- -->
+    <div class="dsc__ch" data-dsc="final" style="--span:.083">
+      <div class="dsc__hold">
+        <h3 class="dsc__final">
+          <span class="dsc__f1">REALITY,</span>
+          <span class="dsc__f2">MADE</span>
+          <span class="dsc__f3">COMPUTABLE.</span>
+        </h3>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- ================= 04 / OUTPUT =================
+       PHASE 11 PART 22 — WHAT IS LEFT OF THE FUSION.
+
+       This was a five-state pinned pipeline — PHYSICAL, CAPTURE, PROCESS,
+       DATA, DECISION — over 520vh of sticky scroll. The DESCENT above now
+       performs all five of those states as one continuous movement through
+       one building: the physical site, a capture round inside a room, the
+       terrain measured under it, the drawing resolving out of the
+       structure, the data separating out of the drawing. Keeping the list
+       as well would have told the same story twice, the second time as a
+       rail of five headings.
+
+       What the list carried that the journey does not is the DELIVERABLE:
+       the reader has just watched reality become data and the next
+       question is what actually arrives. That is this block, and it is the
+       point at which the page's normal structure returns.
+       ================================================================== -->
+  <section class="output" id="fusion" data-section="04" data-section-name="OUTPUT" data-track="04">
+    <div class="output__head">
+      <p class="eyebrow eyebrow--section">
+        <span class="eyebrow__idx">04</span>
+        <span class="eyebrow__rule" aria-hidden="true"></span>
+        <span>PHYSICAL → DIGITAL</span>
+      </p>
+      <h2 class="output__title">
+        <span class="line"><span class="line__in">WHAT ARRIVES.</span></span>
+      </h2>
+      <p class="output__lede">
+        Amit az imént bejárt helyszínből előállítunk: strukturált, mérhető,
+        tervezőprogramba behívható projektadat.
+      </p>
+    </div>
+
+    <dl class="fout__list">
+      <div><dt>TÉRADAT</dt><dd>3D terepmodell · szintvonalrajz</dd></div>
+      <div><dt>MENNYISÉG</dt><dd>konszignáció · helyiségkönyv · rétegrend</dd></div>
+      <div><dt>VIZUÁLIS</dt><dd>360° dokumentáció · virtuális bejárás</dd></div>
+      <div><dt>FORMÁTUM</dt><dd>egyeztetés szerint</dd></div>
+    </dl>
+  </section>
+
+  <!-- ================= 04 / SERVICES ================= -->
+  <section class="services" id="services" data-section="05" data-section-name="SERVICES" data-track="05">
+    <div class="services__head">
+      <p class="eyebrow eyebrow--section">
+        <span class="eyebrow__idx">05</span>
+        <span class="eyebrow__rule" aria-hidden="true"></span>
+        <span>SERVICES</span>
+      </p>
+      <h2 class="services__title">
+        <span class="line"><span class="line__in">THREE READINGS</span></span>
+        <span class="line"><span class="line__in">OF ONE SITE.</span></span>
+      </h2>
+      <!-- PHASE 11 PART 22. This lede used to argue that the three
+           services are three readings of one project. THE DESCENT now
+           performs that argument — a capture round inside a room, the
+           terrain measured under it, the drawing resolving out of the
+           structure — so repeating it here in two sentences was the
+           section explaining what the reader had just travelled through.
+           What is left is the practical thing the argument never said. -->
+      <p class="services__lede">
+        Mindhárom külön is megrendelhető. Az alábbiak alapján eldönthető,
+        melyik felel meg a feladatnak — és mit kell hozzá átadni.
+      </p>
+    </div>
+
+    <!-- ---------- CHAPTER A — CAPTURE ---------- -->
+    <article class="chapter chapter--a" id="chapter-capture" data-chapter="capture">
+      <div class="chapter__col">
+        <div class="chapter__rail"><div class="chapter__hold">
+        <p class="chapter__eyebrow"><span>01</span> CAPTURE</p>
+        <h3 class="chapter__title">EVERY ANGLE.<br>ONE DIGITAL RECORD.</h3>
+        <p class="chapter__hu">360° KAMERA</p>
+        <p class="chapter__lede">
+          360°-os vizuális dokumentáció állapotfelméréshez, virtuális bejáráshoz
+          és referenciaanyag készítéséhez.
+        </p>
+        <dl class="chapter__values" aria-label="Interfész demó adatok">
+          <div><dt>CAPTURE POINTS</dt><dd data-q="stations">—</dd></div>
+          <div><dt>RESOLUTION</dt><dd>8K / 360°</dd></div>
+        </dl>
+        <p class="chapter__demo">Interfész-demó értékek.</p></div></div>
+
+      <div class="chapter__spec">
+        <div class="spec">
+          <h4 class="spec__k">MIRE JÓ?</h4>
+          <ul class="spec__list">
+            <li>Állapotfelmérés</li>
+            <li>Virtuális bejárások</li>
+            <li>Referenciafotók készítése</li>
+          </ul>
+        </div>
+        <div class="spec">
+          <h4 class="spec__k">MILYEN ADATRA VAN SZÜKSÉG?</h4>
+          <ul class="spec__list">
+            <li>Projekt helyszín</li>
+            <li>Feladatleírás</li>
+            <li>Nagyobb projekt esetén alaprajz</li>
+          </ul>
+        </div>
+        <div class="spec">
+          <h4 class="spec__k">KINEK AJÁNLJUK?</h4>
+          <ul class="spec__list">
+            <li>Ingatlanosok</li>
+            <li>Kivitelezők</li>
+            <li>Hotelek</li>
+          </ul>
+        </div>
+        <div class="chapter__acts">
+          <a class="chapter__cta btn btn--solid hv-scan hv-glyph" href="/360-camera/" data-service="capture" data-cursor="explore">
+            <span>360° KAMERA — RÉSZLETEK</span>
+            {{glyph:arrow gl--16}}
+          </a>
+          <a class="chapter__alt" href="#project" data-service="capture" data-cursor="start" data-no-transition>Projekt indítása</a>
+        </div>
+
+        <p class="chapter__base" aria-hidden="true">
+          <span class="chapter__bk">CHAPTER</span>
+          <span class="chapter__bv">01 / 03</span>
+          <span class="chapter__bk">CAPTURE</span>
+          <span class="chapter__bv">12 CAPTURE POINT · 8K / 360° · LEVEL 01</span>
+        </p>
+      </div>
+      </div>
+    </article>
+
+    <!-- ---------- CHAPTER B — MEASURE ---------- -->
+    <article class="chapter chapter--b" id="chapter-measure" data-chapter="measure">
+      <div class="chapter__col">
+        <div class="chapter__rail"><div class="chapter__hold">
+        <p class="chapter__eyebrow"><span>02</span> MEASURE</p>
+        <h3 class="chapter__title">MEASURE<br>THE SITE.</h3>
+        <p class="chapter__hu">TERÜLETFELMÉRÉS</p>
+        <p class="chapter__lede">
+          Terepmodell, szintvonalrajz és számított mennyiségek — 3D
+          tervezőprogramba integrálható formában.
+        </p>
+        <dl class="chapter__values" aria-label="Interfész demó adatok">
+          <div><dt>AREA</dt><dd>1 248,62 m²</dd></div>
+          <div><dt>VOLUME</dt><dd>684,30 m³</dd></div>
+          <div><dt>ELEVATION</dt><dd>+3,42 m</dd></div>
+        </dl>
+        <p class="chapter__demo">Interfész-demó értékek.</p></div></div>
+
+      <div class="chapter__spec">
+        <div class="spec">
+          <h4 class="spec__k">MIRE JÓ?</h4>
+          <ul class="spec__list">
+            <li>Földtömeg számítás — m³</li>
+            <li>Terület számítás — m²</li>
+            <li>Folyóméter</li>
+            <li>Gyors felmérés</li>
+            <li>3D terület meghatározás</li>
+            <li>3D tervezőprogramba integrálható adat</li>
+            <li>Szintvonalrajz készítés</li>
+          </ul>
+        </div>
+        <div class="spec">
+          <h4 class="spec__k">MILYEN ADATRA VAN SZÜKSÉG?</h4>
+          <ul class="spec__list">
+            <li>Helyszínrajz</li>
+            <li>Kertterv</li>
+            <li>Útterv</li>
+          </ul>
+        </div>
+        <p class="spec__legal">A felmérés nem minősül hivatalos földmérésnek.</p>
+        <div class="chapter__acts">
+          <a class="chapter__cta btn btn--solid hv-scan hv-glyph" href="/teruletfelmeres/" data-service="measure" data-cursor="explore">
+            <span>TERÜLETFELMÉRÉS — RÉSZLETEK</span>
+            {{glyph:arrow gl--16}}
+          </a>
+          <a class="chapter__alt" href="#project" data-service="measure" data-cursor="start" data-no-transition>Projekt indítása</a>
+        </div>
+
+        <p class="chapter__base" aria-hidden="true">
+          <span class="chapter__bk">CHAPTER</span>
+          <span class="chapter__bv">02 / 03</span>
+          <span class="chapter__bk">MEASURE</span>
+          <span class="chapter__bv">TEREPMODELL · SZINTVONAL · m² / m³ / fm</span>
+        </p>
+      </div>
+      </div>
+    </article>
+
+    <!-- ---------- CHAPTER C — QUANTIFY ---------- -->
+    <article class="chapter chapter--c" id="chapter-quantify" data-chapter="quantify">
+      <div class="chapter__col">
+        <div class="chapter__rail"><div class="chapter__hold">
+        <p class="chapter__eyebrow"><span>03</span> QUANTIFY</p>
+        <!-- PHASE 11 PART 22 — retitled. This read "FROM DRAWING / TO
+             DATA.", which is now, word for word, the sentence THE DESCENT
+             distributes across the L01 floor plan two sections above. The
+             chapter's job here is not to restate the transformation the
+             journey performed; it is to say what this particular service
+             produces, which is a count rather than an estimate. -->
+        <h3 class="chapter__title">COUNTED,<br>NOT ESTIMATED.</h3>
+        <p class="chapter__hu">MENNYISÉGSZÁMÍTÁS</p>
+        <p class="chapter__lede">
+          2D tervrajzok adatait digitalizáljuk, majd azok alapján strukturált
+          mennyiségi kimutatást készítünk.
+        </p>
+        <dl class="chapter__values" aria-label="Interfész demó adatok">
+          <div><dt>DOORS</dt><dd data-q="doors">—</dd></div>
+          <div><dt>WINDOWS</dt><dd data-q="windows">—</dd></div>
+          <div><dt>FLOOR</dt><dd data-q="area">—</dd></div>
+        </dl>
+        <p class="chapter__demo">Interfész-demó értékek.</p></div></div>
+
+      <div class="chapter__spec">
+        <div class="spec">
+          <h4 class="spec__k">MIRE JÓ?</h4>
+          <ul class="spec__list">
+            <li>Konszignáció</li>
+            <li>Ajtók</li>
+            <li>Ablakok</li>
+            <li>Szerelvények</li>
+            <li>Egyéb darabos elemek</li>
+            <li>Helyiségkönyv</li>
+            <li>Rétegrend</li>
+            <li>Padlóburkolat</li>
+          </ul>
+        </div>
+        <div class="spec">
+          <h4 class="spec__k">MILYEN ADATRA VAN SZÜKSÉG?</h4>
+          <ul class="spec__list">
+            <li>PDF alaprajzok</li>
+            <li>Feladatleírás</li>
+          </ul>
+        </div>
+        <p class="spec__note">
+          A feldolgozás digitális adatkinyerésen és strukturáláson alapul,
+          emberi ellenőrzés mellett.
+        </p>
+        <div class="chapter__acts">
+          <a class="chapter__cta btn btn--solid hv-scan hv-glyph" href="/mennyisegszamitas/" data-service="quantify" data-cursor="explore">
+            <span>MENNYISÉGSZÁMÍTÁS — RÉSZLETEK</span>
+            {{glyph:arrow gl--16}}
+          </a>
+          <a class="chapter__alt" href="#project" data-service="quantify" data-cursor="start" data-no-transition>Projekt indítása</a>
+        </div>
+
+        <p class="chapter__base" aria-hidden="true">
+          <span class="chapter__bk">CHAPTER</span>
+          <span class="chapter__bv">03 / 03</span>
+          <span class="chapter__bk">QUANTIFY</span>
+          <span class="chapter__bv" data-q="summary">—</span>
+        </p>
+      </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= 05 / PROCESS ================= -->
+  <section class="process" id="process" data-section="06" data-section-name="PROCESS" data-track="06">
+    <div class="process__head">
+      <p class="eyebrow eyebrow--section">
+        <span class="eyebrow__idx">06</span>
+        <span class="eyebrow__rule" aria-hidden="true"></span>
+        <span>PROJECT PROCESS</span>
+      </p>
+      <h2 class="process__title">
+        <span class="line"><span class="line__in">FROM FIRST FILE</span></span>
+        <span class="line"><span class="line__in">TO FINAL DATA.</span></span>
+      </h2>
+      <p class="process__lede">
+        Egy projekt mindig ugyanazon az úton indul. Nem kell mindent egyszerre
+        feltölteni — először csak annyi kell, amiből meg tudjuk ítélni a feladatot.
+        Innentől egyetlen anyag útját követjük végig a nyers rajztól a
+        strukturált adatig.
+      </p>
+    </div>
+
+    <!-- ============================================================
+         THE JOURNEY OF PROJECT INFORMATION
+
+         Phase 3 shipped this as six rows on a rule with a small file icon
+         riding a spine beside them — a numbered timeline, which is the one
+         shape this design language should never fall back to, and it was
+         visibly a generation behind the WHY chain directly below it.
+
+         It is now the thing it describes: ONE project token held in a
+         stable reading field on the left while the six stages pass it on
+         the right, and at each stage the token itself changes —
+
+             a raw sheet        SAMPLE_01.PDF   SUBMITTED
+             measured           ...             REVIEWED
+             regions resolve    ...             SCOPED
+             an organised set   PROJECT_001     ALLOCATED
+             a scan crosses     ...             PROCESSING
+             clean structure    ...             DATA READY
+
+         The Scan Plane is used exactly ONCE, at FELDOLGOZÁS, which is the
+         only step that is literally a processing step. The last frame
+         carries fewer marks than the first: complexity → clarity, performed
+         rather than claimed.
+         ============================================================ -->
+    <div class="pj" id="pj">
+
+      <!-- The reading field. Sticky on a wide frame; on a phone and under
+           reduced motion it is replaced by one figure per stage, so the
+           sequence is legible with nothing moving at all. -->
+      <div class="pj__field" id="pjField">
+        <div class="pj__frame">
+          <span class="pj__tick pj__tick--tl" aria-hidden="true"></span>
+          <span class="pj__tick pj__tick--br" aria-hidden="true"></span>
+          <svg class="pf" viewBox="0 0 480 320" data-stage="1" aria-hidden="true" focusable="false">
+          <!-- the coordinate system the token travels through: constant, dimmest -->
+          <g class="pf-sys">
+            <path d="M26 18v284M26 302h436"/>
+            <path d="M26 34h9M26 88h9M26 142h9M26 196h9M26 250h9M26 296h9"/>
+            <path d="M26 18h11M462 18h-11M462 302v-11"/>
+          </g>
+          <!-- 01 the raw sheet -->
+          <g class="pf-sheet">
+            <path d="M150 52h160l20 20v196H150Z"/>
+            <path d="M310 52v20h20"/>
+            <path class="pf-body" d="M170 96h120M170 116h120M170 136h84M170 176h120M170 196h64"/>
+          </g>
+          <!-- unresolved marks: what has not been read yet -->
+          <g class="pf-raw">
+            <path d="M186 74h12M182 68v12M232 82h10M270 70h14M276 64v12M198 156h9M244 150h13M296 162h8M172 218h14M206 226h10M212 220v12M258 214h12M300 230h9M330 108h12M352 132h9M358 126v12M96 128h11M110 178h9M74 96h12M400 176h12M406 170v12M382 232h10M424 120h9M62 202h10M118 258h12M348 262h10M392 78h9"/>
+          </g>
+          <!-- 02 what the review measures -->
+          <g class="pf-dim">
+            <path d="M150 288h180"/>
+            <path d="M150 282v12M330 282v12"/>
+            <path d="M128 52v216"/>
+            <path d="M122 52h12M122 268h12"/>
+            <path class="pf-lead" d="M290 116h74M256 196h108"/>
+            <path class="pf-lead" d="M364 110v12M364 190v12"/>
+          </g>
+          <!-- 03 the regions that resolve into scope -->
+          <g class="pf-sel">
+            <path d="M164 88h-6v-6M296 88h6v-6M164 144h-6v6M296 144h6v6"/>
+            <path d="M164 168h-6v-6M296 168h-6M296 168h6v-6M164 208h-6v6M296 208h6v6"/>
+          </g>
+          <!-- 04 the sheet becomes an organised set -->
+          <g class="pf-set">
+            <g class="pf-card"><path d="M100 62h74l14 14v78h-88Z"/><path class="pf-body" d="M112 96h64M112 110h64M112 124h40"/></g>
+            <g class="pf-card"><path d="M196 62h74l14 14v78h-88Z"/><path class="pf-body" d="M208 96h64M208 110h64M208 124h40"/></g>
+            <g class="pf-card"><path d="M292 62h74l14 14v78h-88Z"/><path class="pf-body" d="M304 96h64M304 110h64M304 124h40"/></g>
+            <g class="pf-card"><path d="M100 170h74l14 14v78h-88Z"/><path class="pf-body" d="M112 204h64M112 218h64M112 232h40"/></g>
+            <g class="pf-card"><path d="M196 170h74l14 14v78h-88Z"/><path class="pf-body" d="M208 204h64M208 218h64M208 232h40"/></g>
+            <g class="pf-card"><path d="M292 170h74l14 14v78h-88Z"/><path class="pf-body" d="M304 204h64M304 218h64M304 232h40"/></g>
+          </g>
+          <!-- what is still unstructured once the set exists -->
+          <g class="pf-noise">
+            <path d="M118 146h8M150 138h6M232 148h7M262 140h6M330 150h8M356 138h6M124 254h8M164 246h6M244 256h7M276 244h6M340 252h8M368 246h6M138 86h6M212 90h7M310 84h6M132 194h6M226 198h7M318 192h6"/>
+          </g>
+          <!-- 05 the one Scan Plane pass in the sequence -->
+          <g class="pf-scan">
+            <rect class="pf-scan-f2" x="86" y="-96" width="308" height="60"/>
+            <rect class="pf-scan-f" x="86" y="-36" width="308" height="36"/>
+            <path class="pf-scan-l" d="M86 0h308"/>
+          </g>
+          <!-- 06 resolved: one clean mark per output -->
+          <g class="pf-out">
+            <path d="M112 142h64M208 142h64M304 142h64M112 250h64M208 250h64M304 250h64"/>
+            <circle class="pf-out-n" cx="240" cy="292" r="3.5"/>
+            <path class="pf-out-r" d="M100 292h130M250 292h130"/>
+          </g>
+        </svg>
+        </div>
+        <p class="pj__meta">
+          <span class="pj__token" id="pjToken">SAMPLE_01.PDF</span>
+          <span class="pj__rule" aria-hidden="true"></span>
+          <span class="pj__state" id="pjState">SUBMITTED</span>
+        </p>
+      </div>
+
+      <ol class="pj__stages" id="pjStages">
+        <li class="pstage" data-stage="1" data-token="SAMPLE_01.PDF" data-state="SUBMITTED">
+          <p class="pstage__k">
+            <span class="pstage__i">01</span>
+            <span class="pstage__sep" aria-hidden="true">/</span>
+            <span class="pstage__state">SUBMITTED</span>
+          </p>
+          <h3 class="pstage__t">MINTARAJZ / KIINDULÓ ANYAG</h3>
+          <p class="pstage__c">Nagyobb projekt esetén először egy reprezentatív mintarajzot kérünk — nem a teljes dokumentációt.</p>
+        </li>
+        <li class="pstage" data-stage="2" data-token="SAMPLE_01.PDF" data-state="REVIEWED">
+          <p class="pstage__k">
+            <span class="pstage__i">02</span>
+            <span class="pstage__sep" aria-hidden="true">/</span>
+            <span class="pstage__state">REVIEWED</span>
+          </p>
+          <h3 class="pstage__t">ÁTTEKINTÉS</h3>
+          <p class="pstage__c">Megvizsgáljuk a feladat terjedelmét és összetettségét: mit tartalmaz az anyag, és mi olvasható ki belőle.</p>
+        </li>
+        <li class="pstage" data-stage="3" data-token="SAMPLE_01.PDF" data-state="SCOPED">
+          <p class="pstage__k">
+            <span class="pstage__i">03</span>
+            <span class="pstage__sep" aria-hidden="true">/</span>
+            <span class="pstage__state">SCOPED</span>
+          </p>
+          <h3 class="pstage__t">ÁRAJÁNLAT</h3>
+          <p class="pstage__c">A projekt alapján egyedi árajánlat készül — a ténylegesen elvégzendő munkára, nem listaárból.</p>
+        </li>
+        <li class="pstage" data-stage="4" data-token="PROJECT_001" data-state="ALLOCATED">
+          <p class="pstage__k">
+            <span class="pstage__i">04</span>
+            <span class="pstage__sep" aria-hidden="true">/</span>
+            <span class="pstage__state">ALLOCATED</span>
+          </p>
+          <h3 class="pstage__t">PROJECT SPACE</h3>
+          <p class="pstage__c">Az árajánlat elfogadása után dedikált Drive projektfelületet biztosítunk a teljes dokumentáció feltöltéséhez.</p>
+        </li>
+        <!-- PHASE 8 Part 20 — restrained, and one word wide.
+             The project token is the only thing that changes state through
+             the six stages, so the multi-level model shows up in the one
+             place where it means something: from PROCESSING onward the file
+             is no longer one document, it is a building with three levels in
+             it. Nothing else about PROCESS was touched. -->
+        <li class="pstage" data-stage="5" data-token="PROJECT_001 · L00·L01·L02" data-state="PROCESSING">
+          <p class="pstage__k">
+            <span class="pstage__i">05</span>
+            <span class="pstage__sep" aria-hidden="true">/</span>
+            <span class="pstage__state">PROCESSING</span>
+          </p>
+          <h3 class="pstage__t">FELDOLGOZÁS</h3>
+          <p class="pstage__c">A szükséges projektadatok digitalizálása és feldolgozása — itt lesz a nyers anyagból strukturált információ.</p>
+        </li>
+        <li class="pstage" data-stage="6" data-token="PROJECT_001 · L00·L01·L02" data-state="DATA READY">
+          <p class="pstage__k">
+            <span class="pstage__i">06</span>
+            <span class="pstage__sep" aria-hidden="true">/</span>
+            <span class="pstage__state">DATA READY</span>
+          </p>
+          <h3 class="pstage__t">DELIVERY</h3>
+          <p class="pstage__c">A megrendelt adatok és kimutatások átadása, a projekthez igazított formátumban.</p>
+        </li>
+      </ol>
+    </div>
+
+    <!-- The release. The field lets the object go here, and what is left is
+         the resolved output — which is also the hand-off into WHY: PROCESS
+         tells one project's story, WHY generalises the method behind it. -->
+    <div class="phand">
+      <!-- The token, not the step index: repeating `06 / DATA READY` here
+           after the stage that already says it reads as a duplicate rather
+           than as the release. -->
+      <p class="phand__k"><span>PROJECT_001</span><span aria-hidden="true">/</span><span>OUTPUT</span></p>
+      <ul class="phand__out">
+        <li><b>DRAWING</b><i>READY</i></li>
+        <li><b>QUANTITY</b><i>STRUCTURED</i></li>
+        <li><b>SITE DATA</b><i>READY</i></li>
+      </ul>
+      <p class="phand__note">
+        A kimenet a megrendelt szolgáltatástól függ — nem minden projekt kap
+        minden adattípust.
+      </p>
+      <span class="phand__drop" aria-hidden="true"></span>
+    </div>
+  </section>
+
+  <!-- ================= 06 / WHY =================
+       Phase 2 shipped this as four horizontal rows that could have belonged
+       to any consultancy. The four ideas were right; the presentation said
+       nothing about GoDataFusion. It is now the transformation itself —
+       INPUT → METHOD → PROCESS → RESULT — which is the only claim this
+       company actually makes, and each stage names what changes at it.
+       No promised savings; the last stage says "more economical process",
+       not "cheaper project". -->
+  <section class="why" id="why" data-section="07" data-section-name="WHY" data-track="07">
+    <div class="why__head">
+      <p class="eyebrow eyebrow--section">
+        <span class="eyebrow__idx">07</span>
+        <span class="eyebrow__rule" aria-hidden="true"></span>
+        <span>WHY GODATAFUSION</span>
+      </p>
+      <h2 class="why__title">
+        <span class="line"><span class="line__in">BETTER DATA.</span></span>
+        <span class="line"><span class="line__in">BETTER WORKFLOW.</span></span>
+      </h2>
+    </div>
+
+    <!-- INPUT → PROCESS → RESULT.
+
+         PHASE 11 PART 22 — the METHOD stage is gone. It was titled
+         DIGITALIZÁCIÓ and it said that physical and drawing-based
+         information becomes structured digital form under one logic,
+         which is precisely and only what THE DESCENT spends eleven
+         screens doing. Three tellings of one idea on one page is two too
+         many, and this was the most abstract of the three.
+
+         The two claims that were NOT the journey stay, because neither is
+         made anywhere else: which tools get chosen, and what the workflow
+         costs. The section still performs its own transformation — each
+         figure carries fewer marks than the one above it — over three
+         stages instead of four. -->
+    <ol class="chain">
+      <li class="chain__s" data-stage="input" style="--stage:0">
+        <p class="chain__t">INPUT</p>
+        <div class="chain__b">
+          <h3 class="chain__k">MODERN ESZKÖZÖK</h3>
+          <p class="chain__c">
+            A feladathoz megfelelő digitális technológia — nem a legdrágább,
+            hanem az, amelyik az adott kérdésre válaszol.
+          </p>
+          <p class="chain__m"><span>360° KAMERA</span><span>FELMÉRÉS</span><span>TERVLAP</span></p>
+        </div>
+        <figure class="chain__f" aria-hidden="true">
+          <svg viewBox="0 0 200 96">
+            <g class="cf-raw">
+              <path d="M14 22h13M18 15v14M46 12h11M51 7v11M31 44h9M79 18h14M86 13v11M8 62h12M62 40h10M67 35v10M96 33h9M120 14h13M126 9v10M110 55h11M143 36h10M148 31v10M172 20h12M160 66h11M186 48h9M35 74h11M74 70h13M99 78h9M129 68h12M155 82h10M22 40h8"/>
+            </g>
+            <g class="cf-sheet">
+              <path d="M6 6h30v22H6zM164 58h30v30h-30z"/>
+            </g>
+          </svg>
+        </figure>
+      </li>
+
+      <li class="chain__s" data-stage="process" style="--stage:1">
+        <p class="chain__t">PROCESS</p>
+        <div class="chain__b">
+          <h3 class="chain__k">OPTIMALIZÁLÁS</h3>
+          <p class="chain__c">
+            Kevesebb manuális adatkezelés és áttekinthetőbb projektinformáció
+            a döntésekhez — kevesebb kiszállás, kevesebb újramérés.
+          </p>
+          <p class="chain__m"><span>m²</span><span>m³</span><span>DB</span></p>
+        </div>
+        <figure class="chain__f" aria-hidden="true">
+          <svg viewBox="0 0 200 96">
+            <g class="cf-grid"><path d="M20 26h160M20 70h160M20 26v44M180 26v44"/></g>
+            <g class="cf-set"><path d="M20 48h160M60 26v44M100 26v44M140 26v44"/></g>
+          </svg>
+        </figure>
+      </li>
+
+      <li class="chain__s chain__s--end" data-stage="result" style="--stage:2">
+        <p class="chain__t">RESULT</p>
+        <div class="chain__b">
+          <h3 class="chain__k">GAZDASÁGOSABB FOLYAMAT</h3>
+          <p class="chain__c">
+            A szükséges eredményhez igazított munkafolyamat, a projekt
+            méretéhez mért ráfordítással.
+          </p>
+          <p class="chain__m"><span>ÁTADHATÓ ADAT</span></p>
+        </div>
+        <figure class="chain__f" aria-hidden="true">
+          <svg viewBox="0 0 200 96">
+            <path class="cf-final" d="M20 48h160"/>
+            <path class="cf-tick" d="M20 42v12M180 42v12"/>
+            <circle class="cf-node" cx="100" cy="48" r="3.5"/>
+          </svg>
+        </figure>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ================= 07 / START PROJECT ================= -->
+  <section class="project" id="project" data-section="08" data-section-name="PROJECT" data-track="08">
+    <div class="project__head">
+      <p class="eyebrow eyebrow--section">
+        <span class="eyebrow__idx">08</span>
+        <span class="eyebrow__rule" aria-hidden="true"></span>
+        <span>PROJECT INPUT</span>
+      </p>
+      <h2 class="project__title">
+        <span class="line"><span class="line__in">START WITH</span></span>
+        <span class="line"><span class="line__in">THE RIGHT DATA.</span></span>
+      </h2>
+    </div>
+
+    <!-- The request experience is ONE component, mounted here and on each
+         service page. modules/request.js owns its markup and its behaviour,
+         so the four surfaces cannot drift apart. -->
+    <div id="projectMount"></div>
+
+    <noscript>
+      <p class="pf__noscript">
+        Az űrlaphoz JavaScript szükséges. Írjon közvetlenül:
+        <a href="mailto:hello@godatafusion.hu" data-company="email-href">hello@godatafusion.hu</a>
+      </p>
+    </noscript>
+
+    <!-- ---- contact alternative (secondary) ---- -->
+    <aside class="alt">
+      <p class="alt__k">VAGY EGYSZERŰEN ÍRJON</p>
+      <p class="alt__c">
+        Ha még csak kérdése van, elég egy rövid üzenet — a mintarajz később is jöhet.
+      </p>
+      <a class="alt__mail" href="#contact">Kapcsolat →</a>
+    </aside>
+  </section>
+
+  <!-- ================= 08 / ABOUT =================
+       Not longer than Phase 2 — more deliberate. A label, one statement
+       the company can stand behind, one paragraph of what that means, and
+       the three modes as a system line. No founder story, no history, no
+       team count: none of that is known, so none of it is written. -->
+  <section class="about" id="about" data-section="09" data-section-name="ABOUT" data-track="09">
+    <div class="about__grid">
+
+      <!-- left column: identity + the technical index -->
+      <div class="about__side">
+        <p class="eyebrow eyebrow--section">
+          <span class="eyebrow__idx">09</span>
+          <span class="eyebrow__rule" aria-hidden="true"></span>
+          <span>ABOUT GODATAFUSION</span>
+        </p>
+
+        <p class="about__lede">
+          A GoDataFusion modern digitális eszközöket visz be az építőipari
+          munkafolyamatokba, hogy a fizikai és tervalapú projektinformációt
+          dokumentálni, felmérni és strukturálni lehessen.
+        </p>
+
+        <dl class="about__idx" aria-label="Működési index">
+          <div><dt>SUBJECT</dt><dd>EGY HELYSZÍN</dd></div>
+          <div><dt>READINGS</dt><dd>03</dd></div>
+          <div><dt>OUTPUT</dt><dd>STRUKTURÁLT ADAT</dd></div>
+        </dl>
+      </div>
+
+      <!-- right column: the statement, then the object, then the system line -->
+      <div class="about__main">
+        <h2 class="about__title">
+          <span class="line"><span class="line__in">PHYSICAL INFORMATION,</span></span>
+          <span class="line"><span class="line__in">MADE DIGITAL.</span></span>
+        </h2>
+
+        <!-- ONE REALITY. THREE INTERPRETATIONS.
+             One silhouette, drawn once and read in three vertical slices:
+             points, contours, plan linework. Not three objects side by side
+             — the same edges continue across every boundary, which is the
+             only claim this company actually makes. -->
+        <figure class="about__fig">
+          <figcaption class="about__figc" aria-hidden="true">
+            <span class="about__figc-k">EGY VALÓSÁG</span>
+            <span class="about__figc-r"></span>
+            <span class="about__figc-v">HÁROM OLVASAT</span>
+          </figcaption>
+          <svg viewBox="0 0 660 300" preserveAspectRatio="xMaxYMid meet" aria-hidden="true">
+            <defs>
+              <g id="abObj">
+                <path d="M118 232 306 124 494 232 306 340Z"/>
+                <path d="M118 232v-86L306 38l188 108v86L306 340Z"/>
+                <path d="M306 124v216M118 146l188 108 188-108"/>
+                <path d="M212 100 306 46l94 54v-52l-94-54-94 54Z"/>
+              </g>
+              <clipPath id="abC1"><rect x="0"   y="0" width="220" height="300"/></clipPath>
+              <clipPath id="abC2"><rect x="220" y="0" width="220" height="300"/></clipPath>
+              <clipPath id="abC3"><rect x="440" y="0" width="220" height="300"/></clipPath>
+            </defs>
+
+            <g class="ab-slice ab-slice--cap" clip-path="url(#abC1)"><use href="#abObj"/></g>
+            <g class="ab-slice ab-slice--mea" clip-path="url(#abC2)">
+              <use href="#abObj"/>
+              <path class="ab-band" d="M0 178h660M0 205h660M0 232h660M0 259h660"/>
+            </g>
+            <g class="ab-slice ab-slice--qua" clip-path="url(#abC3)"><use href="#abObj"/></g>
+
+            <path class="ab-cut" d="M220 16v268M440 16v268"/>
+          </svg>
+        </figure>
+
+        <!-- the one gesture: three points on one continuous line -->
+        <nav class="about__sys" aria-label="A rendszer három üzemmódja">
+          <a href="/360-camera/" data-service="capture">
+            <span class="about__sys-i">01</span>
+            <b>CAPTURE</b><i>Rögzítés</i>
+          </a>
+          <a href="/teruletfelmeres/" data-service="measure">
+            <span class="about__sys-i">02</span>
+            <b>MEASURE</b><i>Felmérés</i>
+          </a>
+          <a href="/mennyisegszamitas/" data-service="quantify">
+            <span class="about__sys-i">03</span>
+            <b>QUANTIFY</b><i>Kimutatás</i>
+          </a>
+        </nav>
+
+        <p class="about__end">Egy rendszer, három üzemmód. Ugyanaz a projekt, három kérdésre válaszolva.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= 09 / FOOTER ================= -->
+<footer class="foot" id="contact">
+  <!-- The closing frame. The slash is the brand's transformation line, so
+       it is the thing that moves the words: each line steps right by one
+       slash, and the three of them fall as one diagonal. -->
+  <div class="foot__mark" id="footMark">
+    <span class="foot__line" style="--i:0"><span class="foot__word" data-l="1">REALITY</span></span>
+    <span class="foot__line" style="--i:1"><i class="foot__slash" aria-hidden="true">/</i><span class="foot__word" data-l="2">DATA</span></span>
+    <span class="foot__line" style="--i:2"><i class="foot__slash" aria-hidden="true">/</i><span class="foot__word" data-l="3">FUSED</span></span>
+  </div>
+
+  <div class="foot__grid">
+    <nav class="foot__nav" aria-label="Lábléc navigáció">
+      <p class="foot__k">SITE</p>
+      <a href="#services">Services</a>
+      <a href="#process">Process</a>
+      <a href="#about">About</a>
+      <a href="#project">Start project</a>
+    </nav>
+
+    <div class="foot__col">
+      <p class="foot__k">SZOLGÁLTATÁSOK</p>
+      <a href="/360-camera/">360° kamera</a>
+      <a href="/teruletfelmeres/">Területfelmérés</a>
+      <a href="/mennyisegszamitas/">Mennyiségszámítás</a>
+    </div>
+
+    <div class="foot__col foot__col--contact">
+      <p class="foot__k">KAPCSOLAT</p>
+      <a class="foot__mail" id="footMail" data-company="email" href="mailto:hello@godatafusion.hu">hello@godatafusion.hu</a>
+      <p class="foot__ph" data-company="email-note">Placeholder elérhetőség — élesítés előtt cserélendő.</p>
+    </div>
+
+    <div class="foot__col">
+      <p class="foot__k">JOGI</p>
+      <p class="foot__legal" data-company="legal-company">Cégadatok, székhely és adószám: kitöltendő.</p>
+      <p class="foot__legal">A felmérés nem minősül hivatalos földmérésnek.</p>
+      <p class="foot__legal">Az oldalon látható mérési értékek demonstrációs adatok.</p>
+    </div>
+  </div>
+
+  <p class="foot__base">
+    <span>© <span id="footYear">2026</span> GoDataFusion</span>
+    <span>TURN REALITY INTO DATA.</span>
+  </p>
+</footer>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

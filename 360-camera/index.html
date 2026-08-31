@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="hu" data-service="capture">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>360° kamera — helyszíni dokumentáció és virtuális bejárás | GoDataFusion</title>
+<meta name="description" content="360°-os vizuális dokumentáció állapotfelméréshez, virtuális bejáráshoz és referenciafotókhoz. Ingatlanosoknak, kivitelezőknek, hoteleknek." />
+<link rel="canonical" href="https://godatafusion.hu/360-camera/" />
+<meta name="theme-color" content="#080A0B" />
+<link rel="preload" href="/fonts/gdf-display.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/gdf-text.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/gdf-mono-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23080A0B'/%3E%3Cpath d='M6 20h20M6 12h20' stroke='%23F1F0EB' stroke-width='1.5'/%3E%3C/svg%3E" />
+<meta property="og:title" content="360° kamera — helyszíni dokumentáció és virtuális bejárás | GoDataFusion" />
+<meta property="og:description" content="360°-os vizuális dokumentáció állapotfelméréshez, virtuális bejáráshoz és referenciafotókhoz. Ingatlanosoknak, kivitelezőknek, hoteleknek." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://godatafusion.hu/360-camera/" />
+<meta property="og:locale" content="hu_HU" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "@id": "https://godatafusion.hu/360-camera/#service",
+      "name": "360° kamera — vizuális dokumentáció",
+      "serviceType": "360° kamera",
+      "description": "360°-os vizuális dokumentáció állapotfelméréshez, virtuális bejáráshoz és referenciafotókhoz. Ingatlanosoknak, kivitelezőknek, hoteleknek.",
+      "url": "https://godatafusion.hu/360-camera/",
+      "inLanguage": "hu",
+      "provider": { "@type": "Organization", "name": "GoDataFusion", "url": "https://godatafusion.hu/" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "GoDataFusion", "item": "https://godatafusion.hu/" },
+        { "@type": "ListItem", "position": 2, "name": "Szolgáltatások", "item": "https://godatafusion.hu/#services" },
+        { "@type": "ListItem", "position": 3, "name": "360° kamera" }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body class="sv sv--capture">
+
+<a class="skip-link" href="#top">Ugrás a tartalomhoz</a>
+
+<div class="atmos" aria-hidden="true">
+  <div class="atmos__wash"></div>
+  <div class="atmos__accent atmos__accent--capture"></div>
+  <div class="atmos__accent atmos__accent--measure"></div>
+  <div class="atmos__accent atmos__accent--quantify"></div>
+  <div class="atmos__vignette"></div>
+  <div class="atmos__grain"></div>
+</div>
+
+<div class="frame" aria-hidden="true">
+  <span class="frame__rule" style="--i:0"></span>
+  <span class="frame__rule" style="--i:1"></span>
+  <span class="frame__rule" style="--i:2"></span>
+  <span class="frame__rule" style="--i:3"></span>
+  <span class="frame__rule" style="--i:4"></span>
+  <b class="frame__mark frame__mark--tl"></b>
+  <b class="frame__mark frame__mark--tr"></b>
+  <b class="frame__mark frame__mark--bl"></b>
+  <b class="frame__mark frame__mark--br"></b>
+</div>
+
+<div class="cursor" id="cursor" aria-hidden="true">
+  <span class="cursor__ring"></span>
+  <span class="cursor__dot"></span>
+  <span class="cursor__label" id="cursorLabel"></span>
+</div>
+
+<div class="stage" id="stage" data-stage="capture">
+  <canvas class="stage__canvas" id="gl" aria-hidden="true"></canvas>
+  <div class="stage__fallback" id="stageFallback" aria-hidden="true">
+    <svg viewBox="0 0 720 520" preserveAspectRatio="xMidYMid meet" role="img" aria-label="GoDataFusion 360° kamera — statikus ábra">
+      <g class="fb-terrain"><path d="M60 366 300 226 660 366 420 506Z"/><path d="M160 366 300 286 560 366 420 446Z"/></g>
+      <g class="fb-mass"><path d="M258 322 366 260 474 322 366 384Z"/><path d="M258 322v-92l108-62 108 62v92l-108 62Z"/><path d="M366 260v124"/></g>
+      <g class="fb-accent">
+        <circle cx="212" cy="352" r="4"/><circle cx="366" cy="162" r="4"/><circle cx="540" cy="309" r="4"/>
+        <circle cx="300" cy="430" r="4"/><circle cx="470" cy="420" r="4"/>
+        <path d="M212 352 366 162 540 309 470 420 300 430Z" stroke-dasharray="5 6"/>
+      </g>
+    </svg>
+  </div>
+  <div class="annos" id="annos" aria-hidden="true"></div>
+  <div class="stage__veil" aria-hidden="true"></div>
+</div>
+
+<div class="scanplane" id="scanplane" aria-hidden="true">
+  <span class="scanplane__field"></span>
+  <span class="scanplane__line"></span>
+</div>
+
+<header class="nav" id="nav">
+  <a class="nav__brand" href="/" aria-label="GoDataFusion — kezdőlap">
+    <span class="nav__glyph" aria-hidden="true"></span>
+    <span class="nav__word">GoDataFusion</span>
+  </a>
+
+  <nav class="nav__links" aria-label="Fő navigáció">
+    <a href="/#services">Services</a>
+    <a href="/#process">Process</a>
+    <a href="/#about">About</a>
+    <a href="/#contact">Contact</a>
+  </nav>
+
+  <a class="btn btn--cta" href="#project" data-cursor="start" data-no-transition>
+    <span>START PROJECT</span>
+    {{glyph:arrow gl--16}}
+  </a>
+
+  <button class="nav__burger" id="navBurger" type="button" aria-expanded="false" aria-controls="navLinksMobile">
+    <span class="sr-only">Menü</span><i aria-hidden="true"></i><i aria-hidden="true"></i>
+  </button>
+</header>
+
+<nav class="nav__drawer" id="navLinksMobile" aria-label="Mobil navigáció" hidden>
+  <a href="/360-camera/">360° kamera</a>
+  <a href="/teruletfelmeres/">Területfelmérés</a>
+  <a href="/mennyisegszamitas/">Mennyiségszámítás</a>
+  <a href="/#process">Process</a>
+  <a href="/#about">About</a>
+  <a class="nav__drawer-cta" href="#project" data-no-transition>START PROJECT ↗</a>
+</nav>
+
+<main id="main">
+
+  <!-- ================= HERO ================= -->
+  <section class="sv-hero" id="top">
+    <div class="sv-hero__content">
+      <nav class="sv-crumb" aria-label="Morzsamenü">
+        <a href="/">GODATAFUSION</a>
+        <span aria-hidden="true">/</span>
+        <a href="/#services">SERVICES</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">360° KAMERA</span>
+      </nav>
+
+      <p class="sv-eyebrow"><span>01</span> CAPTURE</p>
+
+      <h1 class="sv-hero__title">
+        <span class="line"><span class="line__in">CAPTURE THE SITE.</span></span>
+        <span class="line"><span class="line__in">RETURN ANYTIME.</span></span>
+      </h1>
+
+      <p class="sv-lede">Egy bejárás alatt rögzítjük a teljes helyszínt. Utána bármikor visszatérhet — a projekt bármely pontján, anélkül hogy újra ki kellene menni.</p>
+
+      <div class="sv-cta">
+        <a class="btn btn--solid" href="#project" data-cursor="start" data-no-transition>
+          <span>CAPTURE PROJEKT INDÍTÁSA</span>
+          {{glyph:arrow gl--16}}
+        </a>
+        <a class="btn btn--ghost" href="#pano" data-no-transition>360° DEMÓ</a>
+      </div>
+    </div>
+
+    <p class="sv-meta" aria-hidden="true"><span class="sv-meta__i">CP-01 → CP-08</span><span class="sv-meta__i">LEVEL 01</span><span class="sv-meta__i">CAPTURED</span><span class="sv-meta__i">360°</span></p>
+  </section>
+
+  <!-- ================= A FOLYAMAT ================= -->
+  <section class="sv-sec sv-story" id="story">
+    <div class="sv-sec__head">
+      <p class="sv-eyebrow"><span>01</span> HOW IT WORKS</p>
+      <h2 class="sv-h">
+        <span class="line"><span class="line__in">RÖGZÍTÉS,</span></span>
+        <span class="line"><span class="line__in">RENDSZEREZÉS,</span></span>
+        <span class="line"><span class="line__in">VISSZATÉRÉS.</span></span>
+      </h2>
+    </div>
+
+    <div class="sv-states" role="group" aria-label="Nézetváltás">
+      <button class="sv-state" type="button" data-state="capSite" aria-pressed="true">CAPTURE</button>
+      <button class="sv-state" type="button" data-state="capStation" aria-pressed="false">ORGANIZE</button>
+      <button class="sv-state" type="button" data-state="capReturn" aria-pressed="false">RETURN</button>
+    </div>
+
+    <ol class="sv-steps">
+      <li class="sv-step" data-state="capSite">
+        <p class="sv-step__i">01</p>
+        <h3 class="sv-step__k">{{glyph:capture sv-gl gl--20}}CAPTURE</h3>
+        <p class="sv-step__c">
+          A helyszínt egy bejárás alatt rögzítjük. A felvételi pontok
+          egyenletesen fedik le a területet, hogy ne maradjon takarásban lévő
+          rész — ez a fizikai állapot időbélyeges rögzítése.
+        </p>
+      </li>
+      <li class="sv-step" data-state="capStation">
+        <p class="sv-step__i">02</p>
+        <h3 class="sv-step__k">{{glyph:layers sv-gl gl--20}}ORGANIZE</h3>
+        <p class="sv-step__c">
+          A felvételi pontok a projekt strukturált hivatkozásaivá válnak:
+          szintenként és helyiségenként azonosítva, alaprajzhoz kötve.
+          Nem képmappa lesz belőle, hanem kereshető helyszínrajz.
+        </p>
+      </li>
+      <li class="sv-step" data-state="capReturn">
+        <p class="sv-step__i">03</p>
+        <h3 class="sv-step__k">{{glyph:delivery sv-gl gl--20}}RETURN</h3>
+        <p class="sv-step__c">
+          Utólag bármikor visszatérhet a helyszínre — vitás kérdésnél,
+          átadásnál, garanciális ügynél. A rögzített állapot akkor is
+          megnézhető, ha a szerkezet már be van építve.
+        </p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ================= 360° DEMO ================= -->
+  <section class="sv-sec sv-pano" id="pano" data-stage-end>
+    <div class="sv-sec__head">
+      <p class="sv-eyebrow"><span>02</span> VIEW 360°</p>
+      <h2 class="sv-h">
+        <span class="line"><span class="line__in">ÁLLJON BE EGY</span></span>
+        <span class="line"><span class="line__in">FELVÉTELI PONTBA.</span></span>
+      </h2>
+      <p class="sv-lede">
+        Így néz ki egy rögzített helyszín belülről. Húzza el az egérrel vagy
+        az ujjával, és nézzen körbe; a felvételi pontok között ugyanígy lehet
+        váltani, ahogy egy valódi projektben is.
+      </p>
+    </div>
+
+    <div class="pano" id="panoShell">
+      <!-- data-lenis-prevent: belt and braces. The page is scroll-locked while
+           the viewer is open (core/scroll.js), and this additionally tells the
+           smooth-scroll layer that gestures inside this box are never page
+           scrolls — so a wheel over the canvas is a field-of-view change and
+           nothing else, even if the lock is ever bypassed. -->
+      <div class="pano__frame" data-lenis-prevent>
+        <canvas class="pano__canvas" id="panoCanvas" tabindex="0"
+                role="application"
+                aria-label="360 fokos nézet. Húzással vagy a nyílbillentyűkkel nézhet körbe, Escape bezárja."></canvas>
+
+        <!-- PHASE 9 Part 11 — ONE HEADER LINE, IN READING ORDER.
+             What is being looked at first, where it is second, its
+             identifier third. The Phase 8 header led with the station
+             number, which is the one thing a visitor has no use for until
+             they want to come back to it. -->
+        <div class="pano__hud" aria-hidden="true">
+          <span class="pano__lvl" id="panoLevel">RECEPCIÓ</span>
+          <span class="pano__flr" id="panoFloor">L00</span>
+          <span class="pano__id" id="panoId">CP-01</span>
+          <span class="pano__cnt" id="panoCount">01 / 20</span>
+          <span class="pano__head" id="panoHeading">É</span>
+        </div>
+
+        <!-- PHASE 9 Part 36 — the cross-link out of the record and into the
+             structured data. Present only for the reference room, which is
+             the one room the site follows all the way through; every other
+             station navigates the ordinary way. -->
+        <a class="pano__x" id="panoToPlan" hidden
+           href="/mennyisegszamitas/">ALAPRAJZON <span aria-hidden="true">&#8599;</span></a>
+
+        <!-- PHASE 9 Part 12 — the floor map. Outline, rooms, capture points,
+             and which way the camera above is pointing. Nothing else, and
+             every rectangle in it comes out of levelFeatures(). -->
+        <div class="pmap" id="panoMap">
+          <button class="pmap__t" id="panoMapToggle" type="button"
+                  aria-expanded="false" aria-controls="panoMapBody">ALAPRAJZ</button>
+          <div class="pmap__body" id="panoMapBody">
+            <p class="pmap__cap" aria-hidden="true"></p>
+          </div>
+        </div>
+
+        <!-- PHASE 8 — FLOOR, THEN STATION.
+             Twenty capture points in one list is a list. Three floors of
+             five to eight is a building, and choosing the floor first is how
+             anyone actually navigates one. Both rails are built from the
+             viewer's own station table, so a station added in Blender
+             appears here without this markup changing. -->
+        <div class="pano__nav" id="panoNav">
+          <div class="pano__floors" id="panoFloors" role="group"
+               aria-label="Szint választása"></div>
+          <div class="pano__stations" id="panoStations" role="group"
+               aria-label="Felvételi pont választása"></div>
+        </div>
+
+        <p class="pano__demo">DEMO ENVIRONMENT</p>
+
+        <div class="pano__ctl">
+          <button class="pano__b" id="panoPrev" type="button">
+            <span aria-hidden="true">←</span><span class="sr-only">Előző felvételi pont</span>
+          </button>
+          <button class="pano__b" id="panoNext" type="button">
+            <span aria-hidden="true">→</span><span class="sr-only">Következő felvételi pont</span>
+          </button>
+          <button class="pano__b pano__b--x" id="panoExit" type="button">
+            <span aria-hidden="true">ESC</span><span class="sr-only">360°-os nézet bezárása</span>
+          </button>
+        </div>
+
+        <!-- The closed viewer used to be an empty bordered rectangle with a
+             label in the middle — the weakest frame on the site. It is now
+             the station it is about to put you in: a bearing scale on the
+             horizon, and the eight capture points of this walk indexed along
+             the base. All of it is the viewer's own metadata, not decoration. -->
+        <button class="pano__open" type="button" data-pano-open data-cursor="start">
+          <span class="pano__open-h" aria-hidden="true">
+            <i class="pano__open-b" style="--b:0">É</i>
+            <i class="pano__open-b" style="--b:.25">K</i>
+            <i class="pano__open-b" style="--b:.5">D</i>
+            <i class="pano__open-b" style="--b:.75">NY</i>
+          </span>
+          <span class="pano__open-k">VIEW 360°</span>
+          <span class="pano__open-c">Belépés a felvételi pontba</span>
+          <span class="pano__open-s" aria-hidden="true">
+            <i class="is-on">L00</i><i>L01</i><i>L02</i>
+          </span>
+          <span class="pano__open-n" id="panoOpenCount" aria-hidden="true">
+            20 FELVÉTELI PONT · 3 SZINT
+          </span>
+        </button>
+
+        <p class="pano__load" aria-hidden="true">BETÖLTÉS…</p>
+        <p class="pano__fail">A 360°-os nézet ezen az eszközön nem indítható el. A lenti leírás ugyanazt az információt tartalmazza.</p>
+      </div>
+
+      <p class="sr-only" id="panoStatus" role="status" aria-live="polite"></p>
+
+      <div class="pano__meta">
+        <p class="pano__note">
+          <b>DEMO ENVIRONMENT.</b> A bemutatott környezet a GoDataFusion saját
+          demonstrációs terepmodellje, nem ügyfélprojekt. Éles munkánál a
+          felvételi pontokat a valós helyszínen rögzítjük.
+        </p>
+        <p class="pano__alt">
+          A nézetben egy háromszintes épület belseje látható: a földszint
+          fogadótere és tárgyalója, az emeleti nyitott iroda és fókuszszobái,
+          valamint a legfelső szint BIM-szobája és projektstúdiója. Húsz
+          felvételi pont három szinten; mindegyikből ugyanaz az épület
+          látszik, más pozícióból. A szintek között a szintválasztóval,
+          a pontok között a nyilakkal lehet lépni.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= EGY HELYSZÍN, HÁROM NÉZET =================
+       Phase 3 set this as three cards with three icons, which said nothing
+       about capture and left the lower half of the page as the weakest
+       stretch on the site. It is now a spatial documentation track: ONE
+       site plan, read three times, with the capture station moving between
+       readings. STATE → ACCESS → REFERENCE, which is the actual sequence a
+       360° record goes through. The metadata is interface metadata — a
+       station id, a level, a bearing — never a claimed project or date. -->
+  <section class="sv-sec sv-uses" data-scan-target>
+    <div class="sv-sec__head">
+      <p class="sv-eyebrow"><span>03</span> USE CASES</p>
+      <h2 class="sv-h"><span class="line"><span class="line__in">EGY HELYSZÍN,</span></span><span class="line"><span class="line__in">HÁROM NÉZET.</span></span></h2>
+      <p class="sv-lede">
+        Ugyanaz a rögzített helyszín — a különbség az, hogy mikor és mire
+        nyúlnak vissza hozzá.
+      </p>
+    </div>
+
+    <!-- the traverse: one continuous station rule under all three readings -->
+    <div class="uses">
+      <p class="uses__rail" aria-hidden="true">
+        <span class="uses__rail-k">TRAVERSE</span>
+        <span class="uses__rail-l"></span>
+        <span class="uses__rail-v">CP-01 → CP-08</span>
+      </p>
+
+      <ol class="uses__track">
+        <li class="uses__v" data-view="state">
+          <p class="uses__i"><b>01</b> STATE</p>
+          <figure class="uses__fig">
+            <svg viewBox="0 0 320 200" aria-hidden="true">
+              <g class="uv-plan">
+                <path d="M24 24h130v152H24Z"/>
+                <path d="M24 104h130M92 24v152"/>
+                <path d="M154 24h142v152H154Z" class="uv-far"/>
+              </g>
+              <g class="uv-thin"><path d="M40 40h34M40 52h22M108 128h30M108 140h18"/></g>
+              <g class="uv-mark">
+                <circle class="uv-st" cx="92" cy="104" r="5"/>
+                <path class="uv-cone" d="M92 104 38 66 30 102Z"/>
+                <path class="uv-cross" d="M92 84v-14M92 138v-14M62 104H48M136 104h-14"/>
+              </g>
+              <path class="uv-crop" d="M24 24h20M24 24v20M296 176h-20M296 176v-20"/>
+            </svg>
+            <figcaption class="uses__meta">
+              <span>CP-04</span><span>LEVEL 01</span><span>VIEW 218°</span>
+            </figcaption>
+          </figure>
+          <h3 class="uses__k">ÁLLAPOTFELMÉRÉS</h3>
+          <p class="uses__c">
+            A meglévő állapot rögzítése munkakezdés előtt vagy átadás után.
+            Később bizonyítható, mi volt ott és milyen állapotban.
+          </p>
+        </li>
+
+        <li class="uses__v" data-view="access">
+          <p class="uses__i"><b>02</b> ACCESS</p>
+          <figure class="uses__fig">
+            <svg viewBox="0 0 320 200" aria-hidden="true">
+              <g class="uv-plan">
+                <path d="M24 24h272v152H24Z"/>
+                <path d="M118 24v66M118 118v58M212 24v40M212 92v84M24 104h58M96 104h22"/>
+              </g>
+              <g class="uv-thin"><path d="M36 40h28M36 50h18M232 152h32M232 162h20"/></g>
+              <!-- an orthogonal route through the openings, not a chart line -->
+              <path class="uv-path" d="M62 148V70h96v78h96V64"/>
+              <g class="uv-arrow"><path d="M58 106l4-8 4 8M154 74l8 4-8 4M250 108l4-8 4 8"/></g>
+              <g class="uv-mark">
+                <circle class="uv-st" cx="62" cy="148" r="4"/>
+                <circle class="uv-st" cx="62" cy="70" r="3"/>
+                <circle class="uv-st" cx="158" cy="70" r="4"/>
+                <circle class="uv-st" cx="158" cy="148" r="3"/>
+                <circle class="uv-st" cx="254" cy="148" r="3"/>
+                <circle class="uv-st uv-st--on" cx="254" cy="64" r="5"/>
+              </g>
+              <g class="uv-lbl"><text x="52" y="164">01</text><text x="150" y="60">03</text><text x="246" y="54">08</text></g>
+            </svg>
+            <figcaption class="uses__meta">
+              <span>CP-01 → CP-03</span><span>PATH</span><span>NAVIGABLE</span>
+            </figcaption>
+          </figure>
+          <h3 class="uses__k">VIRTUÁLIS BEJÁRÁS</h3>
+          <p class="uses__c">
+            A helyszín távolról is bejárható. Alvállalkozó, tervező vagy
+            megrendelő megnézheti anélkül, hogy kiutazna.
+          </p>
+        </li>
+
+        <li class="uses__v" data-view="reference">
+          <p class="uses__i"><b>03</b> REFERENCE</p>
+          <figure class="uses__fig">
+            <svg viewBox="0 0 320 200" aria-hidden="true">
+              <g class="uv-plan uv-far">
+                <path d="M24 16h272v104H24Z"/>
+                <path d="M118 16v104M212 16v104M24 78h94"/>
+              </g>
+              <!-- the capture becomes a record: one frame pulled out of an
+                   indexed contact strip, still tied to where it was taken -->
+              <g class="uv-frame">
+                <path d="M118 26h84v62h-84Z"/>
+              </g>
+              <g class="uv-thin"><path d="M126 78 146 58l14 12 16-22 18 30M126 34h22"/></g>
+              <path class="uv-lead" d="M160 88v42"/>
+              <g class="uv-idx">
+                <path d="M24 168h272"/>
+                <path d="M24 130h32v38H24ZM58 130h32v38H58ZM92 130h32v38H92ZM126 130h32v38h-32ZM160 130h32v38h-32ZM194 130h32v38h-32ZM228 130h32v38h-32ZM262 130h32v38h-32Z"/>
+              </g>
+              <g class="uv-sel"><path d="M144 128h32v42h-32Z"/></g>
+              <g class="uv-lbl"><text x="206" y="34">R-04</text><text x="24" y="184">01</text><text x="262" y="184">08</text></g>
+            </svg>
+            <figcaption class="uses__meta">
+              <span>INDEX 08</span><span>LOCATION-LOCKED</span><span>ARCHIVE</span>
+            </figcaption>
+          </figure>
+          <h3 class="uses__k">REFERENCIAFOTÓK</h3>
+          <p class="uses__c">
+            Strukturált vizuális projektnapló. Nem szétszórt telefonfotók,
+            hanem sorszámozott, helyhez kötött felvételek.
+          </p>
+        </li>
+      </ol>
+
+      <p class="uses__note">
+        Ajánljuk <b>ingatlanosoknak</b>, <b>kivitelezőknek</b> és <b>hoteleknek</b> —
+        mindenkinek, akinek egy helyszínt többször, több embernek kell megmutatnia.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= AMI A MUNKÁHOZ KELL =================
+       CAPTURE's project input is a SITE briefing, so it is composed as one:
+       the three things we need are anchored to the places on a parcel they
+       actually describe. Same requirement list, same copy, same semantics —
+       a different editorial wrapper from MEASURE's requirement sheet and
+       QUANTIFY's document composition. -->
+  <section class="sv-sec sv-input sv-input--site">
+    <div class="sv-sec__head">
+      <p class="sv-eyebrow"><span>04</span> PROJECT INPUT</p>
+      <h2 class="sv-h"><span class="line"><span class="line__in">A HELYSZÍN</span></span><span class="line"><span class="line__in">ELŐKÉSZÍTÉSE.</span></span></h2>
+      <p class="sv-lede">
+        Három dolog kell a bejárás megtervezéséhez — mindegyik a helyszín
+        egy másik kérdésére válaszol.
+      </p>
+    </div>
+
+    <div class="site">
+      <figure class="site__fig" aria-hidden="true">
+        <svg viewBox="0 0 460 320">
+          <g class="st-parcel"><path d="M28 40 432 28l-14 264L40 280Z"/></g>
+          <g class="st-grid">
+            <path d="M28 100h400M28 160h398M28 220h396M130 34v250M232 32v252M334 30v254"/>
+          </g>
+
+          <!-- A · location -->
+          <g class="st-a">
+            <path class="st-lead" d="M96 96V56h-46"/>
+            <circle class="st-node" cx="96" cy="96" r="5"/>
+            <path class="st-cross" d="M96 82v-8M96 118v-8M78 96h-8M122 96h-8"/>
+            <text x="52" y="50">A</text>
+          </g>
+
+          <!-- B · brief -->
+          <g class="st-b">
+            <path class="st-lead" d="M262 150h84v-40h68"/>
+            <path class="st-brief" d="M198 128h64v44h-64Z"/>
+            <path class="st-thin" d="M208 142h44M208 152h32M208 162h38"/>
+            <text x="418" y="106">B</text>
+          </g>
+
+          <!-- C · floor plan -->
+          <g class="st-c">
+            <path class="st-plan" d="M236 200h132v76H236Z"/>
+            <path class="st-plan" d="M292 200v76M236 240h56M292 244h76"/>
+            <path class="st-lead" d="M368 238h56v52"/>
+            <text x="428" y="296">C</text>
+          </g>
+
+          <path class="st-dim" d="M28 300h390M28 294v12M418 294v12"/>
+          <text class="st-dimt" x="200" y="316">SITE EXTENT</text>
+        </svg>
+      </figure>
+
+      <dl class="sv-req site__req">
+        <div class="sv-req__row" data-anchor="A">
+          <dt class="sv-req__k">{{glyph:location sv-gl gl--20}}PROJEKT HELYSZÍN <b>KÖTELEZŐ</b></dt>
+          <dd class="sv-req__c">Cím vagy pontos megnevezés. Ebből tudjuk megtervezni a bejárást és az utazást.</dd>
+        </div>
+        <div class="sv-req__row" data-anchor="B">
+          <dt class="sv-req__k">{{glyph:data sv-gl gl--20}}FELADATLEÍRÁS <b>KÖTELEZŐ</b></dt>
+          <dd class="sv-req__c">Néhány mondat arról, mit kell dokumentálni és mire fogja használni.</dd>
+        </div>
+        <div class="sv-req__row" data-anchor="C">
+          <dt class="sv-req__k">{{glyph:plan sv-gl gl--20}}ALAPRAJZ <i>NAGYOBB PROJEKTNÉL</i></dt>
+          <dd class="sv-req__c">Nagyobb épületnél az alaprajz segít megbecsülni a felvételi pontok számát. Kisebb helyszínhez nem szükséges.</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ================= A MÁSIK KÉT SZOLGÁLTATÁS ================= -->
+  <!-- ================= A MÁSIK KÉT SZOLGÁLTATÁS =================
+       Not site navigation. The three services are three readings of one
+       reality, so the link into a sibling shows the DESTINATION's reading of
+       the same object — points, contours, plan lines — and takes on that
+       mode's accent while it is being considered. -->
+  <section class="sv-sec sv-sib" id="other">
+    <div class="sv-sec__head">
+      <h2 class="sv-h sv-h--s">
+        <span class="line"><span class="line__in">SAME REALITY.</span></span>
+        <span class="line"><span class="line__in">ANOTHER VIEW.</span></span>
+      </h2>
+      <p class="sv-lede">
+        Ugyanaz a projekt, más kérdésre válaszolva. A három szolgáltatás
+        egymásra épül, de külön is kérhető.
+      </p>
+    </div>
+    <div class="sib">
+      <a class="sib__a" href="/teruletfelmeres/" data-service="measure" data-cursor="EXPLORE">
+        <span class="sib__i">02</span>
+        <span class="sib__fig"><svg class="sib__g sib__g--measure" viewBox="0 0 168 112" aria-hidden="true"><g class="sp-line"><path d="M30 66 84 34 138 66 84 98Z"/><path d="M30 66V42L84 10l54 32v24L84 98Z"/><path d="M84 34v64M30 42l54 32 54-32"/></g><g class="sp-band"><path d="M8 54h152M8 66h152M8 78h152M8 90h152"/></g></svg></span>
+        <span class="sib__k">MEASURE</span>
+        <span class="sib__hu">Területfelmérés</span>
+        <span class="sib__c">Terepmodell, szintvonalrajz és számított földtömeg egy helyszíni felmérésből.</span>
+        <span class="sib__go" aria-hidden="true">
+          <span class="sib__go-r"></span><span class="sib__go-t">NÉZET VÁLTÁS</span>
+        </span>
+      </a>
+      <a class="sib__a" href="/mennyisegszamitas/" data-service="quantify" data-cursor="EXPLORE">
+        <span class="sib__i">03</span>
+        <span class="sib__fig"><svg class="sib__g sib__g--quantify" viewBox="0 0 168 112" aria-hidden="true"><g class="sp-line"><path d="M30 66 84 34 138 66 84 98Z"/><path d="M30 66V42L84 10l54 32v24L84 98Z"/><path d="M84 34v64M30 42l54 32 54-32"/></g><g class="sp-plan"><path d="M42 72h84v22H42Z"/><path d="M84 72v22"/></g><g class="sp-dim"><path d="M42 104h84M42 100v8M126 100v8"/></g></svg></span>
+        <span class="sib__k">QUANTIFY</span>
+        <span class="sib__hu">Mennyiségszámítás</span>
+        <span class="sib__c">2D tervrajzból strukturált konszignáció, helyiségkönyv és rétegrend.</span>
+        <span class="sib__go" aria-hidden="true">
+          <span class="sib__go-r"></span><span class="sib__go-t">NÉZET VÁLTÁS</span>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ================= START PROJECT ================= -->
+  <section class="sv-sec sv-project" id="project">
+    <div class="sv-project__head">
+      <p class="sv-eyebrow"><span>—</span> START PROJECT</p>
+      <h2 class="sv-h">
+        <span class="line"><span class="line__in">INDÍTSA EL</span></span>
+        <span class="line"><span class="line__in">A PROJEKTET.</span></span>
+      </h2>
+      <p class="sv-lede">
+        A(z) <b>360° kamera</b> már ki van választva. Írja le a feladatot,
+        és munkanapon belül válaszolunk.
+      </p>
+    </div>
+
+    <div id="projectMount"></div>
+
+    <noscript>
+      <p class="sv-note">
+        Az űrlaphoz JavaScript szükséges. Írjon közvetlenül:
+        <a href="mailto:hello@godatafusion.hu" data-company="email-href">hello@godatafusion.hu</a>
+      </p>
+    </noscript>
+  </section>
+
+</main>
+
+<footer class="foot" id="contact">
+  <div class="foot__mark is-lit" id="footMark">
+    <span class="foot__line" style="--i:0"><span class="foot__word is-on" data-l="1">REALITY</span></span>
+    <span class="foot__line" style="--i:1"><i class="foot__slash" aria-hidden="true">/</i><span class="foot__word is-on" data-l="2">DATA</span></span>
+    <span class="foot__line" style="--i:2"><i class="foot__slash" aria-hidden="true">/</i><span class="foot__word is-on" data-l="3">FUSED</span></span>
+  </div>
+
+  <div class="foot__grid">
+    <nav class="foot__nav" aria-label="Lábléc navigáció">
+      <p class="foot__k">SITE</p>
+      <a href="/">Kezdőlap</a>
+      <a href="/#process">Process</a>
+      <a href="/#about">About</a>
+      <a href="#project" data-no-transition>Start project</a>
+    </nav>
+
+    <div class="foot__col">
+      <p class="foot__k">SZOLGÁLTATÁSOK</p>
+      <a href="/360-camera/">360° kamera</a>
+      <a href="/teruletfelmeres/">Területfelmérés</a>
+      <a href="/mennyisegszamitas/">Mennyiségszámítás</a>
+    </div>
+
+    <div class="foot__col foot__col--contact">
+      <p class="foot__k">KAPCSOLAT</p>
+      <a class="foot__mail" id="footMail" data-company="email" href="mailto:hello@godatafusion.hu">hello@godatafusion.hu</a>
+      <p class="foot__ph" data-company="email-note">Placeholder elérhetőség — élesítés előtt cserélendő.</p>
+    </div>
+
+    <div class="foot__col">
+      <p class="foot__k">JOGI</p>
+      <p class="foot__legal" data-company="legal-company">Cégadatok, székhely és adószám: kitöltendő.</p>
+      <p class="foot__legal">A felmérés nem minősül hivatalos földmérésnek.</p>
+      <p class="foot__legal">Az oldalon látható mérési értékek demonstrációs adatok.</p>
+    </div>
+  </div>
+
+  <p class="foot__base">
+    <span>© <span id="footYear">2026</span> GoDataFusion</span>
+    <span>TURN REALITY INTO DATA.</span>
+  </p>
+</footer>
+
+<script type="module" src="/src/service.js"></script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+/* ============================================================
+   EVIDENCE — the project evidence sheet.
+
+   Imported by modules/evidence/sheet.js, which means Vite emits it as
+   part of that lazy chunk: while there is no real project, none of this
+   is in the production CSS at all.
+
+   The language is the site's own — hairlines, a factual rail, mono
+   microcopy, no cards — pointed at one job: showing a real asset at a
+   size where it can be examined, and stating what it is beside it.
+   ============================================================ */
+.ev {
+  position: relative; z-index: 2;
+  background: var(--bg);
+  padding: 0 var(--gutter) var(--sec-y);
+}
+/* The section tracker is fixed in the right margin above 1240px, and the
+   fact rail is the one right-aligned column on the site that would run
+   underneath it. Reserve its lane rather than letting a real project's
+   OUTPUT value be overprinted by section numbers. */
+@media (min-width: 1241px) { .ev { padding-right: max(var(--gutter), 122px); } }
+.ev__head { max-width: 1180px; margin-bottom: clamp(30px, 5vh, 66px); }
+.ev__title {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: var(--fs-dl); font-weight: 500; line-height: var(--lh-d); letter-spacing: var(--ls-dl);
+}
+
+/* ---------------- one sheet ---------------- */
+.ev__sheet {
+  display: grid;
+  gap: clamp(20px, 3vw, 52px);
+  padding-block: clamp(30px, 5vh, 64px);
+  border-top: var(--rule-w) solid var(--rule-primary);
+}
+@media (min-width: 900px) {
+  /* The visual owns the frame; the facts are a rail beside it, not a
+     caption under it. */
+  .ev__sheet { grid-template-columns: minmax(0, 1fr) minmax(15rem, 26%); align-items: start; }
+}
+
+.ev__vis { position: relative; margin: 0; }
+.ev__vis img {
+  display: block; width: 100%; height: auto;
+  border: var(--rule-w) solid var(--rule-secondary);
+  background: var(--bg-lift);
+}
+/* What kind of record this is — stated on the sheet, in the service's own
+   accent, because a panorama and a drawing are different claims. */
+.ev__kind {
+  position: absolute; left: 0; top: 0;
+  padding: 7px 11px;
+  background: rgba(8, 10, 11, .82);
+  border-right: 1px solid rgb(var(--accent) / .55);
+  border-bottom: 1px solid rgb(var(--accent) / .55);
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); text-transform: uppercase;
+  color: var(--accent-c);
+  /* PHASE 8.3 — no backdrop filter; an 82% scrim over a photograph does
+     not need one, and a filter here is a render surface over an image. */
+  font-weight: 500;
+}
+.ev__credit {
+  margin-top: 8px;
+  font-family: var(--ff-text); font-size: var(--fs-micro); color: var(--fg-50);
+}
+
+.ev__body { display: grid; align-content: start; gap: clamp(12px, 1.8vh, 20px); }
+.ev__k {
+  font-size: clamp(1.1rem, 1.35vw + .12rem, 2rem);
+  font-weight: 500; letter-spacing: -.028em; line-height: 1.08;
+}
+.ev__c {
+  font-size: var(--fs-lede); line-height: 1.6; color: var(--fg-60);
+  letter-spacing: -.004em; text-wrap: pretty;
+}
+
+/* The factual rail. The same instrument-readout grammar ABOUT uses, so a
+   real project reads as part of the system rather than as a new template. */
+.ev__rail { display: grid; gap: 0; margin: clamp(6px, 1vh, 12px) 0 0; }
+.ev__rail > div {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+  padding: 9px 0; border-top: var(--rule-w) solid var(--rule-secondary);
+}
+.ev__rail > div:last-child { border-bottom: var(--rule-w) solid var(--rule-secondary); }
+.ev__rail dt {
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--fg-50);
+  font-weight: 500;
+}
+.ev__rail dd {
+  margin: 0; text-align: right;
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); color: var(--fg);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------- 01 CONTEXT … 05 RESULT ---------------- */
+.ev__steps {
+  grid-column: 1 / -1;
+  list-style: none; margin: clamp(10px, 2vh, 22px) 0 0; padding: 0;
+  display: grid; gap: clamp(18px, 2.4vw, 40px);
+}
+@media (min-width: 760px) {
+  .ev__steps { grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+}
+.ev__steps li { display: grid; gap: 10px; padding-top: 13px; border-top: var(--rule-w) solid var(--rule-secondary); }
+.ev__step-k {
+  display: flex; align-items: baseline; gap: .6em;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--fg);
+  font-weight: 500;
+}
+.ev__step-i { color: var(--accent-c); font-variant-numeric: tabular-nums; }
+.ev__step-s { color: var(--fg-16); }
+.ev__step-c {
+  font-size: clamp(.84rem, .95vw, 1rem); line-height: 1.6;
+  color: var(--fg-60); letter-spacing: -.004em; text-wrap: pretty;
+}
+
+/* A project that touched more than one service stays on the neutral
+   foreground and names its services in the rail. No rainbow. */
+.ev__sheet[data-service='mixed'] .ev__kind { color: var(--fg); border-color: var(--fg-38); }
+.ev__sheet[data-service='mixed'] .ev__step-i { color: var(--fg); }

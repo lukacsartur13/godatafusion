@@ -1,0 +1,73 @@
+{
+ "staging": {
+  "drawCalls": 66,
+  "drawCallsStructure": 20,
+  "drawCallsFurniture": 46,
+  "mergedTris": {
+   "L00_STRUCTURE": 2448,
+   "L00_GLASS": 216,
+   "L01_STRUCTURE": 2158,
+   "L01_CEILING": 12,
+   "L01_GLASS": 276,
+   "L02_STRUCTURE": 1528,
+   "L02_CEILING": 12,
+   "L02_GLASS": 216,
+   "ROOF_STRUCTURE": 168,
+   "ROOF_CEILING": 12
+  },
+  "furnitureInstances": 212,
+  "furnitureUniqueMeshes": 24,
+  "furnitureTris": 103172,
+  "furnitureByLevel": {
+   "L00": 65,
+   "L01": 93,
+   "L02": 54
+  },
+  "stations": 20,
+  "weldedVerts": {
+   "before": 4920,
+   "after": 4033
+  },
+  "scale": 0.18692103428875387,
+  "floorY": -0.4901852690275988
+ },
+ "materials": {
+  "total": 21,
+  "textured": 16
+ },
+ "imagesStripped": 93,
+ "structure": 107756,
+ "furniture": 364316,
+ "stagingLite": {
+  "drawCalls": 52,
+  "drawCallsStructure": 20,
+  "drawCallsFurniture": 32,
+  "mergedTris": {
+   "L00_STRUCTURE": 2448,
+   "L00_GLASS": 216,
+   "L01_STRUCTURE": 2158,
+   "L01_CEILING": 12,
+   "L01_GLASS": 276,
+   "L02_STRUCTURE": 1528,
+   "L02_CEILING": 12,
+   "L02_GLASS": 216,
+   "ROOF_STRUCTURE": 168,
+   "ROOF_CEILING": 12
+  },
+  "furnitureInstances": 136,
+  "furnitureUniqueMeshes": 16,
+  "furnitureTris": 70831,
+  "furnitureByLevel": {
+   "L00": 50,
+   "L01": 86
+  },
+  "stations": 20,
+  "weldedVerts": {
+   "before": 4920,
+   "after": 4033
+  },
+  "scale": 0.18692103428875387,
+  "floorY": -0.4901852690275988
+ },
+ "furnitureLite": 269652
+}

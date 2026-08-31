@@ -1,0 +1,164 @@
+/* ============================================================
+   02 / MANIFESTO
+
+   One grammar, six words:  outline → structure → solid → data
+
+   The scan band crosses the word; whatever it has passed becomes
+   solid. On the way out the solid fill is replaced by a grid of
+   measurement lines clipped to the glyphs — the word does not fade,
+   it becomes data. Two scroll-linked custom properties drive all of
+   it, so the browser interpolates and JS writes nothing per frame.
+   ============================================================ */
+.manifesto {
+  z-index: 2;
+  padding-block: clamp(90px, 15vh, 200px) clamp(80px, 14vh, 190px);
+}
+
+.manifesto__head { max-width: 1180px; }
+
+.manifesto__title {
+  font-family: var(--ff-display);
+  font-size: var(--fs-dl);
+  font-weight: 500; line-height: var(--lh-d); letter-spacing: var(--ls-dl);
+  text-transform: uppercase;
+  max-width: 18ch;
+}
+
+.manifesto__lede {
+  margin-top: clamp(24px, 3.4vw, 44px);
+  max-width: 54ch;
+  font-size: var(--fs-body);
+  line-height: 1.62; color: var(--fg-60); letter-spacing: -.008em;
+  text-wrap: pretty;
+}
+
+/* ---------------- the words ---------------- */
+.mwords {
+  margin-top: clamp(56px, 10vh, 130px);
+  border-top: var(--rule-w) solid var(--rule-secondary);
+}
+
+.mword {
+  --reveal: 0;
+  --data: 0;
+  --mw-fill: var(--fg);
+  display: block;
+  padding: clamp(20px, 3.4vh, 44px) 0 clamp(16px, 2.6vh, 34px);
+  border-bottom: var(--rule-w) solid var(--rule-secondary);
+}
+
+.mword__type {
+  position: relative;
+  display: block;
+  opacity: calc(1 - var(--data) * .42);
+}
+
+.mword__layer {
+  display: block;
+  font-family: var(--ff-display);
+  font-size: var(--fs-mword);
+  font-weight: 500;
+  line-height: 1.02;
+  /* The manifesto words are the largest type on the site — 186 px at
+     2560 — and Instrument Sans's caps are narrower than the face this
+     replaced, so they take one step MORE tracking here rather than one
+     step less. Checked against DIGITALIZÁCIÓ. and OPTIMALIZÁLÁS., the
+     two longest strings, at every breakpoint in §26. */
+  letter-spacing: -.046em;
+  white-space: nowrap;
+}
+
+/* 1 — OUTLINE: the word exists, but only as edges. */
+.mword__layer--outline {
+  position: relative;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--fg-28);
+}
+
+/* 2/3 — everything the band has already crossed is resolved. */
+.mword__layer--solid,
+.mword__layer--grid {
+  position: absolute; inset: 0;
+  clip-path: inset(0 0 calc((1 - var(--reveal)) * 100%) 0);
+}
+
+/* SOLID — the resolved state. */
+.mword__layer--solid {
+  color: var(--mw-fill);
+  opacity: calc(1 - var(--data));
+}
+
+/* DATA — the same glyphs, filled with a measurement grid instead of ink. */
+.mword__layer--grid {
+  color: transparent;
+  background-image:
+    repeating-linear-gradient(0deg,  var(--mw-fill) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(90deg, var(--mw-fill) 0 1px, transparent 1px 6px);
+  -webkit-background-clip: text;
+  background-clip: text;
+  opacity: var(--data);
+}
+
+/* The band itself — the same gesture as the Scan Plane, at type scale. */
+/* The band carries the word's OWN colour, so the accent that resolves the
+   glyphs is the same one that is doing the resolving. */
+.mword__band {
+  position: absolute; left: -1.5%; right: -1.5%;
+  top: calc(var(--reveal) * 100%);
+  height: 1px;
+  color: var(--mw-fill);
+  background: linear-gradient(90deg, transparent,
+    currentColor 16%, currentColor 84%, transparent);
+  /* peaks mid-sweep, gone at both ends */
+  opacity: calc(var(--reveal) * (1 - var(--reveal)) * 3.4);
+  box-shadow: 0 0 22px currentColor;
+}
+
+/* ---------------- the measurement line under each word ---------------- */
+.mword__meta {
+  display: grid;
+  grid-template-columns: minmax(0, 14ch) minmax(0, 1fr);
+  gap: clamp(16px, 3vw, 54px);
+  align-items: start;
+  margin-top: clamp(14px, 1.8vw, 24px);
+  padding-top: clamp(10px, 1.4vw, 18px);
+  position: relative;
+}
+.mword__meta::before {
+  content: ''; position: absolute; left: 0; top: 0; height: 1px;
+  width: 100%;
+  background: var(--fg-09);
+  transform: scaleX(var(--reveal)); transform-origin: left;
+}
+.mword__idx {
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  color: var(--fg-28);
+  font-variant-numeric: tabular-nums;
+}
+.mword__copy {
+  max-width: 52ch;
+  font-size: clamp(.86rem, .98vw, 1.02rem);
+  line-height: 1.6; color: var(--fg-42);
+  letter-spacing: -.004em;
+  transition: color var(--t-commit) var(--ease);
+}
+.mword.is-lit .mword__copy { color: var(--fg-60); }
+
+/* Exactly one accent on screen at a time — only the word under the
+   reading line takes one, and only three of the six have one to take. */
+.mword.is-focus[data-accent="capture"]  { --mw-fill: rgb(var(--accent-capture)); }
+.mword.is-focus[data-accent="measure"]  { --mw-fill: rgb(var(--accent-measure)); }
+.mword.is-focus[data-accent="quantify"] { --mw-fill: rgb(var(--accent-quantify)); }
+
+@media (max-width: 760px) {
+  .mword__layer { white-space: normal; }
+  .mword__layer--outline { -webkit-text-stroke-width: .7px; }
+  .mword__meta { grid-template-columns: 1fr; gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mword__band { display: none; }
+  .mword__layer--grid { display: none; }
+  .mword__layer--solid { opacity: 1; }
+  .mword__meta::before { transform: none; }
+}

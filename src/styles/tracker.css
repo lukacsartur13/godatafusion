@@ -1,0 +1,43 @@
+/* ============================================================
+   SECTION TRACKER
+   Instrument furniture, not a second navigation. A column of numbers;
+   only the active one earns its label. Lives in the outer margin so it
+   never competes with the engineering frame.
+   ============================================================ */
+.tracker {
+  position: fixed; z-index: 50;
+  right: clamp(8px, 1vw, 18px);
+  top: 50%; transform: translateY(-50%);
+  display: grid; gap: clamp(7px, .9vh, 12px);
+  pointer-events: auto;
+}
+
+.tk {
+  display: flex; align-items: center; justify-content: flex-end; gap: 9px;
+  font-family: var(--ff-label);
+  font-size: 9px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--fg-50);
+  transition: color var(--t-state) var(--ease);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+.tk i { font-style: normal; order: 2; }
+.tk b {
+  order: 1; font-weight: 400;
+  max-width: 0; opacity: 0; overflow: hidden; white-space: nowrap;
+  transition: max-width var(--t-commit) var(--ease), opacity var(--t-state) var(--ease);
+}
+.tk::after {
+  content: ''; order: 3;
+  width: 10px; height: 1px; background: currentColor;
+  transition: width var(--t-state) var(--ease);
+}
+.tk:hover { color: var(--fg-42); }
+.tk:hover b { max-width: 14ch; opacity: 1; }
+.tk.is-on { color: var(--accent-c); }
+.tk.is-on b { max-width: 14ch; opacity: 1; }
+.tk.is-on::after { width: 20px; }
+
+/* The telemetry column already owns the top-right of the hero; below
+   this width the two would collide, and the page reads better without it. */
+@media (max-width: 1240px) { .tracker { display: none; } }

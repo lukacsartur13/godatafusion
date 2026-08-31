@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="hu" data-service="measure">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Területfelmérés — terepmodell, szintvonalrajz, m² és m³ | GoDataFusion</title>
+<meta name="description" content="Gyors területfelmérés: terepmodell, szintvonalrajz, terület- és földtömeg-számítás, 3D tervezőprogramokba integrálható adat. A felmérés nem minősül hivatalos földmérésnek." />
+<link rel="canonical" href="https://godatafusion.hu/teruletfelmeres/" />
+<meta name="theme-color" content="#080A0B" />
+<link rel="preload" href="/fonts/gdf-display.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/gdf-text.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/gdf-mono-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23080A0B'/%3E%3Cpath d='M6 20h20M6 12h20' stroke='%23F1F0EB' stroke-width='1.5'/%3E%3C/svg%3E" />
+<meta property="og:title" content="Területfelmérés — terepmodell, szintvonalrajz, m² és m³ | GoDataFusion" />
+<meta property="og:description" content="Gyors területfelmérés: terepmodell, szintvonalrajz, terület- és földtömeg-számítás, 3D tervezőprogramokba integrálható adat. A felmérés nem minősül hivatalos földmérésnek." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://godatafusion.hu/teruletfelmeres/" />
+<meta property="og:locale" content="hu_HU" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "@id": "https://godatafusion.hu/teruletfelmeres/#service",
+      "name": "Területfelmérés — terepmodell és mennyiségek",
+      "serviceType": "Területfelmérés",
+      "description": "Gyors területfelmérés: terepmodell, szintvonalrajz, terület- és földtömeg-számítás, 3D tervezőprogramokba integrálható adat. A felmérés nem minősül hivatalos földmérésnek.",
+      "url": "https://godatafusion.hu/teruletfelmeres/",
+      "inLanguage": "hu",
+      "provider": { "@type": "Organization", "name": "GoDataFusion", "url": "https://godatafusion.hu/" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "GoDataFusion", "item": "https://godatafusion.hu/" },
+        { "@type": "ListItem", "position": 2, "name": "Szolgáltatások", "item": "https://godatafusion.hu/#services" },
+        { "@type": "ListItem", "position": 3, "name": "Területfelmérés" }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body class="sv sv--measure">
+
+<a class="skip-link" href="#top">Ugrás a tartalomhoz</a>
+
+<div class="atmos" aria-hidden="true">
+  <div class="atmos__wash"></div>
+  <div class="atmos__accent atmos__accent--capture"></div>
+  <div class="atmos__accent atmos__accent--measure"></div>
+  <div class="atmos__accent atmos__accent--quantify"></div>
+  <div class="atmos__vignette"></div>
+  <div class="atmos__grain"></div>
+</div>
+
+<div class="frame" aria-hidden="true">
+  <span class="frame__rule" style="--i:0"></span>
+  <span class="frame__rule" style="--i:1"></span>
+  <span class="frame__rule" style="--i:2"></span>
+  <span class="frame__rule" style="--i:3"></span>
+  <span class="frame__rule" style="--i:4"></span>
+  <b class="frame__mark frame__mark--tl"></b>
+  <b class="frame__mark frame__mark--tr"></b>
+  <b class="frame__mark frame__mark--bl"></b>
+  <b class="frame__mark frame__mark--br"></b>
+</div>
+
+<div class="cursor" id="cursor" aria-hidden="true">
+  <span class="cursor__ring"></span>
+  <span class="cursor__dot"></span>
+  <span class="cursor__label" id="cursorLabel"></span>
+</div>
+
+<div class="stage" id="stage" data-stage="measure">
+  <canvas class="stage__canvas" id="gl" aria-hidden="true"></canvas>
+  <div class="stage__fallback" id="stageFallback" aria-hidden="true">
+    <svg viewBox="0 0 720 520" preserveAspectRatio="xMidYMid meet" role="img" aria-label="GoDataFusion Területfelmérés — statikus ábra">
+      <g class="fb-terrain"><path d="M60 366 300 226 660 366 420 506Z"/><path d="M110 366 300 256 610 366 420 476Z"/><path d="M160 366 300 286 560 366 420 446Z"/><path d="M210 366 300 316 510 366 420 416Z"/></g>
+      <g class="fb-grid"><path d="M60 366 300 226M660 366 420 506M300 226 660 366M60 366 420 506"/></g>
+      <g class="fb-accent"><path d="M150 402h420"/><path d="M260 340 460 340M300 380 500 380"/></g>
+    </svg>
+  </div>
+  <div class="annos" id="annos" aria-hidden="true"></div>
+  <div class="stage__veil" aria-hidden="true"></div>
+</div>
+
+<div class="scanplane" id="scanplane" aria-hidden="true">
+  <span class="scanplane__field"></span>
+  <span class="scanplane__line"></span>
+</div>
+
+<header class="nav" id="nav">
+  <a class="nav__brand" href="/" aria-label="GoDataFusion — kezdőlap">
+    <span class="nav__glyph" aria-hidden="true"></span>
+    <span class="nav__word">GoDataFusion</span>
+  </a>
+
+  <nav class="nav__links" aria-label="Fő navigáció">
+    <a href="/#services">Services</a>
+    <a href="/#process">Process</a>
+    <a href="/#about">About</a>
+    <a href="/#contact">Contact</a>
+  </nav>
+
+  <a class="btn btn--cta" href="#project" data-cursor="start" data-no-transition>
+    <span>START PROJECT</span>
+    {{glyph:arrow gl--16}}
+  </a>
+
+  <button class="nav__burger" id="navBurger" type="button" aria-expanded="false" aria-controls="navLinksMobile">
+    <span class="sr-only">Menü</span><i aria-hidden="true"></i><i aria-hidden="true"></i>
+  </button>
+</header>
+
+<nav class="nav__drawer" id="navLinksMobile" aria-label="Mobil navigáció" hidden>
+  <a href="/360-camera/">360° kamera</a>
+  <a href="/teruletfelmeres/">Területfelmérés</a>
+  <a href="/mennyisegszamitas/">Mennyiségszámítás</a>
+  <a href="/#process">Process</a>
+  <a href="/#about">About</a>
+  <a class="nav__drawer-cta" href="#project" data-no-transition>START PROJECT ↗</a>
+</nav>
+
+<main id="main">
+
+<!-- §12 — THE DATUM. One hairline down the whole page with a calibration
+     tick every 24 px and a major division every 120 px, drawn as two
+     repeating gradients rather than as several hundred elements. Every
+     section on this page is set against it, and each section eyebrow takes
+     a level off it. Decorative: the values a reader needs are in the
+     readouts, not on the scale. -->
+<div class="dtm" aria-hidden="true"><i></i></div>
+
+  <!-- ================= HERO ================= -->
+  <section class="sv-hero" id="top">
+    <div class="sv-hero__content">
+      <nav class="sv-crumb" aria-label="Morzsamenü">
+        <a href="/">GODATAFUSION</a>
+        <span aria-hidden="true">/</span>
+        <a href="/#services">SERVICES</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">TERÜLETFELMÉRÉS</span>
+      </nav>
+
+      <p class="sv-eyebrow"><span>02</span> MEASURE</p>
+
+      <h1 class="sv-hero__title">
+        <span class="line"><span class="line__in">FROM TERRAIN</span></span>
+        <span class="line"><span class="line__in">TO MEASURABLE DATA.</span></span>
+      </h1>
+
+      <p class="sv-lede">Egy helyszíni felmérésből terepmodell lesz: terület, földtömeg és szintvonalak — 3D tervezőprogramokba integrálható adatként.</p>
+
+      <div class="sv-cta">
+        <a class="btn btn--solid" href="#project" data-cursor="start" data-no-transition>
+          <span>MEASURE PROJEKT INDÍTÁSA</span>
+          {{glyph:arrow gl--16}}
+        </a>
+        <a class="btn btn--ghost" href="#terrain" data-no-transition>A TEREP OLVASÁSA</a>
+      </div>
+    </div>
+
+    <p class="sv-meta" aria-hidden="true"><span class="sv-meta__i">AREA m²</span><span class="sv-meta__i">VOLUME m³</span><span class="sv-meta__i">CONTOURS</span><span class="sv-meta__i">ELEVATION</span></p>
+  </section>
+
+  <!-- ================= A TEREP OLVASÁSA ================= -->
+  <section class="sv-sec sv-terrain" id="terrain">
+    <div class="sv-sec__head">
+      <p class="sv-eyebrow"><span>01</span> READ THE GROUND</p>
+      <h2 class="sv-h">
+        <span class="line"><span class="line__in">EGY TEREP,</span></span>
+        <span class="line"><span class="line__in">NÉGY OLVASAT.</span></span>
+      </h2>
+      <p class="sv-lede">
+        Ugyanaz a felmért felület — attól függően jelenik meg másként, hogy
+        milyen adatra van szüksége. Váltson a nézetek között.
+      </p>
+    </div>
+
+    <div class="sv-states" role="group" aria-label="Terepnézet váltása">
+      <button class="sv-state" type="button" data-state="mSurface" aria-pressed="true">SURFACE</button>
+      <button class="sv-state" type="button" data-state="mContours" aria-pressed="false">CONTOURS</button>
+      <button class="sv-state" type="button" data-state="mVolume" aria-pressed="false">VOLUME</button>
+      <button class="sv-state" type="button" data-state="mExport" aria-pressed="false">EXPORT</button>
+    </div>
+
+    <ol class="sv-steps sv-steps--m">
+      <li class="sv-step" data-state="mSurface">
+        <p class="sv-step__i">SURFACE</p>
+        <h3 class="sv-step__k">{{glyph:area sv-gl gl--20}}A FELÜLET</h3>
+        <p class="sv-step__c">
+          A terep 3D modellje. Ez a kiindulás: minden további érték
+          ebből a felületből számítható, nem külön mérésekből.
+        </p>
+        <dl class="sv-data">
+          <div><dt>TERÜLET</dt><dd id="mArea">—</dd></div>
+          <div><dt>KERÜLET</dt><dd id="mPerimeter">—</dd></div>
+        </dl>
+      </li>
+
+      <li class="sv-step" data-state="mContours">
+        <p class="sv-step__i">CONTOURS</p>
+        <h3 class="sv-step__k">{{glyph:contour sv-gl gl--20}}SZINTVONALRAJZ</h3>
+        <p class="sv-step__c">
+          A felületből levezetett topográfiai vonalrendszer, választott
+          szintközzel. Ez az, amit a tervező tovább tud használni.
+        </p>
+        <dl class="sv-data">
+          <div><dt>SZINTKÖZ</dt><dd id="mInterval">—</dd></div>
+          <div><dt>VONALAK</dt><dd id="mLines">—</dd></div>
+          <div><dt>SZINTKÜLÖNBSÉG</dt><dd id="mRelief">—</dd></div>
+        </dl>
+      </li>
+
+      <li class="sv-step" data-state="mVolume">
+        <p class="sv-step__i">VOLUME</p>
+        <h3 class="sv-step__k">{{glyph:volume sv-gl gl--20}}FÖLDTÖMEG</h3>
+        <p class="sv-step__c">
+          Két szint közötti földtömeg. Mozgassa a metszési szintet — a
+          kitermelés és a feltöltés köbmétere a valós felületből számolódik újra.
+        </p>
+
+        <!-- The one control on the site whose number is integrated from the
+             surface being rendered. Composed as a calibrated scale rather
+             than as a slider with three captions: the level rides the blade,
+             and cut and fill read off either side of it. The element under
+             all of it is still a plain <input type="range">. -->
+        <div class="cut" id="cutInst">
+          <div class="cut__head">
+            <label class="cut__l" for="cutLevel">METSZÉSI SZINT</label>
+            <span class="cut__unit" aria-hidden="true">m · BALTIC</span>
+          </div>
+
+          <div class="cut__scale">
+            <span class="cut__ticks" aria-hidden="true"></span>
+            <span class="cut__fill" aria-hidden="true"></span>
+            <span class="cut__blade" aria-hidden="true"><b id="cutL">—</b></span>
+            <input class="cut__r" id="cutLevel" type="range" min="0" max="100" value="50" step="1"
+                   aria-describedby="cutOut" />
+          </div>
+
+          <dl class="cut__out" id="cutOut">
+            <div class="cut__o cut__o--cut"><dt>KITERMELÉS</dt><dd id="cutV">—</dd></div>
+            <div class="cut__o cut__o--fill"><dt>FELTÖLTÉS</dt><dd id="fillV">—</dd></div>
+          </dl>
+
+          <p class="sr-only" id="cutStatus" role="status" aria-live="polite"></p>
+        </div>
+      </li>
+
+      <li class="sv-step" data-state="mExport">
+        <p class="sv-step__i">EXPORT</p>
+        <h3 class="sv-step__k">{{glyph:delivery sv-gl gl--20}}ÁTADHATÓ ADAT</h3>
+        <p class="sv-step__c">
+          A felmérés eredménye 3D tervezőprogramokba integrálható adatként
+          megy tovább — nem képként, hanem geometriaként és számként.
+        </p>
+        <dl class="sv-data">
+          <div><dt>LEGALACSONYABB</dt><dd id="mMin">—</dd></div>
+          <div><dt>LEGMAGASABB</dt><dd id="mMax">—</dd></div>
+          <div><dt>LÉPTÉK</dt><dd id="mScale">—</dd></div>
+        </dl>
+      </li>
+    </ol>
+
+    <p class="sv-legal sv-legal--strong" data-note="SURVEY NOTE / 01">
+      <b>FONTOS.</b> A felmérés nem minősül hivatalos földmérésnek.
+      Az itt látható értékek egy demonstrációs terepmodellből számított
+      adatok, nem ügyfélprojekt eredményei.
+    </p>
+  </section>
+
+  <!-- ================= MIT SZÁMOLUNK ================= -->
+  <!-- The renderer suspends here: everything below is opaque and reads,
+       so the scene has nothing left to say and should stop drawing. -->
+  <section class="sv-sec sv-caps" data-scan-target data-stage-end>
+    <div class="sv-sec__head">
+      <p class="sv-eyebrow"><span>02</span> OUTPUT</p>
+      <h2 class="sv-h"><span class="line"><span class="line__in">MIT KAP KÉZHEZ?</span></span></h2>
+    </div>
+
+    <ul class="sv-caps__list">
+      <li class="sv-cap"><span class="sv-cap__u">m³</span><span class="sv-cap__k">Földtömeg számítás</span></li>
+      <li class="sv-cap"><span class="sv-cap__u">m²</span><span class="sv-cap__k">Terület számítás</span></li>
+      <li class="sv-cap"><span class="sv-cap__u">fm</span><span class="sv-cap__k">Folyóméter</span></li>
+      <li class="sv-cap"><span class="sv-cap__u">3D</span><span class="sv-cap__k">3D terület meghatározás</span></li>
+      <li class="sv-cap"><span class="sv-cap__u">↗</span><span class="sv-cap__k">3D tervezőprogramokba integrálható adat</span></li>
+      <li class="sv-cap"><span class="sv-cap__u">≋</span><span class="sv-cap__k">Szintvonalrajz készítés</span></li>
+      <li class="sv-cap"><span class="sv-cap__u">⏱</span><span class="sv-cap__k">Gyors felmérés</span></li>
+    </ul>
+  </section>
+
+  <!-- ================= AMI A MUNKÁHOZ KELL ================= -->
+  <!-- MEASURE's project input is a SURVEY SHEET: four numbered requirement
+       rows against one calibrated column of statuses. Same `.sv-req` data,
+       a different editorial wrapper from CAPTURE's site briefing and
+       QUANTIFY's document intake. -->
+  <section class="sv-sec sv-input sv-input--sheet">
+    <div class="sv-sec__head">
+      <p class="sv-eyebrow"><span>03</span> PROJECT INPUT</p>
+      <h2 class="sv-h"><span class="line"><span class="line__in">AMI AZ INDULÁSHOZ SEGÍT.</span></span></h2>
+      <p class="sv-lede">
+        Egyik dokumentum sem feltétele a munkának. Amelyik rendelkezésre áll,
+        az pontosítja a feladat terjedelmét és az ajánlatot — ha egyik sincs,
+        attól még tudunk indulni, csak a becslés lesz tágabb.
+      </p>
+    </div>
+
+    <p class="sheet__h" aria-hidden="true">
+      <span>REQUIREMENTS</span><span class="sheet__r"></span><span>04 ROWS</span>
+    </p>
+
+    <dl class="sv-req sheet__req">
+      <div class="sv-req__row" data-row="01">
+        <dt class="sv-req__k">{{glyph:location sv-gl gl--20}}HELYSZÍNRAJZ <i>HA VAN</i></dt>
+        <dd class="sv-req__c">A telek határai és a meglévő állapot. Ebből látszik, mekkora területet kell bejárni.</dd>
+      </div>
+      <div class="sv-req__row" data-row="02">
+        <dt class="sv-req__k">{{glyph:plan sv-gl gl--20}}KERTTERV <i>HA VAN</i></dt>
+        <dd class="sv-req__c">Tereprendezésnél ebből derül ki, milyen szintekre kell dolgozni.</dd>
+      </div>
+      <div class="sv-req__row" data-row="03">
+        <dt class="sv-req__k">{{glyph:linear sv-gl gl--20}}ÚTTERV <i>HA VAN</i></dt>
+        <dd class="sv-req__c">Nyomvonalas munkánál a hossz-szelvények és a folyóméter alapja.</dd>
+      </div>
+      <div class="sv-req__row" data-row="04">
+        <dt class="sv-req__k">{{glyph:data sv-gl gl--20}}FELADATLEÍRÁS <b>KÖTELEZŐ</b></dt>
+        <dd class="sv-req__c">Mit kell kimérni és mihez fogja használni. Ez a legfontosabb információ.</dd>
+      </div>
+    </dl>
+
+    <p class="sv-legal" data-note="SURVEY NOTE / 02">A felmérés nem minősül hivatalos földmérésnek.</p>
+  </section>
+
+  <!-- ================= A MÁSIK KÉT SZOLGÁLTATÁS ================= -->
+  <!-- ================= A MÁSIK KÉT SZOLGÁLTATÁS =================
+       Not site navigation. The three services are three readings of one
+       reality, so the link into a sibling shows the DESTINATION's reading of
+       the same object — points, contours, plan lines — and takes on that
+       mode's accent while it is being considered. -->
+  <section class="sv-sec sv-sib" id="other">
+    <div class="sv-sec__head">
+      <h2 class="sv-h sv-h--s">
+        <span class="line"><span class="line__in">SAME REALITY.</span></span>
+        <span class="line"><span class="line__in">ANOTHER VIEW.</span></span>
+      </h2>
+      <p class="sv-lede">
+        Ugyanaz a projekt, más kérdésre válaszolva. A három szolgáltatás
+        egymásra épül, de külön is kérhető.
+      </p>
+    </div>
+    <div class="sib">
+      <a class="sib__a" href="/360-camera/" data-service="capture" data-cursor="EXPLORE">
+        <span class="sib__i">01</span>
+        <span class="sib__fig"><svg class="sib__g sib__g--capture" viewBox="0 0 168 112" aria-hidden="true"><g class="sp-dots"><path d="M30 66 84 34 138 66 84 98Z"/><path d="M30 66V42L84 10l54 32v24L84 98Z"/><path d="M84 34v64M30 42l54 32 54-32"/></g></svg></span>
+        <span class="sib__k">CAPTURE</span>
+        <span class="sib__hu">360° kamera</span>
+        <span class="sib__c">360°-os vizuális dokumentáció állapotfelméréshez és virtuális bejáráshoz.</span>
+        <span class="sib__go" aria-hidden="true">
+          <span class="sib__go-r"></span><span class="sib__go-t">NÉZET VÁLTÁS</span>
+        </span>
+      </a>
+      <a class="sib__a" href="/mennyisegszamitas/" data-service="quantify" data-cursor="EXPLORE">
+        <span class="sib__i">03</span>
+        <span class="sib__fig"><svg class="sib__g sib__g--quantify" viewBox="0 0 168 112" aria-hidden="true"><g class="sp-line"><path d="M30 66 84 34 138 66 84 98Z"/><path d="M30 66V42L84 10l54 32v24L84 98Z"/><path d="M84 34v64M30 42l54 32 54-32"/></g><g class="sp-plan"><path d="M42 72h84v22H42Z"/><path d="M84 72v22"/></g><g class="sp-dim"><path d="M42 104h84M42 100v8M126 100v8"/></g></svg></span>
+        <span class="sib__k">QUANTIFY</span>
+        <span class="sib__hu">Mennyiségszámítás</span>
+        <span class="sib__c">2D tervrajzból strukturált konszignáció, helyiségkönyv és rétegrend.</span>
+        <span class="sib__go" aria-hidden="true">
+          <span class="sib__go-r"></span><span class="sib__go-t">NÉZET VÁLTÁS</span>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ================= START PROJECT ================= -->
+  <section class="sv-sec sv-project" id="project">
+    <div class="sv-project__head">
+      <p class="sv-eyebrow"><span>—</span> START PROJECT</p>
+      <h2 class="sv-h">
+        <span class="line"><span class="line__in">INDÍTSA EL</span></span>
+        <span class="line"><span class="line__in">A PROJEKTET.</span></span>
+      </h2>
+      <p class="sv-lede">
+        A(z) <b>Területfelmérés</b> már ki van választva. Írja le a feladatot,
+        és munkanapon belül válaszolunk.
+      </p>
+    </div>
+
+    <div id="projectMount"></div>
+
+    <noscript>
+      <p class="sv-note">
+        Az űrlaphoz JavaScript szükséges. Írjon közvetlenül:
+        <a href="mailto:hello@godatafusion.hu" data-company="email-href">hello@godatafusion.hu</a>
+      </p>
+    </noscript>
+  </section>
+
+</main>
+
+<footer class="foot" id="contact">
+  <div class="foot__mark is-lit" id="footMark">
+    <span class="foot__line" style="--i:0"><span class="foot__word is-on" data-l="1">REALITY</span></span>
+    <span class="foot__line" style="--i:1"><i class="foot__slash" aria-hidden="true">/</i><span class="foot__word is-on" data-l="2">DATA</span></span>
+    <span class="foot__line" style="--i:2"><i class="foot__slash" aria-hidden="true">/</i><span class="foot__word is-on" data-l="3">FUSED</span></span>
+  </div>
+
+  <div class="foot__grid">
+    <nav class="foot__nav" aria-label="Lábléc navigáció">
+      <p class="foot__k">SITE</p>
+      <a href="/">Kezdőlap</a>
+      <a href="/#process">Process</a>
+      <a href="/#about">About</a>
+      <a href="#project" data-no-transition>Start project</a>
+    </nav>
+
+    <div class="foot__col">
+      <p class="foot__k">SZOLGÁLTATÁSOK</p>
+      <a href="/360-camera/">360° kamera</a>
+      <a href="/teruletfelmeres/">Területfelmérés</a>
+      <a href="/mennyisegszamitas/">Mennyiségszámítás</a>
+    </div>
+
+    <div class="foot__col foot__col--contact">
+      <p class="foot__k">KAPCSOLAT</p>
+      <a class="foot__mail" id="footMail" data-company="email" href="mailto:hello@godatafusion.hu">hello@godatafusion.hu</a>
+      <p class="foot__ph" data-company="email-note">Placeholder elérhetőség — élesítés előtt cserélendő.</p>
+    </div>
+
+    <div class="foot__col">
+      <p class="foot__k">JOGI</p>
+      <p class="foot__legal" data-company="legal-company">Cégadatok, székhely és adószám: kitöltendő.</p>
+      <p class="foot__legal">A felmérés nem minősül hivatalos földmérésnek.</p>
+      <p class="foot__legal">Az oldalon látható mérési értékek demonstrációs adatok.</p>
+    </div>
+  </div>
+
+  <p class="foot__base">
+    <span>© <span id="footYear">2026</span> GoDataFusion</span>
+    <span>TURN REALITY INTO DATA.</span>
+  </p>
+</footer>
+
+<script type="module" src="/src/service.js"></script>
+</body>
+</html>

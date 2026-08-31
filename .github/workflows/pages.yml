@@ -1,0 +1,72 @@
+# Build the static site and publish it to GitHub Pages.
+#
+# BASE_PATH is the whole of the difference between this and the Netlify
+# build: Pages serves a project repository from /<repo>/, so the emitted
+# asset URLs and the 103 hand-written root-absolute links in the five
+# documents are rewritten to that prefix (see tools/base-plugin.mjs).
+# Netlify leaves BASE_PATH unset and gets exactly the build it always had.
+#
+# NOTE: the inquiry form posts to /api/project-request, which is a Netlify
+# function. GitHub Pages is static-only and has no equivalent, so on this
+# deployment the form has no backend.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; never cancel one that is already publishing.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 24, not the 20 Netlify builds with: `npm test` passes the glob
+      # `test/*.test.mjs` to the runner itself, and pattern arguments to
+      # `node --test` only landed after 20. The build alone is happy on 20;
+      # the gate in front of it is not.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm test
+
+      - name: Build
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}/
+        run: npm run build
+
+      # Pages runs Jekyll over the artifact unless told not to, which
+      # strips any path beginning with an underscore.
+      - run: touch dist/.nojekyll
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

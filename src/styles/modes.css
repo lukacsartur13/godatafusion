@@ -1,0 +1,324 @@
+/* ============================================================
+   service operating modes — the console
+   Not cards. Three states of one instrument.
+   ============================================================ */
+.modes { position: relative; z-index: 3; align-self: end; }
+
+/* ============================================================
+   §14 — THE SERVICE RAIL, ASYMMETRIC
+
+   Phase 9 ran three equal columns under one continuous rule. It worked
+   and it was predictable — the brief's word — and it made the three
+   services look like three equivalent products rather than three
+   readings of one site, which is the whole argument of the page above it.
+
+   The rail is now a SECTION DRAWING. Three channels of progressively
+   increasing width (0,84 / 1,00 / 1,16), each entered at its own datum:
+   CAPTURE at the top line, MEASURE 14 px down, QUANTIFY 28 px down. The
+   continuous top border is gone; each mode carries its own rule, at its
+   own height, and the stepped edge is the composition.
+
+   What did NOT change, because §14 says so explicitly:
+     - three <button>s, role="tab", the same roving tabindex
+     - the full column is the hit area, still ≥ 64 px tall at every width
+     - the BOTTOM edge stays aligned, so the accent bar reads as one
+       instrument's channel indicator rather than three loose underlines
+     - the readout below is unmoved, so switching modes still cannot
+       shift the rail
+   ============================================================ */
+.modes__rail {
+  display: grid;
+  grid-template-columns: minmax(0, .84fr) minmax(0, 1fr) minmax(0, 1.16fr);
+  /* STRETCH, not end. With bottom-aligned tracks the stepped padding made
+     each box taller and therefore START higher, which put all three datum
+     rules back on one line — the step cancelled itself exactly. Equal-height
+     boxes let the padding move the rule and the content DOWN together while
+     the bottom edge, and so the accent bar, stays level. */
+  align-items: stretch;
+}
+
+.mode {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: clamp(14px, 1.5vw, 22px);
+  align-content: start;
+  padding: clamp(15px, 1.65vw, 24px) clamp(14px, 1.6vw, 28px) clamp(17px, 1.85vw, 26px);
+  text-align: left; cursor: pointer;
+  color: var(--fg);
+  transition: background-color var(--motion-state) var(--ease-out);
+}
+/* the stepped datum — one rule per channel, at its own height */
+.mode { --mode-step: 0px; padding-top: calc(clamp(15px, 1.65vw, 24px) + var(--mode-step)); }
+.mode:nth-child(2) { --mode-step: 14px; }
+.mode:nth-child(3) { --mode-step: 28px; }
+.mode__rule {
+  position: absolute; left: 0; right: 0; top: var(--mode-step);
+  height: var(--rule-w); background: var(--rule-secondary);
+  transition: background-color var(--motion-ui) var(--ease-out);
+}
+.mode:hover .mode__rule, .mode:focus-visible .mode__rule { background: var(--rule-primary); }
+.mode.is-active .mode__rule { background: var(--rule-active); }
+
+/* the channel divider starts at its own mode's datum, not at the rail's */
+.mode + .mode::before {
+  content: ''; position: absolute; left: 0; top: var(--mode-step); bottom: 0;
+  width: var(--rule-w); background: var(--rule-secondary);
+}
+.mode:first-child { padding-left: 0; }
+
+.mode__head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+}
+.mode__idx { color: var(--fg-28); transition: color var(--motion-ui) var(--ease-out); }
+/* §21 — the glyph is grey until the channel is the live one. An accent
+   that is on all three at once is decoration; an accent on the active
+   one is data. */
+.mode__gl {
+  color: var(--fg-38);
+  transition: color var(--motion-ui) var(--ease-out);
+}
+.mode:hover .mode__gl, .mode:focus-visible .mode__gl { color: var(--fg-60); }
+.mode.is-active .mode__gl { color: var(--accent-c); }
+
+.mode__body { display: block; min-width: 0; }
+.mode__key {
+  display: block;
+  font-family: var(--ff-display);
+  font-size: var(--fs-key); font-weight: 500;
+  letter-spacing: -.026em; line-height: 1;
+  text-transform: uppercase;
+  transition: color var(--motion-ui) var(--ease-out);
+}
+.mode__hu {
+  display: block; margin-top: .85em;
+  font-family: var(--ff-text); font-size: var(--fs-micro);
+  letter-spacing: .002em; text-transform: none;
+  color: var(--fg-42);
+  transition: color var(--motion-ui) var(--ease-out);
+}
+
+.mode__bar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: var(--accent-c);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--t-commit) var(--ease-io);
+}
+
+.mode.is-active {
+  background: linear-gradient(180deg, transparent 12%, rgb(var(--accent) / .055) 100%);
+}
+.mode.is-active .mode__key { color: var(--accent-c); }
+.mode.is-active .mode__idx { color: var(--accent-70); }
+.mode.is-active .mode__hu  { color: var(--fg-60); }
+.mode.is-active .mode__bar { transform: scaleX(1); }
+
+/* one-shot attention sweep after the intro resolves */
+.modes__rail.is-hinted .mode__bar { animation: bar-hint 1.5s var(--ease-io) both; }
+.modes__rail.is-hinted .mode:nth-child(2) .mode__bar { animation-delay: .1s; }
+.modes__rail.is-hinted .mode:nth-child(3) .mode__bar { animation-delay: .2s; }
+@keyframes bar-hint {
+  0%   { transform: scaleX(0); transform-origin: left; opacity: .55; }
+  46%  { transform: scaleX(1); transform-origin: left; opacity: .55; }
+  47%  { transform: scaleX(1); transform-origin: right; opacity: .55; }
+  100% { transform: scaleX(0); transform-origin: right; opacity: .55; }
+}
+
+/* ---------- readouts ---------- */
+/* Fixed height: switching modes must never move the rail above it. */
+.readouts {
+  position: relative;
+  border-top: var(--rule-w) solid var(--rule-secondary);
+  height: clamp(104px, 8.4vw, 122px);
+  padding: clamp(12px, 1.3vw, 17px) 0 clamp(10px, 1.1vw, 14px);
+}
+.readout, .readouts__idle {
+  position: absolute;
+  left: 0; right: 0;
+  top: clamp(12px, 1.3vw, 17px);
+}
+.readout, .readouts__idle { animation: readout-in .5s var(--ease) both; }
+@keyframes readout-in { from { opacity: 0; transform: translate3d(0, 5px, 0); } to { opacity: 1; transform: none; } }
+
+.readout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(20px, 3vw, 56px);
+  align-items: start;
+}
+.readout[hidden], .readouts__idle[hidden] { display: none; }
+
+.readout__desc {
+  font-size: clamp(.78rem, .93vw, .95rem);
+  line-height: 1.55; color: var(--fg-60); max-width: 58ch;
+  letter-spacing: -.004em;
+}
+.readout__note {
+  margin-top: .7em; color: var(--fg-28); text-transform: none;
+  font-family: var(--ff-text); font-size: var(--fs-micro);
+}
+.readout__note--legal { color: var(--accent-c); }
+.readout__note--legal::before { content: '⚠ '; }
+
+.readout__data { display: flex; gap: clamp(16px, 2.4vw, 46px); }
+.readout__data > div { display: grid; gap: 7px; text-align: right; }
+.readout__data dt { color: var(--fg-28); }
+.readout__data dd {
+  font-size: clamp(.72rem, .9vw, .88rem);
+  color: var(--accent-c);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .04em;
+}
+
+.readouts__idle {
+  display: flex; align-items: baseline; gap: clamp(12px, 1.6vw, 26px);
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: .12em; color: var(--fg-28); text-transform: uppercase;
+  font-weight: 500;
+}
+.readouts__idle b { color: var(--fg-60); font-weight: 400; }
+.readouts__idle span { text-transform: none; letter-spacing: .04em; }
+
+.modes__disclaimer {
+  position: absolute; right: 0; bottom: 100%; margin-bottom: 0;
+  padding: 0 0 6px;
+  font-family: var(--ff-text); font-size: var(--fs-micro); color: var(--fg-50); text-transform: none;
+  pointer-events: none;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+  /* On a phone the object owns a band of its own in the middle of the hero,
+     which is exactly where the rail lands. The rail gets its own ground so
+     the three modes are read as an interface, not through a wireframe. */
+  .modes {
+    position: relative; z-index: 3;
+  }
+  .modes::before {
+    /* Bleeds to the VIEWPORT edges, not past them: a -100vw inset on an
+       unclipped absolute child grows the document to twice the viewport
+       width, which is a horizontal scrollbar at every tablet size. */
+    content: ''; position: absolute; inset: -52px calc(var(--gutter) * -1) -140px;
+    background: linear-gradient(180deg,
+      rgba(8, 10, 11, 0) 0, rgba(8, 10, 11, .78) 38px,
+      rgba(8, 10, 11, .94) 60px, rgba(8, 10, 11, .98) 100%);
+    z-index: -1; pointer-events: none;
+  }
+  .modes__rail { grid-template-columns: 1fr; }
+  .mode, .mode:nth-child(2), .mode:nth-child(3) { --mode-step: 0px; }
+  .mode {
+    grid-template-columns: auto 1fr; grid-template-rows: auto;
+    align-items: center; gap: 14px;
+    padding: 14px 0;
+  }
+  .mode + .mode::before { display: none; }
+  .mode__idx { padding-top: 0; }
+  .mode__body { flex: 1; }
+  .mode__key { font-size: 1.15rem; }
+  .mode__hu { margin-top: .45em; }
+  .mode.is-active { background: linear-gradient(90deg, rgb(var(--accent) / .07), transparent 70%); }
+
+  .readouts { height: 132px; padding-top: 12px; }
+  .readout, .readouts__idle { top: 12px; }
+}
+@media (max-width: 620px) {
+  .readout { grid-template-columns: 1fr; gap: 10px; }
+  .readout__data { justify-content: flex-start; gap: 14px; }
+  .readout__data > div { text-align: left; gap: 5px; }
+  .readout__data dd { font-size: .72rem; }
+  .readout__desc {
+    font-size: .8rem;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+  /* Submission requirements move to the service pages on small screens;
+     the legal note stays, because it is a claim limit, not a detail. */
+  .readout__note:not(.readout__note--legal) { display: none; }
+  .readouts { height: 162px; }
+  .modes__disclaimer { font-size: .5rem; letter-spacing: .06em; }
+}
+
+/* ============================================================
+   PHASE 5 — THE PHONE RAIL
+
+   Phase 4 stacked the three modes as full-width rows. Correct as an
+   interface, wrong as a composition: three large blocks ate ~350px of an
+   844px frame, which is most of the reason the object had nowhere to be.
+
+   The rail is now ONE compact row of three states — index over key, the
+   way an instrument labels its channels — and the descriptive readout
+   below it becomes a state baseline rather than a panel. The interaction
+   is unchanged: same buttons, same tabs, same store.
+   ============================================================ */
+@media (max-width: 700px) {
+  .modes { align-self: end; }
+  /* The Phase 4 ground under the rail was sized for three stacked rows and
+     bled 140px past the bottom of a rail that is now 52px tall. */
+  .modes::before { inset: -30px calc(var(--gutter) * -1) -90px; }
+
+  .modes__rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .mode {
+    /* The COLUMNS have to come back to one. The 900 breakpoint above puts
+       the head beside the body (`auto 1fr`) for the full-width row layout,
+       and this block only reset the rows — so at 375 the three channels
+       were still two columns each and .mode__body was a 50 px box holding
+       an 65 px word. Caught by qa/p10/hu.mjs as a QUANTIFY overflow, which
+       is what an overflow check is for. */
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 7px;
+    padding: 11px clamp(8px, 2.4vw, 14px) 13px;
+    border-top: 0;
+  }
+  /* §24 — the stepped datum is a desktop composition. At 390 the three
+     channels are ~110 px wide and a 28 px step would spend a tenth of the
+     frame on an offset nobody can read as one. The rule is level here and
+     the asymmetry is carried by the glyph column instead. */
+  .mode, .mode:nth-child(2), .mode:nth-child(3) { --mode-step: 0px; }
+  .mode__head { justify-content: flex-start; gap: 7px; }
+  .mode__gl { --gl-size: 16px; --gl-stroke: 1.35; }
+  .mode:first-child { padding-left: 0; border-top: 0; }
+  /* The vertical hairlines come back — three channels of one instrument,
+     not three list items. */
+  .mode + .mode::before { display: block; }
+  .mode__idx { padding-top: 0; }
+  .mode__key { font-size: clamp(.82rem, 3.5vw, 1.02rem); letter-spacing: -.02em; }
+  /* The Hungarian label moves to the state baseline below, but it is still
+     part of each button's accessible name — collapsed, never removed. */
+  .mode__hu {
+    position: absolute; width: 1px; height: 1px; margin: -1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+  .mode.is-active { background: linear-gradient(180deg, transparent 8%, rgb(var(--accent) / .07) 100%); }
+
+  /* ---- the state baseline ---- */
+  /* Still absolutely positioned inside a fixed height: switching modes must
+     never move the rail above it, which is what would make the window jump. */
+  /* Sized for the tallest state: MEASURE carries a legal note that is a
+     claim limit, not a detail, so it may never be the thing that overflows.
+     Fixed for every mode — a height that changed with the mode would move
+     the rail, and the window above it, on every tap. */
+  .readouts { height: 126px; padding: 11px 0 0; }
+  .readout, .readouts__idle { top: 11px; }
+  .readout { grid-template-columns: minmax(0, 1fr); gap: 9px; }
+  /* Two lines, and they are two lines because the copy is edited for the
+     frame — the clamp is a backstop against a future longer string, not the
+     mechanism. A visible ellipsis in the middle of a sentence reads as a
+     defect; the CAPTURE readout drops its audience sentence instead. */
+  .readout__desc {
+    font-size: .78rem; line-height: 1.5; max-width: 100%;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+  .readout__desc-x { display: none; }
+  .readout__data { justify-content: flex-start; gap: clamp(14px, 4.6vw, 26px); }
+  .readout__data > div { text-align: left; gap: 4px; }
+  .readouts__idle { display: grid; gap: 6px; }
+  /* The legal note is one line of claim limit. At the site's normal micro
+     tracking it wrapped to two at 375 and pushed itself out of the fixed
+     baseline; the tracking is what was spending the width, not the words. */
+  .readout__note--legal { margin-top: .5em; letter-spacing: .05em; }
+  .modes__disclaimer { display: none; }
+}
+

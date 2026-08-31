@@ -1,0 +1,454 @@
+/* ============================================================
+   base + atmosphere + engineering frame
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* Anchors must clear the fixed header on the platform scroller too,
+   not only through Lenis. */
+section[id], footer[id] { scroll-margin-top: calc(var(--nav-h) + 8px); }
+
+body {
+  margin: 0;
+  min-height: 100%;
+  overflow-x: clip;
+  background: var(--bg);
+  color: var(--fg);
+  /* PHASE 10 — the document default is the TEXT face. It used to be the
+     display face, which is how a headline grotesk ended up setting every
+     paragraph, every form field and every list item on the site. Display
+     type is now opted INTO, by the four classes below and by nothing
+     else. */
+  font-family: var(--ff-text);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* PHASE 10 — none of the three families ships an italic or a small-cap,
+     and <i> is used all over this codebase as a neutral inline hook rather
+     than for emphasis. Without this the browser synthesises a fake oblique
+     for every index, unit and key on the site. */
+  font-synthesis: none;
+}
+
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+img, svg, canvas { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; background: none; border: 0; }
+a { color: inherit; text-decoration: none; }
+i, em { font-style: normal; }
+dl, dd, dt, p, h1, h2, h3, figure { margin: 0; }
+
+::selection { background: var(--accent-c); color: var(--bg); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+.skip-link {
+  position: fixed; top: 8px; left: 8px; z-index: 200;
+  transform: translateY(-160%);
+  padding: 10px 16px; background: var(--fg); color: var(--bg);
+  font-family: var(--ff-label); font-size: 12px; letter-spacing: .08em;
+  transition: transform var(--t-hover) var(--ease);
+  font-weight: 500;
+}
+.skip-link:focus-visible { transform: none; }
+
+/* ---- focus ---- */
+:focus { outline: none; }
+:focus-visible {
+  outline: 1px solid var(--accent-c);
+  outline-offset: 3px;
+}
+.mode:focus-visible { outline-offset: -3px; }
+
+/* ============ section scaffolding ============ */
+/* `.output` was `.fusion` until Phase 11 collapsed the five-state pipeline
+   into the deliverable block, and this list kept the old name — so 04 was
+   the one section on the page with no gutter, sitting a full gutter left of
+   05 and running to the viewport edge. The class that exists is the class
+   that is listed. */
+.manifesto, .output, .services, .process, .why, .project, .about {
+  position: relative;
+  padding-inline: var(--gutter);
+}
+/* Everything from PROCESS down paints over the canvas — which is also the
+   cue for the renderer to suspend itself. */
+.process, .why, .project, .about, .foot { background: var(--bg); }
+.process::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 22vh;
+  background: linear-gradient(180deg, rgba(8,10,11,0), var(--bg) 78%);
+  transform: translateY(-100%); pointer-events: none;
+}
+
+.sec-lede {
+  max-width: var(--measure);
+  font-size: var(--fs-body);
+  line-height: 1.62; color: var(--fg-60); letter-spacing: -.006em;
+  text-wrap: pretty;
+}
+
+/* ============================================================
+   THE DISPLAY TIER — PHASE 10 §02
+
+   Four classes and nothing else may set --ff-display. Each carries its
+   own tracking, because one tracking value from 182 px down to 27 px is
+   what makes a display system look bought rather than drawn.
+
+   `u-dxl / u-dl / u-dm` are the three scales the brief asked for;
+   `u-dlock` is the small display lockup — a headline set at label size,
+   used where a title has to be display-voiced but cannot be big (the
+   drawer, the sibling-service cards, the form's step titles).
+   ============================================================ */
+.u-dxl, .u-dl, .u-dm, .u-dlock {
+  font-family: var(--ff-display);
+  font-weight: 500;
+  text-transform: uppercase;
+  text-wrap: balance;
+  /* PHASE 10 — none of the three families ships an italic or a small-cap,
+     and <i> is used all over this codebase as a neutral inline hook rather
+     than for emphasis. Without this the browser synthesises a fake oblique
+     for every index, unit and key on the site. */
+  font-synthesis: none;
+}
+.u-dxl   { font-size: var(--fs-dxl); letter-spacing: var(--ls-dxl); line-height: var(--lh-d); }
+.u-dl    { font-size: var(--fs-dl);  letter-spacing: var(--ls-dl);  line-height: var(--lh-d); }
+.u-dm    { font-size: var(--fs-dm);  letter-spacing: var(--ls-dm);  line-height: .92; }
+.u-dlock {
+  font-size: clamp(1.02rem, .62vw + .84rem, 1.5rem);
+  letter-spacing: -.015em; line-height: 1.06; font-weight: 550;
+}
+
+/* ============================================================
+   THE MICRO TIER — PHASE 10 §03
+
+   Phase 9 had ONE rule here covering twenty-three selectors, and it set
+   all of them in monospace. That is the finding this phase opens with:
+   the site used mono for SMALL, not for TECHNICAL, so "SERVICES",
+   "START PROJECT" and a three-word sentence of help text were dressed
+   in the same face as a room ID.
+
+   Two rules now, and the question they answer is different:
+
+     .u-label   is this an interface label?   → Plex Sans, tracked caps
+     .u-data    is this a value or an ID?     → Plex Mono
+
+   A string qualifies as .u-data if a machine produced it or would
+   accept it: L01-R07, CP-11, 842.6 M², +4.00 M, 47°41'12.8"N, 08 / 12,
+   a floor key, a capture ID, a percentage the renderer is writing. Every
+   other small string on this site is a label.
+   ============================================================ */
+.u-label,
+.eyebrow, .strip__scroll, .telemetry__k, .mode__hu, .modes__disclaimer,
+.btn, .nav__links a, .tk b, .spec__k, .pf__legend, .foot__k,
+.readout__data dt, .readouts__idle b, .hwin__cap,
+.pstage__k, .phand__k, .chapter__eyebrow {
+  font-family: var(--ff-label);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro);
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.u-data,
+.telemetry, .telemetry__v, .strip__coords, .strip__section, .anno,
+.mode__idx, .readout__data dd, .tk i, .eyebrow__idx,
+.pj__meta, .phand__out i {
+  font-family: var(--ff-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The interface-copy tier: small, but a SENTENCE. Neither a label nor a
+   value, and before this phase both of these were tracked uppercase
+   monospace, which is how a helpful line of Hungarian ended up looking
+   like a system error. */
+.readout__note, .modes__disclaimer, .chapter__demo {
+  font-family: var(--ff-text);
+  text-transform: none;
+  letter-spacing: -.002em;
+  font-weight: 400;
+}
+.modes__disclaimer { font-size: var(--fs-micro); }
+
+.eyebrow {
+  display: flex; align-items: center; gap: .75em;
+  color: var(--fg-42);
+}
+.eyebrow__idx { color: var(--fg); }
+.eyebrow__rule {
+  width: clamp(24px, 3.4vw, 54px); height: var(--rule-w);
+  background: currentColor; opacity: .55;
+  transform-origin: left;
+}
+.eyebrow--section { margin-bottom: clamp(28px, 4vw, 56px); }
+
+/* ============================================================
+   §08 — THE BUTTON SYSTEM
+
+   Four types. The audit found nine visually distinct button treatments
+   across the four documents, all of them variations on "border goes
+   accent, text goes accent", and no rule about which one meant what.
+
+     PRIMARY     the one action that starts work. START PROJECT, and a
+                 service page's own conversion. High contrast, square.
+                 Hover: SCAN REVEAL (§07 A) — the only place it is used
+                 besides the two representation links.
+     SECONDARY   navigation between parts of the offer. Service detail
+                 links, section jumps. Outlined.
+                 Hover: TECHNICAL SHIFT (§07 B).
+     TECHNICAL   a control that opens another READING of the same thing:
+                 VIEW IN PLAN, VIEW CAPTURE, a floor key. Smaller,
+                 monospace value, sits on a measurement rule.
+                 Hover: DATA LINE (§07 D).
+     ICON        a bare glyph action — close, expand, step. Square hit
+                 area, never smaller than 40 px on a touch pointer.
+                 Hover: GLYPH ASSEMBLY (§07 C).
+
+   MOTION. No scale on any of them, no pill expansion, no shadow. What a
+   GoDataFusion button does when you point at it is one of exactly four
+   things, and each one is a line, a scan, a text shift or a glyph.
+
+   CORNERS are square everywhere. `border-radius` appears nowhere in the
+   system — a drafting mark does not have a corner radius.
+   ============================================================ */
+.btn {
+  position: relative;
+  display: inline-flex; align-items: center; gap: .75em;
+  padding: .95em 1.4em;
+  border: var(--rule-w) solid var(--rule-primary);
+  border-radius: 0;
+  color: var(--fg);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color var(--motion-ui) var(--ease-out),
+              background-color var(--motion-ui) var(--ease-out),
+              color var(--motion-ui) var(--ease-out);
+}
+/* The glyph in a button is optically one cap high, not one em. */
+.btn .gl { --gl-size: 1.28em; --gl-stroke: 1.5; margin-inline-end: -.15em; }
+
+/* ---- PRIMARY ---- */
+.btn--solid,
+.btn--primary {
+  background: var(--fg); color: var(--bg); border-color: var(--fg);
+  font-weight: 600;
+}
+.btn--solid:hover, .btn--solid:focus-visible,
+.btn--primary:hover, .btn--primary:focus-visible {
+  background: var(--fg-hi); border-color: var(--fg-hi); color: var(--bg);
+}
+/* On a light ground the scan line has to be the SERVICE colour at full
+   strength or it disappears into the fill. */
+.btn--solid.hv-scan::after,
+.btn--primary.hv-scan::after {
+  background: linear-gradient(90deg, var(--accent-c) 0 1.5px, transparent 1.5px);
+}
+
+/* ---- SECONDARY ---- */
+.btn--secondary:hover, .btn--secondary:focus-visible,
+.btn:not(.btn--solid):not(.btn--primary):not(.btn--ghost):not(.btn--tech):hover,
+.btn:not(.btn--solid):not(.btn--primary):not(.btn--ghost):not(.btn--tech):focus-visible {
+  border-color: var(--accent-70); color: var(--accent-c);
+}
+
+/* ---- TECHNICAL ----
+   Not a smaller secondary: a different object. No box at all — a label
+   over a measurement rule, with the value it leads to underneath. */
+.btn--tech {
+  display: inline-grid; gap: .4em; justify-items: start;
+  padding: 0; border: 0;
+  color: var(--fg);
+}
+.btn--tech > span:first-child {
+  font-family: var(--ff-label); font-size: var(--fs-micro); font-weight: 500;
+  letter-spacing: var(--ls-micro); text-transform: uppercase;
+}
+.btn--tech .btn__rule {
+  display: block; width: 100%; height: var(--rule-w);
+  background: var(--rule-measure);
+  transform: scaleX(var(--btn-rule-x, .3)); transform-origin: left;
+  transition: transform var(--motion-ui) var(--ease-line),
+              background-color var(--motion-ui) var(--ease-out);
+}
+.btn--tech .btn__v {
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); color: var(--fg-38);
+  transition: color var(--motion-ui) var(--ease-out);
+}
+.btn--tech:hover, .btn--tech:focus-visible { color: var(--accent-c); }
+.btn--tech:hover .btn__rule, .btn--tech:focus-visible .btn__rule {
+  --btn-rule-x: 1; background: var(--accent-c);
+}
+.btn--tech:hover .btn__v, .btn--tech:focus-visible .btn__v { color: var(--accent-c); }
+
+/* ---- ICON ACTION ---- */
+.btn--icon {
+  display: inline-grid; place-items: center;
+  width: 40px; height: 40px; padding: 0;
+  border-color: var(--rule-secondary);
+  color: var(--fg-60);
+}
+.btn--icon .gl { --gl-size: 20px; margin: 0; }
+.btn--icon:hover, .btn--icon:focus-visible {
+  color: var(--accent-c); border-color: var(--accent-40);
+}
+
+/* ---- GHOST — a quiet text action, no box ---- */
+.btn--ghost { border-color: transparent; padding-inline: .2em; color: var(--fg-60); }
+.btn--ghost:hover, .btn--ghost:focus-visible { color: var(--fg); border-color: transparent; }
+
+.btn--cta { padding: .82em 1.2em; }
+
+/* PHASE 9 markup used a hand-drawn 10x10 arrow inside every button. Those
+   are GDF ARROW glyphs now; this keeps any that a later edit reintroduces
+   from rendering at the wrong weight. */
+.btn > svg:not(.gl) { width: .72em; height: .72em; overflow: visible; }
+.btn > svg:not(.gl) path {
+  fill: none; stroke: currentColor; stroke-width: 1.4; vector-effect: non-scaling-stroke;
+}
+
+/* ============ atmosphere ============ */
+.atmos { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.atmos__wash {
+  position: absolute; inset: -10%;
+  background: radial-gradient(70% 60% at 22% 8%, rgba(255,255,255,.028) 0%, transparent 62%);
+}
+
+/* ------------------------------------------------------------------
+   THE ACCENT ATMOSPHERE
+
+   PHASE 8.2. This wash used to be ONE element whose gradient read
+   `rgb(var(--accent) / calc(.05 * var(--accent-mix)))`. Recolouring it
+   meant writing an inherited custom property on the root, which
+   re-resolved style for the whole document, and then re-rasterising a
+   full-viewport gradient on every frame of the crossfade.
+
+   It is three layers now, one per service, each holding its own fixed
+   colour and existing continuously. A mode change animates OPACITY and
+   nothing else: no colour is recomputed, no gradient is re-generated,
+   and the crossfade is two quads on the compositor. The composition is
+   identical — same geometry, same 5% alpha, same 0,85 s.
+   ------------------------------------------------------------------ */
+.atmos__accent {
+  position: absolute; inset: -10%;
+  opacity: 0;
+  /* No `will-change: opacity`. These are 3,0 x 1,8 screen-fulls each, and
+     a permanent promotion hint is three 5,4 Mpx composited layers held
+     for the whole session — behind an OPAQUE canvas, where none of them
+     is even visible at the hero. Confirmed in the layer tree: three
+     2998x1804 `WillChangeOpacity` layers with a paint count of zero.
+     Chrome promotes an opacity transition for its duration on its own,
+     which is the only time promotion buys anything. */
+  contain: layout paint style;
+  transition: opacity var(--t-mode) var(--ease-mode);
+}
+.atmos__accent--capture {
+  background: radial-gradient(58% 46% at 66% 44%, rgb(66 232 255 / .05) 0%, transparent 68%);
+}
+.atmos__accent--measure {
+  background: radial-gradient(58% 46% at 66% 44%, rgb(184 255 61 / .05) 0%, transparent 68%);
+}
+.atmos__accent--quantify {
+  background: radial-gradient(58% 46% at 66% 44%, rgb(255 104 70 / .05) 0%, transparent 68%);
+}
+.atmos[data-accent="capture"]  .atmos__accent--capture,
+.atmos[data-accent="measure"]  .atmos__accent--measure,
+.atmos[data-accent="quantify"] .atmos__accent--quantify { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .atmos__accent { transition-duration: .16s; }
+}
+.atmos__vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(120% 92% at 50% 44%, transparent 42%, rgba(0,0,0,.55) 100%);
+}
+/* PHASE 8.3 — the grain is a PLAIN LAYER now.
+
+   `mix-blend-mode: overlay` on a full-viewport element makes the
+   compositor flatten its backdrop into a render surface and read it back,
+   and this one's backdrop is the whole atmosphere block. It was the third
+   full-screen blend surface on the page, after the nav's backdrop filter
+   and the custom cursor — and the three of them are multiplicative, not
+   additive: individually each costs 2-11 fps, together they cost the hero
+   half its frame rate.
+
+   What overlay bought here is close to nothing. The ground under this
+   layer is #080A0B; overlay against a near-black backdrop is very nearly
+   a no-op, and every pixel of grain anyone has ever seen on this page came
+   from the handful of lighter areas. It is a straight 3,5% wash now over
+   the same texture, and the difference is not visible at any breakpoint —
+   verified in the before/after captures in qa/p83/. */
+.atmos__grain {
+  position: absolute; inset: 0; opacity: .035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============ engineering frame ============ */
+.frame { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+.frame__rule {
+  position: absolute; top: 0; bottom: 0; width: 1px;
+  left: calc(var(--gutter) + (100% - var(--gutter) * 2) * var(--i) / 4);
+  background: linear-gradient(180deg, transparent, var(--fg-05) 12%, var(--fg-05) 88%, transparent);
+  transform: scaleY(var(--frame-scale, 1));
+  transform-origin: top;
+}
+.frame__rule:first-child, .frame__rule:last-child {
+  background: linear-gradient(180deg, transparent, var(--fg-09) 12%, var(--fg-09) 88%, transparent);
+}
+/* §16 — the frame's corner mark IS .mk-cross. It predates the drafting-mark
+   set by six phases and was drawn with its own hardcoded 9 px box and 4 px
+   offsets; it now reads the shared tick tokens, so the registration cross on
+   the page frame, the one in a glyph and the one under the cursor are the
+   same mark at three sizes and cannot drift apart. */
+.frame__mark {
+  position: absolute;
+  width: calc(var(--tick-m) * 2 - 1px); height: calc(var(--tick-m) * 2 - 1px);
+  opacity: var(--frame-mark, 1);
+}
+.frame__mark::before, .frame__mark::after {
+  content: ''; position: absolute; background: var(--fg-28);
+}
+.frame__mark::before { left: 0; right: 0; top: calc(var(--tick-m) - 3px); height: var(--rule-w); }
+.frame__mark::after { top: 0; bottom: 0; left: calc(var(--tick-m) - 3px); width: var(--rule-w); }
+.frame__mark--tl { left: calc(var(--gutter) - var(--tick-s)); top: calc(var(--nav-h) - var(--tick-s)); }
+.frame__mark--tr { right: calc(var(--gutter) - var(--tick-s)); top: calc(var(--nav-h) - var(--tick-s)); }
+.frame__mark--bl { left: calc(var(--gutter) - var(--tick-s)); bottom: calc(var(--strip-h) - var(--tick-s)); }
+.frame__mark--br { right: calc(var(--gutter) - var(--tick-s)); bottom: calc(var(--strip-h) - var(--tick-s)); }
+
+@media (max-width: 720px) {
+  .frame__rule:nth-child(2), .frame__rule:nth-child(4) { display: none; }
+}
+
+/* ============================================================
+   PAGE SCROLL LOCK
+
+   PHASE 8.1. An immersive surface — today only the 360 viewer — takes the
+   page scroll while it is open. See core/scroll.js for the measurement: the
+   viewer's own wheel handler called `preventDefault`, and Lenis scrolled the
+   page anyway, walking the reader out of the viewer and down towards the
+   request form in three ordinary zoom gestures.
+
+   `overflow: hidden` on the scrolling element keeps the current offset —
+   nothing jumps, and nothing has to be restored by hand on the way in.
+   `scrollbar-gutter` keeps the layout from shifting by the width of a
+   classic scrollbar on the platforms that still draw one.
+   ============================================================ */
+html.is-scroll-locked,
+html.is-scroll-locked body { overflow: hidden; }
+html.is-scroll-locked { scrollbar-gutter: stable; }

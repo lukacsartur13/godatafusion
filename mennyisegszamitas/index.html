@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="hu" data-service="quantify">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Mennyiségszámítás — konszignáció, helyiségkönyv, rétegrend | GoDataFusion</title>
+<meta name="description" content="2D tervrajzokból strukturált mennyiségi kimutatás: ajtó- és ablakkonszignáció, helyiségkönyv, rétegrend, padlóburkolat. PDF alaprajzból, mintarajzzal indulva." />
+<link rel="canonical" href="https://godatafusion.hu/mennyisegszamitas/" />
+<meta name="theme-color" content="#080A0B" />
+<link rel="preload" href="/fonts/gdf-display.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/gdf-text.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/gdf-mono-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23080A0B'/%3E%3Cpath d='M6 20h20M6 12h20' stroke='%23F1F0EB' stroke-width='1.5'/%3E%3C/svg%3E" />
+<meta property="og:title" content="Mennyiségszámítás — konszignáció, helyiségkönyv, rétegrend | GoDataFusion" />
+<meta property="og:description" content="2D tervrajzokból strukturált mennyiségi kimutatás: ajtó- és ablakkonszignáció, helyiségkönyv, rétegrend, padlóburkolat. PDF alaprajzból, mintarajzzal indulva." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://godatafusion.hu/mennyisegszamitas/" />
+<meta property="og:locale" content="hu_HU" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "@id": "https://godatafusion.hu/mennyisegszamitas/#service",
+      "name": "Mennyiségszámítás — tervalapú kimutatás",
+      "serviceType": "Mennyiségszámítás",
+      "description": "2D tervrajzokból strukturált mennyiségi kimutatás: ajtó- és ablakkonszignáció, helyiségkönyv, rétegrend, padlóburkolat. PDF alaprajzból, mintarajzzal indulva.",
+      "url": "https://godatafusion.hu/mennyisegszamitas/",
+      "inLanguage": "hu",
+      "provider": { "@type": "Organization", "name": "GoDataFusion", "url": "https://godatafusion.hu/" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "GoDataFusion", "item": "https://godatafusion.hu/" },
+        { "@type": "ListItem", "position": 2, "name": "Szolgáltatások", "item": "https://godatafusion.hu/#services" },
+        { "@type": "ListItem", "position": 3, "name": "Mennyiségszámítás" }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body class="sv sv--quantify">
+
+<a class="skip-link" href="#top">Ugrás a tartalomhoz</a>
+
+<div class="atmos" aria-hidden="true">
+  <div class="atmos__wash"></div>
+  <div class="atmos__accent atmos__accent--capture"></div>
+  <div class="atmos__accent atmos__accent--measure"></div>
+  <div class="atmos__accent atmos__accent--quantify"></div>
+  <div class="atmos__vignette"></div>
+  <div class="atmos__grain"></div>
+</div>
+
+<div class="frame" aria-hidden="true">
+  <span class="frame__rule" style="--i:0"></span>
+  <span class="frame__rule" style="--i:1"></span>
+  <span class="frame__rule" style="--i:2"></span>
+  <span class="frame__rule" style="--i:3"></span>
+  <span class="frame__rule" style="--i:4"></span>
+  <b class="frame__mark frame__mark--tl"></b>
+  <b class="frame__mark frame__mark--tr"></b>
+  <b class="frame__mark frame__mark--bl"></b>
+  <b class="frame__mark frame__mark--br"></b>
+</div>
+
+<div class="cursor" id="cursor" aria-hidden="true">
+  <span class="cursor__ring"></span>
+  <span class="cursor__dot"></span>
+  <span class="cursor__label" id="cursorLabel"></span>
+</div>
+
+<div class="stage" id="stage" data-stage="quantify">
+  <canvas class="stage__canvas" id="gl" aria-hidden="true"></canvas>
+  <div class="stage__fallback" id="stageFallback" aria-hidden="true">
+    <svg viewBox="0 0 720 520" preserveAspectRatio="xMidYMid meet" role="img" aria-label="GoDataFusion Mennyiségszámítás — statikus ábra">
+      <g class="fb-mass">
+        <path d="M170 150h380v260H170Z"/><path d="M186 166h348v228H186Z"/>
+        <path d="M300 166v228M420 166v228M186 250h348M186 320h348"/>
+      </g>
+      <g class="fb-accent">
+        <path d="M240 250h34M240 250a34 34 0 0 1 34-34" />
+        <path d="M360 320h34M360 320a34 34 0 0 1 34-34" />
+        <path d="M170 130h380M170 124v12M550 124v12"/>
+      </g>
+    </svg>
+  </div>
+  <div class="annos" id="annos" aria-hidden="true"></div>
+  <div class="stage__veil" aria-hidden="true"></div>
+</div>
+
+<div class="scanplane" id="scanplane" aria-hidden="true">
+  <span class="scanplane__field"></span>
+  <span class="scanplane__line"></span>
+</div>
+
+<header class="nav" id="nav">
+  <a class="nav__brand" href="/" aria-label="GoDataFusion — kezdőlap">
+    <span class="nav__glyph" aria-hidden="true"></span>
+    <span class="nav__word">GoDataFusion</span>
+  </a>
+
+  <nav class="nav__links" aria-label="Fő navigáció">
+    <a href="/#services">Services</a>
+    <a href="/#process">Process</a>
+    <a href="/#about">About</a>
+    <a href="/#contact">Contact</a>
+  </nav>
+
+  <a class="btn btn--cta" href="#project" data-cursor="start" data-no-transition>
+    <span>START PROJECT</span>
+    {{glyph:arrow gl--16}}
+  </a>
+
+  <button class="nav__burger" id="navBurger" type="button" aria-expanded="false" aria-controls="navLinksMobile">
+    <span class="sr-only">Menü</span><i aria-hidden="true"></i><i aria-hidden="true"></i>
+  </button>
+</header>
+
+<nav class="nav__drawer" id="navLinksMobile" aria-label="Mobil navigáció" hidden>
+  <a href="/360-camera/">360° kamera</a>
+  <a href="/teruletfelmeres/">Területfelmérés</a>
+  <a href="/mennyisegszamitas/">Mennyiségszámítás</a>
+  <a href="/#process">Process</a>
+  <a href="/#about">About</a>
+  <a class="nav__drawer-cta" href="#project" data-no-transition>START PROJECT ↗</a>
+</nav>
+
+<main id="main">
+
+<!-- §13 — THE SHEET. A drawn border inset from the frame with four
+     registration crosses, so the page reads as one architectural sheet
+     that the sections are laid out ON rather than as a stack of blocks. -->
+<div class="qsh" aria-hidden="true"><b></b><b></b><u></u><u></u></div>
+
+  <!-- ================= HERO ================= -->
+  <section class="sv-hero" id="top">
+    <div class="sv-hero__content">
+      <nav class="sv-crumb" aria-label="Morzsamenü">
+        <a href="/">GODATAFUSION</a>
+        <span aria-hidden="true">/</span>
+        <a href="/#services">SERVICES</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">MENNYISÉGSZÁMÍTÁS</span>
+      </nav>
+
+      <p class="sv-eyebrow"><span>03</span> QUANTIFY</p>
+
+      <h1 class="sv-hero__title">
+        <span class="line"><span class="line__in">FROM DRAWING</span></span>
+        <span class="line"><span class="line__in">TO DATA.</span></span>
+      </h1>
+
+      <p class="sv-lede">2D tervrajzok adatait digitalizáljuk, majd azok alapján strukturált mennyiségi kimutatást készítünk — konszignációt, helyiségkönyvet, rétegrendet.</p>
+
+      <div class="sv-cta">
+        <a class="btn btn--solid" href="#project" data-cursor="start" data-no-transition>
+          <span>QUANTIFY PROJEKT INDÍTÁSA</span>
+          {{glyph:arrow gl--16}}
+        </a>
+        <a class="btn btn--ghost" href="#analysis" data-no-transition>A FELDOLGOZÁS</a>
+      </div>
+    </div>
+
+    <!-- The hero legend follows the floor selector: it names what is on the
+         sheet currently being read, and every figure in it is counted. -->
+    <p class="sv-meta" aria-hidden="true" id="qMeta"></p>
+  </section>
+
+  <!-- ================= A TERV OLVASÁSA ================= -->
+  <section class="sv-sec sv-analysis" id="analysis">
+    <div class="sv-sec__head">
+      <p class="sv-eyebrow"><span>01</span> DRAWING ANALYSIS</p>
+      <h2 class="sv-h">
+        <span class="line"><span class="line__in">A RAJZBÓL</span></span>
+        <span class="line"><span class="line__in">STRUKTÚRA LESZ.</span></span>
+      </h2>
+      <p class="sv-lede">
+        Négy lépés ugyanazon a rajzon. A tervlap nem hagyja el a képet —
+        csak egyre több derül ki róla.
+      </p>
+    </div>
+
+    <!-- PHASE 8 — FLOOR FIRST.
+         The building has three levels and the same four readings apply to
+         each of them, so the floor selector sits ABOVE the state switch: you
+         choose which sheet you are reading, then how far the reading has
+         got. ÖSSZES is the exploded axonometric — all three plans as layers,
+         which is the one view that shows they belong to one building. -->
+    <div class="sv-floors" role="group" aria-label="Szint választása">
+      <span class="sv-floors__k" aria-hidden="true">SZINT</span>
+      <button class="sv-floor is-on" type="button" data-floor="L00" aria-pressed="true">
+        <b>L00</b><i>FÖLDSZINT</i><u>±0,00</u>
+      </button>
+      <button class="sv-floor" type="button" data-floor="L01" aria-pressed="false">
+        <b>L01</b><i>MUNKASZINT</i><u>+4,00</u>
+      </button>
+      <button class="sv-floor" type="button" data-floor="L02" aria-pressed="false">
+        <b>L02</b><i>PROJEKTSZINT</i><u>+7,60</u>
+      </button>
+      <button class="sv-floor sv-floor--all" type="button" data-floor="ALL" aria-pressed="false">
+        <b>ÖSSZES</b><i>ROBBANTOTT</i><u>3 SZINT</u>
+      </button>
+    </div>
+
+    <!-- PHASE 9 Parts 22 and 36 — THE REFERENCE ROOM, HERE AS DATA.
+         The room a visitor stood inside in the 360 viewer, on the sheet it
+         belongs to, with the figures counted off the same rectangle. It
+         appears on the work floor and nowhere else: one room is the point,
+         and a card on every room would be a BIM viewer rather than a
+         demonstration. Every value is written by service/quantify.js from
+         levelFeatures() — there is no number in this markup. -->
+    <!-- PATCH 9.1 — THE ROOM READS BEFORE THE CAPTION DOES.
+         Same five facts, same ids, same link; nothing added and nothing
+         dropped. The panel's own caption used to be its first line, so the
+         first thing read was a description of the panel rather than the
+         room it is evidence for. It is now the trailing note on the
+         identity line, and the room proof reads in the order it is
+         argued: WHICH ROOM → WHAT WAS COUNTED IN IT → WHERE IT WAS STOOD
+         IN → and only then the state rail underneath. -->
+    <aside class="sv-ref" id="qRef" hidden>
+      <p class="sv-ref__h">
+        <b id="qRefId">—</b><i id="qRefLabel">—</i>
+        <span class="sv-ref__k">UGYANAZ A HELYISÉG · STRUKTURÁLT NÉZET</span>
+      </p>
+      <dl class="sv-ref__d">
+        <div><dt>ALAPTERÜLET</dt><dd id="qRefArea">—</dd></div>
+        <div><dt>AJTÓ</dt><dd id="qRefDoors">—</dd></div>
+        <div><dt>ABLAK</dt><dd id="qRefWins">—</dd></div>
+        <div><dt>PADLÓ</dt><dd id="qRefFinish">—</dd></div>
+      </dl>
+      <a class="sv-ref__x" id="qRefToPano" href="/360-camera/">FELVÉTELI PONT <span aria-hidden="true">&#8599;</span></a>
+    </aside>
+
+    <div class="sv-states" role="group" aria-label="Feldolgozási állapot váltása">
+      <button class="sv-state" type="button" data-state="qDrawing" aria-pressed="true">DRAWING</button>
+      <button class="sv-state" type="button" data-state="qIdentify" aria-pressed="false">IDENTIFY</button>
+      <button class="sv-state" type="button" data-state="qStructure" aria-pressed="false">STRUCTURE</button>
+      <button class="sv-state" type="button" data-state="qQuantity" aria-pressed="false">QUANTITY</button>
+    </div>
+
+    <ol class="sv-steps sv-steps--q">
+      <li class="sv-step" data-state="qDrawing">
+        <p class="sv-step__i">01 / DRAWING</p>
+        <h3 class="sv-step__k">{{glyph:plan sv-gl gl--20}}A TERVLAP</h3>
+        <p class="sv-step__c">
+          A kiindulás egy PDF alaprajz: falak, nyílászárók, helyiségek,
+          méretvonalak. Pontosan az, amit a tervezőtől kap.
+        </p>
+      </li>
+      <li class="sv-step" data-state="qIdentify">
+        <p class="sv-step__i">02 / IDENTIFY</p>
+        <h3 class="sv-step__k">{{glyph:scan sv-gl gl--20}}AZONOSÍTÁS</h3>
+        <p class="sv-step__c">
+          A rajzi jeleket elemenként azonosítjuk: melyik ajtótípus,
+          melyik ablak, melyik helyiség. Digitális adatkinyerés,
+          <b>emberi ellenőrzés mellett</b> — nem automata felismerés helyettünk.
+        </p>
+      </li>
+      <li class="sv-step" data-state="qStructure">
+        <p class="sv-step__i">03 / STRUCTURE</p>
+        <h3 class="sv-step__k">{{glyph:layers sv-gl gl--20}}STRUKTÚRA</h3>
+        <p class="sv-step__c">
+          Az azonosított elemek típusonként összeállnak: konszignációs
+          sorok, helyiséglista, felületek. Innentől nem rajz, hanem tábla.
+        </p>
+      </li>
+      <li class="sv-step" data-state="qQuantity">
+        <p class="sv-step__i">04 / QUANTITY</p>
+        <h3 class="sv-step__k">{{glyph:quantify sv-gl gl--20}}MENNYISÉG</h3>
+        <p class="sv-step__c">
+          A tábla darabszámmá és négyzetméterré válik — ez megy tovább
+          az árazásba, a megrendelésbe és a kivitelezésbe.
+        </p>
+        <dl class="sv-data sv-data--live">
+          <div><dt>AJTÓ</dt><dd id="qDoors">—</dd></div>
+          <div><dt>ABLAK</dt><dd id="qWindows">—</dd></div>
+          <div><dt>HELYISÉG</dt><dd id="qRooms">—</dd></div>
+          <div><dt><span id="qAreaK">SZINT</span></dt><dd id="qFloor">—</dd></div>
+        </dl>
+      </li>
+    </ol>
+
+    <!-- The extraction sheet. It is the result of the four states above, so
+         it belongs in the same column the reading happens in, on its own
+         ground — not laid across the drawing, which is where Phase 3 put it
+         and where the two collided into an unreadable overlap. -->
+    <div class="qsheet">
+      <p class="qsheet__h" aria-hidden="true">
+        <span>KIVONAT</span><span class="qsheet__r"></span>
+        <span id="qSheetNo">SHEET 01 / 03</span>
+      </p>
+
+      <!-- PHASE 8 — the per-floor breakdown.
+           Every figure in this table is counted from the same room
+           rectangles the drawings above are generated from. There is no
+           second source and nothing here is typed: add a door in
+           src/webgl/levels.js and this table changes with the drawing. -->
+      <table class="sv-tbl sv-tbl--floors">
+        <caption class="sv-tbl__cap">
+          SZINTENKÉNTI KIMUTATÁS — a fenti három tervlapról leolvasva.
+          <b>Demonstrációs épület, számított értékek.</b>
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">SZINT</th><th scope="col">SZINTMAGASSÁG</th>
+            <th scope="col">HELYISÉG</th><th scope="col">AJTÓ</th>
+            <th scope="col">ABLAK</th><th scope="col">ALAPTERÜLET</th>
+          </tr>
+        </thead>
+        <tbody id="qFloorRows"></tbody>
+        <tfoot>
+          <tr>
+            <th scope="row">ÖSSZESEN</th><td id="qTotalH">—</td>
+            <td id="qTotalR">—</td><td id="qTotalD">—</td>
+            <td id="qTotalW">—</td><td id="qTotalA">—</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <table class="sv-tbl">
+        <caption class="sv-tbl__cap">
+        KONSZIGNÁCIÓ — <b id="qScope">FÖLDSZINT</b> nyílászárói típusonként.
+        <b>Demonstrációs tervlap, számított értékek.</b>
+      </caption>
+        <thead>
+          <tr><th scope="col">JEL</th><th scope="col">MEGNEVEZÉS</th><th scope="col">DB</th></tr>
+      </thead>
+        <tbody>
+          <tr><th scope="row">D01</th><td>Ajtó — típus 01</td><td id="qD01">—</td></tr>
+          <tr><th scope="row">D02</th><td>Ajtó — típus 02</td><td id="qD02">—</td></tr>
+          <tr><th scope="row">D03</th><td>Ajtó — típus 03</td><td id="qD03">—</td></tr>
+          <tr><th scope="row">W01</th><td>Ablak — típus 01</td><td id="qW01">—</td></tr>
+          <tr><th scope="row">W02</th><td>Ablak — típus 02</td><td id="qW02">—</td></tr>
+          <tr><th scope="row">W03</th><td>Ablak — típus 03</td><td id="qW03">—</td></tr>
+      </tbody>
+      </table>
+    </div>
+
+    <!-- the title block sits where a title block sits: bottom right. -->
+    <dl class="qtb" aria-hidden="true">
+      <div><dt>Sheet</dt><dd>Q-101</dd></div>
+      <div><dt>Scale</dt><dd>1:100</dd></div>
+      <div><dt>Reading</dt><dd class="is-live" data-q="area">—</dd></div>
+    </dl>
+
+  </section>
+
+  <!-- ================= KIMENETEK ================= -->
+  <!-- The four outputs are four readings of ONE drawing, so the drawing has
+       to still be on screen while they are read — hovering or focusing a row
+       moves the recognition bracket onto the feature that output is derived
+       from. Phase 3 wired that interaction and then painted an opaque section
+       over the canvas it targets, so it has never been visible. This section
+       is transparent; the renderer suspends one section later. -->
+  <section class="sv-sec sv-out sv-out--live" data-scan-target>
+    <div class="out__col">
+      <div class="sv-sec__head">
+        <p class="sv-eyebrow"><span>02</span> OUTPUT</p>
+        <h2 class="sv-h"><span class="line"><span class="line__in">MIT KAP KÉZHEZ?</span></span></h2>
+        <p class="sv-lede">
+          Mind a négy kimenet ugyanabból a tervlapból származik. Vigye rá az
+          egeret vagy a fókuszt egy sorra — a rajzon kijelöljük, mire épül.
+        </p>
+      </div>
+
+      <dl class="sv-rows">
+        <div class="sv-row" data-extract="d01" tabindex="0">
+          <dt class="sv-row__k"><span class="sv-row__i">01</span>KONSZIGNÁCIÓ</dt>
+          <dd class="sv-row__c">
+            Ajtó, ablak, szerelvény és egyéb darabos elemek típusonkénti
+            kimutatása, darabszámmal és azonosítóval.
+          </dd>
+        </div>
+        <div class="sv-row" data-extract="room" tabindex="0">
+          <dt class="sv-row__k"><span class="sv-row__i">02</span>HELYISÉGKÖNYV</dt>
+          <dd class="sv-row__c">
+            Helyiségenkénti lista alapterülettel — <span id="qRoomArea">—</span> a
+            kiválasztott szint legnagyobb helyiségére.
+          </dd>
+        </div>
+        <div class="sv-row" data-extract="w03" tabindex="0">
+          <dt class="sv-row__k"><span class="sv-row__i">03</span>RÉTEGREND</dt>
+          <dd class="sv-row__c">
+            Szerkezetek rétegenkénti kigyűjtése. Ebben a demóban a modell
+            valós rétegadata a szerkezeti vastagság és a padlóréteg:
+            <span id="qLayers">—</span>. Éles projektnél a rétegrendet a
+            tervlap rétegrendi hivatkozásaiból vesszük át — itt nem
+            találunk ki olyan réteget, ami a modellben nincs benne.
+          </dd>
+        </div>
+        <div class="sv-row" data-extract="f1" tabindex="0">
+          <dt class="sv-row__k"><span class="sv-row__i">04</span>PADLÓBURKOLAT</dt>
+          <dd class="sv-row__c">
+            Burkolattípusonkénti felület, helyiségekre bontva — közvetlenül
+            árazható mennyiség. A kiválasztott szinten
+            <span id="qFinish">—</span>.
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- the title block sits where a title block sits: bottom right. -->
+    <dl class="qtb" aria-hidden="true">
+      <div><dt>Sheet</dt><dd>Q-201</dd></div>
+      <div><dt>Scale</dt><dd>FULL SET</dd></div>
+      <div><dt>Reading</dt><dd class="is-live" data-q="summary">—</dd></div>
+    </dl>
+
+  </section>
+
+  <!-- ================= MINTARAJZ ================= -->
+  <!-- The renderer suspends here: everything below is opaque and reads. -->
+  <section class="sv-sec sv-sample" data-stage-end>
+    <div class="sv-sec__head">
+      <p class="sv-eyebrow"><span>03</span> START WITH A SAMPLE</p>
+      <h2 class="sv-h">
+        <span class="line"><span class="line__in">EGY RAJZZAL</span></span>
+        <span class="line"><span class="line__in">KEZDÜNK.</span></span>
+      </h2>
+      <p class="sv-lede">
+        Nagyobb projekt esetén első körben egy reprezentatív mintarajzot kérünk.
+        A feladat áttekintése és az árajánlat elfogadása után dedikált Drive
+        projektfelületet biztosítunk a teljes dokumentáció feltöltéséhez.
+      </p>
+    </div>
+
+    <div class="sv-flow">
+      <ol class="sv-flow__l">
+        <li><span>01</span> Küldjön egy reprezentatív PDF mintarajzot.</li>
+        <li><span>02</span> Átnézzük a feladatot és a terjedelmét.</li>
+        <li><span>03</span> Egyedi árajánlatot küldünk.</li>
+        <li><span>04</span> Elfogadás után a teljes dokumentáció a dedikált Drive projektfelületre kerül.</li>
+      </ol>
+
+      <div class="sv-drop" id="sampleDrop" tabindex="0" role="button"
+           aria-label="Mintarajz megadása — átugrás az űrlaphoz">
+        <span class="sv-drop__mark" aria-hidden="true"></span>
+        <span class="sv-drop__k">DROP SAMPLE DRAWING</span>
+        <span class="sv-drop__c">Húzza ide a PDF-et, vagy kattintson az űrlaphoz</span>
+        <span class="sv-drop__f">PDF · MAX 4 MB</span>
+      </div>
+    </div>
+
+    <p class="sv-note">
+      Ez az oldal nem dokumentumtár. Egyetlen mintarajz kell az induláshoz —
+      a teljes tervanyag a projektfelületre megy, nem a nyilvános űrlapra.
+    </p>
+  </section>
+
+  <!-- ================= AMI A MUNKÁHOZ KELL ================= -->
+  <!-- QUANTIFY's project input is a DOCUMENT INTAKE: the two things we need
+       are a sheet and a brief, so they are composed as two document records
+       with a sheet reference, not as a generic requirement list. -->
+  <section class="sv-sec sv-input sv-input--doc">
+    <div class="sv-sec__head">
+      <p class="sv-eyebrow"><span>04</span> PROJECT INPUT</p>
+      <h2 class="sv-h"><span class="line"><span class="line__in">AMI AZ INDULÁSHOZ KELL.</span></span></h2>
+    </div>
+
+    <dl class="sv-req doc__req">
+      <div class="sv-req__row" data-doc="A1 / PDF">
+        <dt class="sv-req__k">{{glyph:pdf sv-gl gl--20}}PDF ALAPRAJZ <b>KÖTELEZŐ</b></dt>
+        <dd class="sv-req__c">Egy olvasható, reprezentatív tervlap. Nagyobb projektnél elég egyetlen mintarajz.</dd>
+      </div>
+      <div class="sv-req__row" data-doc="TXT / BRIEF">
+        <dt class="sv-req__k">{{glyph:data sv-gl gl--20}}FELADATLEÍRÁS <b>KÖTELEZŐ</b></dt>
+        <dd class="sv-req__c">Milyen kimutatás kell: konszignáció, helyiségkönyv, rétegrend, burkolat — vagy ezek kombinációja.</dd>
+      </div>
+    </dl>
+
+    <p class="sv-note">
+      A feldolgozás digitális adatkinyerésen és strukturáláson alapul,
+      emberi ellenőrzés mellett. Nem állítjuk, hogy a munkát teljes egészében
+      algoritmus végzi.
+    </p>
+  </section>
+
+  <!-- ================= A MÁSIK KÉT SZOLGÁLTATÁS ================= -->
+  <!-- ================= A MÁSIK KÉT SZOLGÁLTATÁS =================
+       Not site navigation. The three services are three readings of one
+       reality, so the link into a sibling shows the DESTINATION's reading of
+       the same object — points, contours, plan lines — and takes on that
+       mode's accent while it is being considered. -->
+  <section class="sv-sec sv-sib" id="other">
+    <div class="sv-sec__head">
+      <h2 class="sv-h sv-h--s">
+        <span class="line"><span class="line__in">SAME REALITY.</span></span>
+        <span class="line"><span class="line__in">ANOTHER VIEW.</span></span>
+      </h2>
+      <p class="sv-lede">
+        Ugyanaz a projekt, más kérdésre válaszolva. A három szolgáltatás
+        egymásra épül, de külön is kérhető.
+      </p>
+    </div>
+    <div class="sib">
+      <a class="sib__a" href="/360-camera/" data-service="capture" data-cursor="EXPLORE">
+        <span class="sib__i">01</span>
+        <span class="sib__fig"><svg class="sib__g sib__g--capture" viewBox="0 0 168 112" aria-hidden="true"><g class="sp-dots"><path d="M30 66 84 34 138 66 84 98Z"/><path d="M30 66V42L84 10l54 32v24L84 98Z"/><path d="M84 34v64M30 42l54 32 54-32"/></g></svg></span>
+        <span class="sib__k">CAPTURE</span>
+        <span class="sib__hu">360° kamera</span>
+        <span class="sib__c">360°-os vizuális dokumentáció állapotfelméréshez és virtuális bejáráshoz.</span>
+        <span class="sib__go" aria-hidden="true">
+          <span class="sib__go-r"></span><span class="sib__go-t">NÉZET VÁLTÁS</span>
+        </span>
+      </a>
+      <a class="sib__a" href="/teruletfelmeres/" data-service="measure" data-cursor="EXPLORE">
+        <span class="sib__i">02</span>
+        <span class="sib__fig"><svg class="sib__g sib__g--measure" viewBox="0 0 168 112" aria-hidden="true"><g class="sp-line"><path d="M30 66 84 34 138 66 84 98Z"/><path d="M30 66V42L84 10l54 32v24L84 98Z"/><path d="M84 34v64M30 42l54 32 54-32"/></g><g class="sp-band"><path d="M8 54h152M8 66h152M8 78h152M8 90h152"/></g></svg></span>
+        <span class="sib__k">MEASURE</span>
+        <span class="sib__hu">Területfelmérés</span>
+        <span class="sib__c">Terepmodell, szintvonalrajz és számított földtömeg egy helyszíni felmérésből.</span>
+        <span class="sib__go" aria-hidden="true">
+          <span class="sib__go-r"></span><span class="sib__go-t">NÉZET VÁLTÁS</span>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ================= START PROJECT ================= -->
+  <section class="sv-sec sv-project" id="project">
+    <div class="sv-project__head">
+      <p class="sv-eyebrow"><span>—</span> START PROJECT</p>
+      <h2 class="sv-h">
+        <span class="line"><span class="line__in">INDÍTSA EL</span></span>
+        <span class="line"><span class="line__in">A PROJEKTET.</span></span>
+      </h2>
+      <p class="sv-lede">
+        A(z) <b>Mennyiségszámítás</b> már ki van választva. Írja le a feladatot,
+        és munkanapon belül válaszolunk.
+      </p>
+    </div>
+
+    <div id="projectMount"></div>
+
+    <noscript>
+      <p class="sv-note">
+        Az űrlaphoz JavaScript szükséges. Írjon közvetlenül:
+        <a href="mailto:hello@godatafusion.hu" data-company="email-href">hello@godatafusion.hu</a>
+      </p>
+    </noscript>
+  </section>
+
+</main>
+
+<footer class="foot" id="contact">
+  <div class="foot__mark is-lit" id="footMark">
+    <span class="foot__line" style="--i:0"><span class="foot__word is-on" data-l="1">REALITY</span></span>
+    <span class="foot__line" style="--i:1"><i class="foot__slash" aria-hidden="true">/</i><span class="foot__word is-on" data-l="2">DATA</span></span>
+    <span class="foot__line" style="--i:2"><i class="foot__slash" aria-hidden="true">/</i><span class="foot__word is-on" data-l="3">FUSED</span></span>
+  </div>
+
+  <div class="foot__grid">
+    <nav class="foot__nav" aria-label="Lábléc navigáció">
+      <p class="foot__k">SITE</p>
+      <a href="/">Kezdőlap</a>
+      <a href="/#process">Process</a>
+      <a href="/#about">About</a>
+      <a href="#project" data-no-transition>Start project</a>
+    </nav>
+
+    <div class="foot__col">
+      <p class="foot__k">SZOLGÁLTATÁSOK</p>
+      <a href="/360-camera/">360° kamera</a>
+      <a href="/teruletfelmeres/">Területfelmérés</a>
+      <a href="/mennyisegszamitas/">Mennyiségszámítás</a>
+    </div>
+
+    <div class="foot__col foot__col--contact">
+      <p class="foot__k">KAPCSOLAT</p>
+      <a class="foot__mail" id="footMail" data-company="email" href="mailto:hello@godatafusion.hu">hello@godatafusion.hu</a>
+      <p class="foot__ph" data-company="email-note">Placeholder elérhetőség — élesítés előtt cserélendő.</p>
+    </div>
+
+    <div class="foot__col">
+      <p class="foot__k">JOGI</p>
+      <p class="foot__legal" data-company="legal-company">Cégadatok, székhely és adószám: kitöltendő.</p>
+      <p class="foot__legal">A felmérés nem minősül hivatalos földmérésnek.</p>
+      <p class="foot__legal">Az oldalon látható mérési értékek demonstrációs adatok.</p>
+    </div>
+  </div>
+
+  <p class="foot__base">
+    <span>© <span id="footYear">2026</span> GoDataFusion</span>
+    <span>TURN REALITY INTO DATA.</span>
+  </p>
+</footer>
+
+<script type="module" src="/src/service.js"></script>
+</body>
+</html>

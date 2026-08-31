@@ -1,0 +1,495 @@
+/* ============================================================
+   THE 360° VIEWER
+
+   Closed, it is a framed still with one control. Open, it is the page's
+   dominant element — and on a phone it takes the whole viewport, because
+   a 360° view inside a 40vh box is not a 360° view.
+   ============================================================ */
+
+.pano { display: grid; gap: clamp(20px, 3vw, 44px); }
+@media (min-width: 1000px) {
+  .pano { grid-template-columns: minmax(0, 1fr) minmax(15rem, 20rem); align-items: start; }
+}
+
+.pano__frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  min-height: clamp(280px, 46vh, 620px);
+  overflow: hidden;
+  background: #06080a;
+}
+/* A registration frame, not a border — the same corner marks the document
+   intake uses, so a placed sheet and a placed station read as one grammar. */
+.pano__frame::before, .pano__frame::after {
+  content: ''; position: absolute; z-index: 2;
+  width: 22px; height: 22px; border: var(--rule-w) solid var(--rule-primary);
+  pointer-events: none;
+}
+.pano__frame::before { left: 0; top: 0; border-right: 0; border-bottom: 0; }
+.pano__frame::after  { right: 0; bottom: 0; border-left: 0; border-top: 0; }
+.pano.is-open .pano__frame::before, .pano.is-open .pano__frame::after { opacity: 0; }
+
+.pano__canvas {
+  width: 100%; height: 100%;
+  display: block;
+  opacity: 0;
+  transition: opacity var(--t-commit) var(--ease);
+  cursor: grab;
+}
+.pano__canvas.is-dragging { cursor: grabbing; }
+.pano__canvas:focus-visible { outline: 2px solid var(--accent-c); outline-offset: -2px; }
+.pano.is-open .pano__canvas { opacity: 1; }
+/* PHASE 8.2 — the station cut. Out fast, back a little slower, and
+   nothing but opacity so the whole thing is one compositor property. */
+.pano.is-open .pano__canvas.is-blink { opacity: 0; transition-duration: 110ms; }
+.pano.is-open .pano__canvas { transition: opacity 170ms linear; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pano.is-open .pano__canvas.is-blink { opacity: 1; }
+}
+
+/* ---------------------------------------------------------------- closed */
+.pano__open {
+  position: absolute; inset: 0;
+  display: grid; place-content: center; gap: 8px;
+  /* lifted clear of the horizon, so the bearing marks are never read
+     through the entry copy */
+  padding-bottom: clamp(58px, 9vh, 96px);
+  text-align: center;
+  background:
+    radial-gradient(120% 90% at 50% 60%, rgb(var(--accent) / .07), transparent 62%),
+    linear-gradient(180deg, #090c0e, #06080a);
+  cursor: pointer;
+  /* PHASE 8.1 — `visibility 0s` on the way BACK, delayed on the way out.
+     A plain `visibility var(--t-state)` flips the discrete value at the
+     midpoint of the transition in both directions, so for the first ~150 ms
+     after the viewer closes this control is still `visibility: hidden` — and
+     an element that is not visible cannot take focus. `close()` restores
+     focus to it synchronously, so the call was silently doing nothing and
+     focus fell to the body. */
+  transition: opacity var(--t-state) var(--ease), visibility 0s;
+}
+.pano.is-open .pano__open {
+  opacity: 0; visibility: hidden;
+  transition: opacity var(--t-state) var(--ease), visibility 0s var(--t-state);
+}
+
+.pano__open::before {
+  content: ''; position: absolute; left: 50%; top: 50%;
+  width: clamp(150px, 24vw, 300px); aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--accent-40);
+  border-radius: 50%;
+  transition: transform var(--t-commit) var(--ease), border-color var(--t-state) var(--ease);
+}
+/* the horizon: the full width of the station, not a stub under the label */
+.pano__open::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 4%, rgb(var(--accent) / .10) 22%,
+    var(--accent-70) 50%, rgb(var(--accent) / .10) 78%, transparent 96%);
+}
+
+/* the bearing scale, read off the horizon */
+.pano__open-h {
+  position: absolute; left: 0; right: 0; top: 50%;
+  height: 0; pointer-events: none;
+}
+.pano__open-b {
+  position: absolute; top: 8px;
+  left: calc(8% + var(--b) * 84%);
+  transform: translateX(-50%);
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  font-style: normal; letter-spacing: var(--ls-micro); color: var(--fg-50);
+  font-weight: 500;
+}
+.pano__open-b::before {
+  content: ''; position: absolute; left: 50%; top: -13px;
+  width: 1px; height: 9px; background: var(--accent-40);
+}
+
+/* the eight capture points of this walk, indexed along the base */
+.pano__open-s {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 4px; padding: 0 clamp(16px, 2.4vw, 34px) clamp(14px, 2vh, 22px);
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); color: var(--fg-38);
+  font-variant-numeric: tabular-nums;
+}
+.pano__open-s i {
+  position: relative; font-style: normal; padding-top: 14px;
+}
+.pano__open-s i::before {
+  content: ''; position: absolute; left: 50%; top: 0;
+  width: 1px; height: 7px; background: var(--fg-16);
+}
+.pano__open-s i.is-on { color: var(--accent-c); }
+.pano__open-s i.is-on::before { background: var(--accent-c); height: 10px; }
+/* No scale-up on hover: the site answers a pointer with a colour and a
+   rule, never by growing the control under it. */
+.pano__open:hover::before { border-color: var(--accent-c); background: rgb(var(--accent) / .07); }
+.pano__open:focus-visible { outline: 2px solid var(--accent-c); outline-offset: -6px; }
+
+.pano__open-k {
+  position: relative;
+  font-family: var(--ff-label); font-size: clamp(.72rem, 1.1vw, .92rem);
+  letter-spacing: var(--ls-micro); color: var(--fg);
+  font-weight: 500;
+}
+.pano__open-c {
+  position: relative;
+  font-family: var(--ff-text); font-size: var(--fs-micro); color: var(--fg-50);
+}
+
+/* ---------------------------------------------------------------- HUD */
+.pano__hud {
+  position: absolute; left: 0; right: 0; top: 0;
+  display: flex; flex-wrap: wrap; gap: 6px 18px;
+  padding: 14px 16px;
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono);
+  background: linear-gradient(180deg, rgba(6, 8, 10, .8), transparent);
+  opacity: 0; transition: opacity var(--t-state) var(--ease);
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+.pano.is-open .pano__hud { opacity: 1; }
+.pano__id { color: var(--accent-c); }
+.pano__flr {
+  color: var(--fg); padding: 0 6px;
+  border-left: var(--rule-w) solid var(--rule-primary); border-right: var(--rule-w) solid var(--rule-primary);
+}
+.pano__lvl, .pano__cnt { color: var(--fg-50); }
+.pano__head { margin-left: auto; color: var(--fg-50); }
+
+/* ---------------------------------------------------------------- FLOOR + STATION RAILS
+   PHASE 8. The rails were a vertical stack docked to the left edge, and with
+   eight stations on the ground floor that is nine boxes down the side of the
+   frame covering a third of the view — you could not see the room you had
+   just chosen to stand in.
+
+   They are a BASE BAR now: two short horizontal rows over a scrim along the
+   bottom of the frame, floors above stations, the same shape on a desktop
+   and on a phone. Everything above the bar is the view. It also puts the
+   navigation on the edge the arrows and ESC already live on, so the viewer's
+   controls occupy one side of the frame instead of two. */
+.pano__nav {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+  display: grid; gap: 5px; justify-items: start;
+  /* the bottom-right corner stays with the arrow / ESC cluster */
+  padding: 46px 210px 13px 14px;
+  background: linear-gradient(0deg,
+    rgba(6, 8, 10, .88) 0%, rgba(6, 8, 10, .68) 58%, transparent 100%);
+  opacity: 0; transition: opacity var(--t-state) var(--ease);
+  pointer-events: none;
+  /* `visibility`, not just opacity: the rails are built as soon as the
+     station table lands, which is before anyone has opened the viewer, and a
+     focusable button inside an invisible panel is a keyboard trap. */
+  visibility: hidden;
+}
+.pano.is-open .pano__nav { opacity: 1; pointer-events: auto; visibility: visible; }
+.pano__floors, .pano__stations { display: flex; gap: 4px; max-width: 100%; }
+.pano__stations {
+  overflow-x: auto; scrollbar-width: none;
+  scroll-snap-type: x proximity; padding-bottom: 1px;
+}
+.pano__stations::-webkit-scrollbar { display: none; }
+.pano__f, .pano__s {
+  appearance: none; cursor: pointer; flex: none;
+  display: flex; align-items: baseline; gap: 7px;
+  padding: 5px 10px; scroll-snap-align: center;
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); white-space: nowrap;
+  color: var(--fg-50);
+  background: rgba(6, 8, 10, .58);
+  border: var(--rule-w) solid var(--rule-secondary);
+  transition: color var(--t-hover) var(--ease), border-color var(--t-hover) var(--ease);
+  font-variant-numeric: tabular-nums;
+}
+.pano__f b, .pano__s b { font-weight: 400; color: inherit; }
+.pano__f i, .pano__s i { font-style: normal; color: var(--fg-38); }
+.pano__f.is-on i { color: var(--fg-50); }
+.pano__f em { font-style: normal; color: var(--fg-38); font-variant-numeric: tabular-nums; }
+.pano__f:hover, .pano__s:hover { color: var(--fg); border-color: var(--accent-40); }
+.pano__f.is-on { color: var(--accent-c); border-color: var(--accent-40); }
+/* PHASE 8.2 — every floor's stations are in the rail from the start;
+   a floor change hides the ones that do not belong to it rather than
+   rebuilding the rail. See service/capture.js. */
+.pano__s.is-off { display: none; }
+
+.pano__s { color: var(--fg-38); }
+.pano__s.is-on { color: var(--accent-c); border-color: var(--accent-40); }
+.pano__f:focus-visible, .pano__s:focus-visible { outline: 2px solid var(--accent-c); outline-offset: 1px; }
+
+.pano__open-n {
+  position: relative;
+  font-family: var(--ff-mono); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-mono); color: var(--fg-38);
+  font-variant-numeric: tabular-nums;
+}
+
+.pano__demo {
+  /* Under the HUD, not in the bottom-left corner — the base bar owns the
+     bottom of the frame now, and the stamp was sitting behind it. */
+  position: absolute; left: 16px; top: 40px;
+  font-family: var(--ff-text); font-size: var(--fs-micro); color: var(--fg-50);
+  padding: 5px 9px;
+  border: var(--rule-w) solid var(--rule-primary);
+  background: rgba(6, 8, 10, .62);
+  opacity: 0; transition: opacity var(--t-state) var(--ease);
+}
+.pano.is-open .pano__demo { opacity: 1; }
+
+/* ---------------------------------------------------------------- controls */
+.pano__ctl {
+  position: absolute; right: 14px; bottom: 14px; z-index: 3;
+  display: flex; gap: 6px;
+  opacity: 0; visibility: hidden;
+  transition: opacity var(--t-state) var(--ease), visibility var(--t-state);
+}
+.pano.is-open .pano__ctl { opacity: 1; visibility: visible; }
+
+.pano__b {
+  min-width: 46px; min-height: 46px;         /* a real tap target */
+  display: grid; place-items: center;
+  border: var(--rule-w) solid var(--rule-primary);
+  /* PHASE 8.3 — no backdrop filter. There are up to a dozen of these over
+     a live 360 render, and each one makes the compositor read back the
+     canvas behind it before it can draw. What is behind them is a
+     photograph, and a 6 px blur under a 68% scrim was not visible; the
+     scrim carries it instead. */
+  background: rgba(6, 8, 10, .78);
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-60);
+  cursor: pointer;
+  transition: color var(--t-hover) var(--ease), border-color var(--t-hover) var(--ease);
+  font-weight: 500;
+}
+.pano__b:hover { color: var(--fg); border-color: var(--accent-40); }
+.pano__b--x { color: var(--fg-50); }
+
+.pano__load, .pano__fail {
+  position: absolute; inset: 0;
+  display: none; place-content: center; text-align: center;
+  padding: 24px;
+  font-family: var(--ff-label); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-micro); color: var(--fg-50);
+  background: #06080a;
+  font-weight: 500;
+}
+.pano.is-loading .pano__load { display: grid; }
+.pano.is-failed .pano__fail { display: grid; }
+.pano.is-failed .pano__open { display: none; }
+
+/* ---------------------------------------------------------------- side copy */
+.pano__meta { display: grid; gap: 16px; align-content: start; }
+.pano__note {
+  font-family: var(--ff-text); font-size: var(--fs-mono);
+  line-height: 1.75; letter-spacing: .04em; color: var(--fg-60);
+  padding: 14px 16px;
+  border-left: 2px solid var(--accent-40);
+  background: rgba(255, 255, 255, .028);
+}
+.pano__note b { color: var(--fg); letter-spacing: var(--ls-micro); }
+.pano__alt { font-size: var(--fs-lede); line-height: 1.62; color: var(--fg-60); }
+
+/* ---------------------------------------------------------------- mobile */
+@media (max-width: 899px) {
+  .pano__frame { aspect-ratio: 4 / 5; min-height: 0; }
+
+  /* Open, the viewer owns the viewport: an immersive control inside a
+     scrolling column fights the page for every gesture. */
+  .pano.is-open .pano__frame {
+    position: fixed; inset: 0; z-index: 90;
+    aspect-ratio: auto; border: 0;
+  }
+  /* Thumb reach: the exit and the station controls sit in the bottom third,
+     never in a corner the hand has to stretch for, and never under the home
+     indicator. */
+  .pano.is-open .pano__ctl {
+    left: 0; right: 0; bottom: max(22px, env(safe-area-inset-bottom));
+    justify-content: center; gap: 10px;
+  }
+  .pano.is-open .pano__b { min-width: 64px; min-height: 52px; }
+  .pano.is-open .pano__demo {
+    top: calc(max(14px, env(safe-area-inset-top)) + 30px);
+    left: 10px;
+  }
+  .pano.is-open .pano__hud { padding-top: max(14px, env(safe-area-inset-top)); }
+  /* MOBILE (Part 21): the same base bar, lifted clear of the thumb
+     controls, and the level NAMES drop so three floors fit 390 px. */
+  .pano.is-open .pano__nav {
+    bottom: max(78px, calc(env(safe-area-inset-bottom) + 68px));
+    padding: 34px 10px 10px;
+  }
+  .pano__f, .pano__s { min-height: 38px; padding: 6px 11px; }
+  .pano__f i, .pano__f em { display: none; }
+  body.pano-open { overflow: hidden; }
+  body.pano-open .nav, body.pano-open .tracker { opacity: 0; pointer-events: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pano__canvas, .pano__open, .pano__hud, .pano__ctl, .pano__demo { transition-duration: var(--t-hover); }
+}
+
+/* ============================================================
+   PAGE TRANSITION FIELD
+
+   One Scan Plane grammar, three signatures. The band that crosses the frame
+   is the same gesture the site uses everywhere; what changes is what the
+   destination mode reads with it — sampled points for CAPTURE, an elevation
+   interval for MEASURE, one drawn line for QUANTIFY. Not three transition
+   systems: three readings of one pass.
+
+   (The gradients used `rgba(var(--x-accent), a)` — space-separated channels
+   inside the legacy comma form, which is invalid CSS. Every one of them was
+   dropped, so the band has been rendering as nothing and the transition was
+   a plain black wipe with a label on it.)
+   ============================================================ */
+.xfield {
+  position: fixed; inset: 0; z-index: 300;
+  pointer-events: none;
+  display: none;
+  background: var(--bg);
+  --x-accent: var(--accent-idle);
+}
+.xfield.is-on { display: block; }
+
+.xfield__band {
+  position: absolute; left: 0; right: 0; top: 0; height: 42vh;
+  background:
+    linear-gradient(180deg, transparent, rgb(var(--x-accent) / .10) 46%, rgb(var(--x-accent) / .02) 62%, transparent),
+    linear-gradient(180deg, transparent 46%, rgb(var(--x-accent) / .62) 47%, transparent 48%);
+}
+/* the destination's own reading of the pass */
+.xfield__band::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 47%;
+  height: 26px; transform: translateY(-50%);
+  opacity: .9;
+}
+.xfield[data-mode="capture"] .xfield__band::after {
+  background-image: radial-gradient(circle at 2px 50%, rgb(var(--x-accent) / .85) 1.4px, transparent 1.6px);
+  background-size: 15px 100%;
+}
+.xfield[data-mode="measure"] .xfield__band::after {
+  height: 44px;
+  background-image: repeating-linear-gradient(180deg,
+    rgb(var(--x-accent) / .34) 0 1px, transparent 1px 11px);
+}
+.xfield[data-mode="quantify"] .xfield__band::after {
+  background-image:
+    linear-gradient(90deg, transparent 0 8%, rgb(var(--x-accent) / .55) 8% 92%, transparent 92%),
+    linear-gradient(90deg, transparent 0 8%, rgb(var(--x-accent) / .55) 8% 92%, transparent 92%);
+  background-size: 100% 1px, 100% 1px;
+  background-position: 0 40%, 0 62%;
+  background-repeat: no-repeat;
+}
+
+.xfield__k {
+  position: absolute; left: var(--gutter); top: 50%;
+  transform: translateY(-50%);
+  display: flex; align-items: center; gap: 14px;
+  font-family: var(--ff-label); font-size: var(--fs-mono);
+  letter-spacing: .3em; color: rgb(var(--x-accent));
+  opacity: 0;
+  font-weight: 500;
+}
+.xfield__k::after {
+  content: ''; width: clamp(40px, 8vw, 140px); height: 1px;
+  background: rgb(var(--x-accent) / .5);
+}
+
+@media (prefers-reduced-motion: reduce) { .xfield { display: none !important; } }
+
+/* ================================================================
+   PHASE 9 Part 11 — THE HEADER READS IN THE ORDER A PERSON ASKS.
+
+   What am I looking at, where is it, what is it called. The room label
+   is now the primary term and the station number the reference, which
+   is the reverse of Phase 8's order and the reason the header no longer
+   opens with a code.
+   ================================================================ */
+.pano__lvl { color: var(--fg); }
+.pano__flr { color: var(--fg-50); }
+.pano__id { color: var(--accent-c); }
+.pano__cnt { color: var(--fg-38, var(--fg-50)); }
+
+/* ---------------------------------------------------------------- Part 36
+   VIEW IN PLAN — one cross-link, for one room. */
+.pano__x {
+  position: absolute; right: 14px; top: 44px; z-index: 4;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--accent-c);
+  text-decoration: none;
+  padding: 6px 10px;
+  border: 1px solid rgba(var(--accent), .42);
+  background: rgba(6, 8, 10, .72);
+  opacity: 0; visibility: hidden;
+  transition: opacity var(--t-state) var(--ease), visibility var(--t-state),
+              border-color var(--t-hover) var(--ease);
+  font-weight: 500;
+}
+.pano.is-open .pano__x:not([hidden]) { opacity: 1; visibility: visible; }
+.pano__x:hover, .pano__x:focus-visible { border-color: var(--accent-c); }
+
+/* ================================================================
+   PHASE 9 Part 12 — THE FLOOR MAP
+
+   Small, quiet, and made of the same rectangles as the drawing. It sits
+   in the corner the controls do not use, it never grows, and it has no
+   controls of its own beyond the station dots themselves.
+   ================================================================ */
+.pmap {
+  position: absolute; left: 14px; bottom: 92px; z-index: 3;
+  width: 194px;
+  opacity: 0; visibility: hidden;
+  transition: opacity var(--t-state) var(--ease), visibility var(--t-state);
+}
+.pano.is-open .pmap { opacity: 1; visibility: visible; }
+.pmap__t {
+  display: none;                       /* desktop: the map is simply open */
+  appearance: none; cursor: pointer;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-50);
+  padding: 5px 9px; border: var(--rule-w) solid var(--rule-primary);
+  background: rgba(6, 8, 10, .72);
+  font-weight: 500;
+}
+.pmap__body {
+  border: var(--rule-w) solid var(--rule-primary);
+  /* Nearly solid. A map you can see a bright desk through is not a map —
+     and a `backdrop-filter` here is exactly what Phase 8.3 measured at
+     11 fps, so this is flat paint. */
+  background: rgba(6, 8, 10, .93);
+  padding: 8px 8px 6px;
+}
+.pmap__svg { display: block; width: 100%; height: auto; overflow: visible; }
+.pmap__cap {
+  margin: 6px 0 0; white-space: nowrap;
+  font-family: var(--ff-text); font-size: var(--fs-micro); color: var(--fg-50);
+}
+/* three weights, as the drawing has: outline, partitions, and the one
+   rectangle the site follows everywhere */
+.pmap__outline { fill: none; stroke: var(--fg-50); stroke-width: .035; }
+.pmap__r { fill: none; stroke: var(--fg-16); stroke-width: .018; }
+.pmap__r--ref { fill: rgba(var(--accent), .10); stroke: rgba(var(--accent), .34); }
+.pmap__terrace { fill: none; stroke: var(--fg-16); stroke-width: .018;
+  stroke-dasharray: .09 .07; }
+.pmap__cone { fill: rgba(var(--accent), .16); stroke: none; }
+.pmap__d {
+  fill: var(--fg-16); stroke: var(--fg-50); stroke-width: .014;
+  cursor: pointer; transition: fill var(--t-hover) var(--ease);
+}
+.pmap__d:hover { fill: var(--fg-50); }
+.pmap__d.is-on { fill: transparent; stroke: transparent; }
+.pmap__here { fill: var(--accent-c); stroke: rgba(6, 8, 10, .9); stroke-width: .03; }
+
+@media (max-width: 900px) {
+  /* Part 28 — on a phone the map is a thing you ask for. */
+  .pmap { left: 14px; bottom: 104px; width: auto; }
+  .pmap__t { display: inline-block; }
+  .pmap__body { display: none; width: 210px; margin-top: 6px; }
+  .pmap.is-open .pmap__body { display: block; }
+  .pano__x { top: auto; bottom: 152px; right: 14px; }
+}

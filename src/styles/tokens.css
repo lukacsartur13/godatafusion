@@ -1,0 +1,416 @@
+/* ============================================================
+   GoDataFusion — design tokens
+   One accent channel at a time. The active service owns it.
+   ============================================================ */
+
+/* ------------------------------------------------------------------
+   PHASE 10 — THE TYPE SYSTEM
+
+   Three families, three jobs, no overlap. Geist / Geist Mono are gone:
+   they gave this site the same voice as every other product built on
+   the Vercel stack, and the brief for this phase is that GoDataFusion
+   should not share a typographic identity with anything else in the
+   studio's portfolio.
+
+     GDF Display   Instrument Sans   wght 400–700   23,1 kB
+     GDF Text      IBM Plex Sans     wght 300–600   26,3 kB
+     GDF Mono      IBM Plex Mono     400 / 500      12,5 kB
+                                            TOTAL   61,9 kB
+
+   Geist + Geist Mono were 83,6 kB across four files, so the third
+   family arrives at a 21,7 kB SAVING. That is subsetting, not luck:
+   Google serves latin and latin-ext as separate faces, and a Hungarian
+   page pulls both, every time. These are one file per family, cut to
+   the charset the site actually sets — ASCII, the Hungarian accented
+   pairs, the typographic punctuation and the engineering marks
+   (° ′ ″ ² ³ × ↗ — the coordinate strip and the m² / m³ readouts).
+   See docs/fonts/ for the build and the three OFL 1.1 licences; all
+   three families are SIL Open Font License, self-hosting permitted.
+
+   MEASURED METRICS, all on a 1000 upm — read off the shipped files, not
+   off a specimen page:
+
+                        cap    x   adv H   adv n
+     Geist (Phase 9)    710   530    713     581
+     Geist Mono         710   530    600     600
+     Instrument Sans    720   510    736     599
+     IBM Plex Sans      698   516    707     568
+     IBM Plex Mono      698   516    600     600
+
+   Three facts fell out of that table and every ramp below is set by
+   them.
+
+   ONE. Both Plex faces share IBM's metrics EXACTLY — same cap, same
+   x-height, same 600 advance as the mono it replaces. So a sans label
+   and a mono value set at the same size sit on the same cap line with
+   no optical correction, which is what makes the §03 label/data split
+   possible without a per-component nudge.
+
+   TWO. Instrument Sans runs a taller cap (720) over a SMALLER x-height
+   (510) — a cap-to-x ratio of 1,41 against Geist's 1,34. That is the
+   whole reason it is here: tall narrow caps over a quiet lowercase is
+   what makes a headline read as architectural rather than as an
+   interface. It also means the display ramp has to come down 1,4% to
+   land the same cap line, not the 3% a first pass guessed.
+
+   THREE. Every ramp is scaled by its face's own cap ratio, so the
+   rendered CAP HEIGHT is unchanged from Phase 9 at every breakpoint.
+   Verified in qa/p10/type.mjs across nine widths — hero cap at 2560:
+   109,96 px before, 110,0 px after.
+   ------------------------------------------------------------------ */
+@font-face {
+  font-family: 'GDF Display';
+  src: url('/fonts/gdf-display.woff2') format('woff2');
+  font-weight: 400 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'GDF Text';
+  src: url('/fonts/gdf-text.woff2') format('woff2');
+  font-weight: 300 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'GDF Mono';
+  src: url('/fonts/gdf-mono-400.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'GDF Mono';
+  src: url('/fonts/gdf-mono-500.woff2') format('woff2');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+
+:root {
+  /* ---- surface ---- */
+  --bg:            #080A0B;
+  --bg-lift:       #0C0F10;
+  --fg:            #F1F0EB;
+  --grey:          #242729;
+  --grey-line:     #1A1D1E;
+
+  /* Contrast against --bg (#080A0B), measured:
+       --fg-60  6.52:1  body copy            AA small text
+       --fg-50  4.80:1  micro labels          AA small text
+       --fg-38  3.21:1  indices, quiet keys   AA large / UI
+     Phase 1 ran the micro labels at .28 (2.24:1) and .42 (3.69:1). Engineering
+     type on this page is 10–11px, so those two tiers were lifted until the
+     smallest text on the site clears AA. --fg-16 and below stay decorative:
+     rules, hairlines and marks, never anything that has to be read.
+
+     PHASE 4: --fg-38 was still carrying text in thirty places — key labels,
+     metadata rows, table headers — at 3.21:1, which is the AA-large / UI
+     threshold, not the small-text one, and every one of them is 11–12px
+     mono. Measured and lifted to --fg-50 (4.80:1). --fg-38 is now a
+     DRAWING value: ticks, strokes, hairlines and borders only. */
+  --fg-60: rgba(241, 240, 235, .60);
+  --fg-50: rgba(241, 240, 235, .50);
+  --fg-42: rgba(241, 240, 235, .50);
+  --fg-38: rgba(241, 240, 235, .38);   /* DRAWING ONLY — ticks, strokes, rules */
+  --fg-28: rgba(241, 240, 235, .50);
+  --fg-16: rgba(241, 240, 235, .16);
+  --fg-09: rgba(241, 240, 235, .09);
+  --fg-05: rgba(241, 240, 235, .055);
+  /* PHASE 10 §22 — one step ABOVE --fg for the few marks that have to sit
+     forward of body copy without becoming a headline. Used by the display
+     lockups and the active technical key, nowhere else. */
+  --fg-hi:  #FFFEFA;
+
+  /* ---- service accents (rgb channels; JS tweens --accent) ---- */
+  --accent-capture:  66 232 255;
+  --accent-measure:  184 255 61;
+  --accent-quantify: 255 104 70;
+  --accent-idle:     176 188 190;
+
+  --accent: var(--accent-idle);          /* live channel, stepped by JS   */
+  --accent-c:   rgb(var(--accent));
+  --accent-70:  rgb(var(--accent) / .70);
+  --accent-40:  rgb(var(--accent) / .40);
+  --accent-18:  rgb(var(--accent) / .18);
+  --accent-08:  rgb(var(--accent) / .08);
+  /* 0 in idle, 1 when a service owns the atmosphere — JS stepped */
+  --accent-mix: 0;
+
+  /* ============================================================
+     TYPE — three families, three jobs
+
+       --ff-display   headlines, display lockups, large service titles.
+                      Set in caps almost everywhere on this site.
+       --ff-text      body copy, ledes, navigation, forms, lists,
+                      service descriptions. The default for the document.
+       --ff-label     the UI micro tier — SERVICES, START PROJECT, section
+                      keys, button text. Uppercase and tracked, but SANS.
+                      This is the token PHASE 10 §03 introduced: it is
+                      --ff-text, and it exists so that "is this small?" and
+                      "is this data?" stop being the same question.
+       --ff-mono      TECHNICAL ONLY. Coordinates, room and floor IDs,
+                      capture IDs, measurements, counts, system metadata.
+                      If a monospace string is not a value a machine
+                      produced or an identifier a machine would accept,
+                      it belongs in --ff-label.
+     ============================================================ */
+  --ff-display: 'GDF Display', 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --ff-text:    'GDF Text', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --ff-label:   var(--ff-text);
+  --ff-mono:    'GDF Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* ---- the three display scales — PHASE 10 §02 ----
+     DISPLAY XL   hero          TURN REALITY / INTO DATA.
+     DISPLAY L    service hero  FROM DRAWING / TO DATA.
+     DISPLAY M    transitions   A RAJZBÓL / STRUKTÚRA LESZ.
+
+     PHASE 4 set each ramp as `slope·vw + floor` so the large canvas keeps
+     scaling instead of pinning at 1440; that stays. What changed in Phase
+     10 is that every term is multiplied by 710/720 = 0,986 — Geist's cap
+     height over Instrument Sans's — so the rendered cap line is where it
+     was. Measured across nine widths in qa/p10/type.mjs: the hero cap is
+     within 0,1 px of the Geist composition at 2560, 1920 and 1440, and
+     the headline still breaks into exactly two rows at all nine.
+
+     Each scale carries its OWN tracking. Caps need less negative tracking
+     as they get smaller, and one --ls-display applied from 182 px down to
+     28 px is the single most common way a display system looks bought
+     rather than drawn. */
+  --fs-dxl:  clamp(2.85rem, 4.98vw + 1.577rem, 11.24rem);
+  --fs-dl:   clamp(2.18rem, 3.41vw + 0.936rem, 7.02rem);
+  --fs-dm:   clamp(1.73rem, 2.32vw + 0.539rem, 4.54rem);
+  --ls-dxl:  -.042em;
+  --ls-dl:   -.034em;
+  --ls-dm:   -.026em;
+  --lh-d:    .875;      /* the display line box — set once, read everywhere */
+
+  /* Phase 9 names, kept as aliases so no stylesheet has to be rewritten
+     to follow the new ramp. New work should set --fs-dxl / --fs-dl /
+     --fs-dm and the matching --ls-*. */
+  --fs-display: var(--fs-dxl);
+  --fs-h2:      var(--fs-dl);
+  --fs-h3:      var(--fs-dm);
+  --ls-display: var(--ls-dxl);
+
+  --fs-mword:   clamp(1.85rem, 8.4vw, 11.6rem);
+
+  /* ---- text tier ----
+     Plex Sans sets smaller than Geist at the same px — x-height 516 vs
+     530 — so the body ramp is lifted by 530/516 = 2,7% to hold the same
+     READING size, which is x-height, not font-size. Measured on the hero
+     lede: x-height 10,00 px before / 9,99 px after at 2560, 8,16 / 8,14
+     at 1440, 7,42 / 7,43 at 1024 and below. */
+  --fs-body:    clamp(.94rem, .43vw + .625rem, 1.27rem);
+  --fs-lede:    clamp(.90rem, .39vw + .635rem, 1.21rem);
+  --fs-key:     clamp(1.05rem, 1.05vw + .40rem, 2.05rem);
+
+  /* ---- micro tier ----
+     --fs-micro is the SANS label size, --fs-mono the TECHNICAL one. Phase
+     9 already ran them as two ramps; both are simply scaled by 710/698 =
+     1,0172, the cap ratio between Geist and Plex, so each holds its Phase
+     9 cap height exactly.
+
+     They are deliberately NOT equal. A label and a value at the same size
+     would align perfectly — the two Plex faces share a cap — but the data
+     tier has carried a little more presence than the label tier since
+     Phase 4, and that hierarchy is doing real work: on the MEASURE
+     instrument the numbers are the subject and their keys are not. */
+  --fs-micro:   clamp(.651rem, .132vw + .631rem, .814rem);
+  --fs-mono:    clamp(.692rem, .142vw + .666rem, .875rem);
+
+  /* Geist Mono and Plex Mono have the SAME 600 advance, so the tracking
+     change is not a width correction — it is the point of §03. At .17 em
+     a room ID and a nav label were tracked identically, which is exactly
+     why the site read as monospace-everywhere. The label tier keeps wide
+     tracking because that is what makes it a LABEL; the data tier drops
+     to .075 em because a coordinate is a string to be read, not a caption
+     to be spaced. */
+  --ls-micro:   .155em;   /* --ff-label, uppercase */
+  --ls-mono:    .075em;   /* --ff-mono, technical */
+
+  /* ---- layout ---- */
+  --gutter: clamp(18px, 3.1vw, 92px);
+  /* How wide the editorial column may run. Tied to the display size rather
+     than to `ch` on the 16px root: a headline authored as two lines has to
+     stay two lines at every width, and 64ch broke "TURN REALITY / INTO
+     DATA." into four rows at 2560. */
+  --col-display: min(100%, max(38rem, calc(var(--fs-display) * 6.62)));
+  --sec-y: clamp(84px, 13vh, 178px);
+  --measure: 58ch;
+  --nav-h: clamp(56px, 4.8vw, 72px);
+  /* PATCH 9.1 — the height of the fixed header BOX, not of its content.
+     `--nav-h` is the bar's `height`; the bar also carries a 1 px bottom
+     hairline, so everything that has to clear the header was clearing it
+     by one pixel less than it asked for. Every top inset now measures
+     against this, so a change to the bar can never again leave a section
+     under it. */
+  --nav-safe: calc(var(--nav-h) + 1px);
+  --strip-h: clamp(34px, 3vw, 42px);
+
+  /* ============================================================
+     THE RULE SYSTEM — PHASE 10 §15
+
+     Before this phase the site drew hairlines at eight different
+     opacities picked per component. Four roles, and nothing else:
+
+       PRIMARY      a structural division — section edge, table head,
+                    the boundary of a composition.
+       SECONDARY    a repeated division inside one structure — list
+                    rows, spec items, the frame's inner columns.
+       MEASURE      a drawing mark: a tick, a datum, a leader, an
+                    extension line. Never a boundary.
+       ACTIVE       the one rule in view that is carrying state.
+
+     Weight is ALWAYS 1 px. A rule that needs more presence gets more
+     opacity, never more thickness — a 2 px hairline on a drawing reads
+     as a mistake, and on a 2x panel it reads as a 1 px rule that failed.
+     ============================================================ */
+  --rule-primary:   var(--fg-16);
+  --rule-secondary: var(--fg-09);
+  --rule-measure:   var(--fg-38);
+  --rule-active:    var(--accent-40);
+  --rule-w: 1px;
+
+  /* ---- drafting marks — PHASE 10 §16 ----
+     Three tick lengths and one anchor radius, so a corner cross on the
+     hero and a datum tick in the MEASURE instrument are the same mark at
+     two sizes rather than two marks that happen to be small. */
+  --tick-s: 4px;
+  --tick-m: 7px;
+  --tick-l: 12px;
+  --anchor-r: 2px;
+
+  /* ============================================================
+     MOTION — PHASE 10 §20
+
+     Three durations, three curves, and nothing else in the document.
+     Phase 3 collapsed seventeen durations into three tiers; Phase 10
+     renames them for what they DO rather than for what triggers them,
+     and retunes the middle tier.
+
+       --motion-fast   180ms  the pointer is answered. Colour, opacity,
+                              a 1–2 px shift. Never geometry that moves
+                              far enough to be watched.
+       --motion-ui     260ms  a control RESOLVES: a glyph assembles, an
+                              index slides into place, a rule extends.
+                              Phase 9 ran this at 340 ms, which read as
+                              soft. The brief for this phase is precise
+                              and slightly mechanical, and 260 is where
+                              the scan line stops feeling like an
+                              animation and starts feeling like a
+                              response.
+       --motion-state  650ms  a decision or a reveal — a mode commits, a
+                              panel opens, a section arrives.
+
+     EASING CHARACTER. No springs, no overshoot: every curve below ends
+     with its second control point at y=1, so nothing on this site can
+     travel past its destination and come back.
+
+       --ease-out    the default. Leaves quickly, lands exactly.
+       --ease-io     travel between two known states.
+       --ease-line   a rule or a scan drawing ITSELF — nearly linear in
+                     the middle so the line reads as swept, not thrown.
+     ============================================================ */
+  --motion-fast:  .18s;
+  --motion-ui:    .26s;
+  --motion-state: .65s;
+
+  --ease-out:  cubic-bezier(.16, .84, .28, 1);
+  --ease-io:   cubic-bezier(.72, 0, .18, 1);
+  --ease-line: cubic-bezier(.34, 0, .10, 1);
+
+  /* Phase 3–9 names, aliased onto the three tiers. Every existing
+     stylesheet follows the new grammar without being rewritten. */
+  --ease:    var(--ease-out);
+  --t-hover:  var(--motion-fast);
+  --t-state:  var(--motion-ui);
+  --t-commit: var(--motion-state);
+
+  /* PHASE 8.2 — the mode transition, shared by the CSS side and the
+     GSAP side. MODE_DUR / MODE_EASE in webgl/scene.js are this duration
+     and the curve `power2.inOut` traces, so the atmosphere, the marks
+     and the object are one gesture rather than three that start
+     together and drift. NOT one of the three tiers: it is a contract
+     with the renderer, and it is documented as such. */
+  --t-mode:    .85s;
+  --ease-mode: cubic-bezier(.45, 0, .55, 1);
+  --dur: .58s;
+}
+
+/* ============================================================
+   THE ACCENT SCOPES
+
+   PHASE 8.2. `--accent` used to be declared on `:root` and written by
+   JS. A custom property is inherited, so that one write re-resolved
+   style for every element in the document — 1 043 of them, at 10,5–13,4
+   ms — whether or not it read the accent. The crossfade that went with
+   it was `:root.is-accent-shift *`, which made the whole document
+   transition-capable on twelve properties for 850 ms and repainted it
+   every frame. Together they are the two whole-document recalculations
+   and the 46–65 ms of Paint that Phase 8.1 measured and accepted.
+
+   The accent is declared HERE instead: on the handful of top-level
+   regions that contain an accent-bearing mark. `core/theme.js` writes
+   `data-accent` to them, and only to the ones near the viewport, so a
+   hero mode change re-resolves ~283 elements in four small subtrees and
+   nothing document-wide.
+
+   `:root` keeps the idle value as the fallback for anything that is not
+   inside a scope — a detached node, a print stylesheet, an element
+   added before its region is scanned.
+   ============================================================ */
+[data-accent="capture"]  { --accent: var(--accent-capture);  --accent-mix: 1; }
+[data-accent="measure"]  { --accent: var(--accent-measure);  --accent-mix: 1; }
+[data-accent="quantify"] { --accent: var(--accent-quantify); --accent-mix: 1; }
+[data-accent="idle"]     { --accent: var(--accent-idle);     --accent-mix: 0; }
+
+/* THE DERIVED TOKENS HAVE TO BE RE-DERIVED IN THE SCOPE.
+
+   `--accent-c: rgb(var(--accent))` is substituted where it is DECLARED,
+   not where it is used: a descendant inherits the computed colour, not
+   the recipe. Declared only on `:root`, every one of these would stay
+   frozen at the idle grey no matter what a scope set `--accent` to —
+   and the marks that read them (the rail key, the wordmark dot, the
+   telemetry figure) would never change colour again, while the ones
+   that write `rgb(var(--accent) / a)` inline would. Re-declared here,
+   they resolve against the scope's own accent. */
+[data-accent] {
+  --accent-c:   rgb(var(--accent));
+  --accent-70:  rgb(var(--accent) / .70);
+  --accent-40:  rgb(var(--accent) / .40);
+  --accent-18:  rgb(var(--accent) / .18);
+  --accent-08:  rgb(var(--accent) / .08);
+}
+
+/* ============================================================
+   THE MARKS
+
+   What crossfades is a REAL LIST of the elements that carry an accent,
+   not `*`. Twenty-odd selectors instead of a universal one, on the five
+   properties that actually hold the colour — so the browser interpolates
+   the marks and repaints the marks, and the rest of the document is not
+   involved in the transition at all.
+
+   These are permanent, which is what lets the `is-accent-shift` class
+   go: a 0,34 s colour transition on a rail key or a callout figure is
+   what one would author for those components anyway, and there is no
+   longer a class toggle re-resolving the document to add and remove it.
+   ============================================================ */
+.mode__key, .mode__idx, .mode__arrow path, .mode.is-active, .mode.is-active::after,
+.anno__dot, .anno__line, .anno__text i, .anno__text b, .anno__text u,
+.anno--x .anno__text, .anno--level .anno__text,
+.hero__title .dot, .telemetry__v.num, .strip__track i,
+.scanplane__field, .scanplane__line,
+.fb-accent path, .fb-accent circle,
+.readout__note--legal, .cursor__ring, .cursor__label {
+  transition:
+    color var(--t-mode) var(--ease-mode),
+    background-color var(--t-mode) var(--ease-mode),
+    background-image var(--t-mode) var(--ease-mode),
+    border-color var(--t-mode) var(--ease-mode),
+    fill var(--t-mode) var(--ease-mode),
+    stroke var(--t-mode) var(--ease-mode);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mode__key, .mode__idx, .mode__arrow path, .mode.is-active, .mode.is-active::after,
+  .anno__dot, .anno__line, .anno__text i, .anno__text b, .anno__text u,
+  .anno--x .anno__text, .anno--level .anno__text,
+  .hero__title .dot, .telemetry__v.num, .strip__track i,
+  .scanplane__field, .scanplane__line,
+  .fb-accent path, .fb-accent circle,
+  .readout__note--legal, .cursor__ring, .cursor__label { transition-duration: .01s; }
+}

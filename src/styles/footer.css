@@ -1,0 +1,103 @@
+/* ============================================================
+   09 / FOOTER — the last brand moment, and the Scan Plane's last pass.
+   ============================================================ */
+.foot {
+  position: relative; z-index: 2;
+  padding: clamp(60px, 10vh, 130px) var(--gutter) clamp(26px, 4vh, 46px);
+  border-top: var(--rule-w) solid var(--rule-secondary);
+}
+
+.foot__mark {
+  position: relative;
+  display: grid;
+  padding-bottom: clamp(40px, 7vh, 96px);
+  /* one slash-width of step per line — the diagonal is measured, not eyeballed */
+  --step: clamp(24px, 5.2vw, 150px);
+}
+.foot__line {
+  display: flex; align-items: baseline;
+  gap: clamp(6px, .8vw, 20px);
+  padding-left: calc(var(--i) * var(--step));
+}
+.foot__word, .foot__slash {
+  font-size: clamp(2.5rem, 11.4vw, 15rem);
+  font-weight: 500; line-height: .90; letter-spacing: -.052em;
+  font-style: normal;
+}
+.foot__slash {
+  color: var(--fg-16);
+  /* The one deliberate exception to the three-tier timing: the closing
+     wordmark resolves over a full second, once, and then stops. */
+  transition: color 1s var(--ease);
+}
+.foot__mark.is-lit .foot__slash { color: var(--accent-40); }
+.foot__word {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--fg-28);
+  transition: color 1s var(--ease), -webkit-text-stroke-color 1s var(--ease);
+}
+.foot__word[data-l="1"] { transition-delay: 0s; }
+.foot__word[data-l="2"] { transition-delay: .16s; }
+.foot__word[data-l="3"] { transition-delay: .32s; }
+.foot__word.is-on { color: var(--fg); -webkit-text-stroke-color: transparent; }
+.foot__word[data-l="3"].is-on { color: var(--accent-c); }
+
+.foot__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(24px, 3.4vw, 56px);
+  padding-top: clamp(28px, 4vh, 48px);
+  border-top: var(--rule-w) solid var(--rule-secondary);
+}
+.foot__nav, .foot__col { display: grid; gap: 11px; align-content: start; }
+.foot__k {
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); text-transform: uppercase;
+  color: var(--fg-28); margin-bottom: 4px;
+  font-weight: 500;
+}
+.foot__grid a {
+  font-size: .95rem; color: var(--fg-60); width: max-content;
+  border-bottom: 1px solid transparent;
+  transition: color var(--t-state) var(--ease), border-color var(--t-state) var(--ease);
+}
+.foot__grid a:hover, .foot__grid a:focus-visible {
+  color: var(--fg); border-bottom-color: var(--accent-40);
+}
+.foot__mail { color: var(--accent-c) !important; }
+
+/* Placeholders are labelled as placeholders. Nothing here is invented
+   company data pretending to be real. */
+/* Legal text is the one thing on the page that must never be decorative;
+   --fg-16 was too faint to read against the footer. */
+.foot__ph, .foot__legal {
+  font-family: var(--ff-text); font-size: var(--fs-micro);
+  letter-spacing: .08em; line-height: 1.75; color: var(--fg-42);
+  max-width: 34ch;
+}
+/* A placeholder notice is text, and text has to clear AA: the accent at
+   62% put the QUANTIFY orange at 3.2:1. Full accent, no alpha. */
+.foot__ph { color: var(--accent-c); }
+
+.foot__base {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px;
+  margin-top: clamp(40px, 7vh, 84px);
+  padding-top: clamp(16px, 2.4vh, 24px);
+  border-top: var(--rule-w) solid var(--rule-secondary);
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); color: var(--fg-28);
+  text-transform: uppercase; font-weight: 500;
+}
+
+@media (max-width: 900px) {
+  .foot__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 24px; }
+}
+@media (max-width: 520px) {
+  .foot__grid { grid-template-columns: 1fr; }
+  .foot__word { -webkit-text-stroke-width: .7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .foot__word { color: var(--fg); -webkit-text-stroke-color: transparent; }
+  .foot__word[data-l="3"] { color: var(--accent-c); }
+  .foot__slash { color: var(--accent-40); }
+}
