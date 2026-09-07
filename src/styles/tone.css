@@ -1,0 +1,597 @@
+/* ============================================================
+   PHASE 12 — THE LIGHT SURFACE, AND THE SALES LAYER
+
+   The brief for this phase: keep the dark, technical brand opening, but
+   stop the whole document from being dark. Roughly 40 % graphite and
+   60 % off-white, alternating, so the content blocks separate and the
+   drama of the dark sections is spent rather than diluted.
+
+   ONE mechanism. `data-tone="light"` on a section re-declares the same
+   tokens every component already reads — --bg, --fg, the --fg-NN alpha
+   ramp, the rule roles — so nothing inside has to know which ground it
+   is standing on. A button that is white-on-graphite in the hero is
+   graphite-on-white here, from the same declaration.
+
+   THE ACCENTS ON A LIGHT GROUND. Cyan #42E8FF and lime #B8FF3D are
+   headline colours on black and unreadable on white: 1,6:1 and 1,4:1.
+   A light scope therefore carries an INK variant of each service colour,
+   measured against #F5F6F7:
+
+       capture   #00788F   4,8:1
+       measure   #2F7A16   5,0:1
+       quantify  #BF3F17   5,0:1
+
+   Same hue family, same job — a service IDENTIFIER, never the call to
+   action. The CTA is one colour everywhere: the foreground of whatever
+   ground it sits on.
+   ============================================================ */
+
+[data-tone="light"] {
+  --bg:        #F5F6F7;
+  --bg-lift:   #FFFFFF;
+  --fg:        #0B0F14;
+  --fg-hi:     #000000;
+  --grey:      #E3E6E8;
+  --grey-line: #D6DADD;
+
+  --fg-60: rgba(11, 15, 20, .70);
+  --fg-50: rgba(11, 15, 20, .60);
+  --fg-42: rgba(11, 15, 20, .60);
+  --fg-38: rgba(11, 15, 20, .40);
+  --fg-28: rgba(11, 15, 20, .52);
+  --fg-16: rgba(11, 15, 20, .16);
+  --fg-09: rgba(11, 15, 20, .10);
+  --fg-05: rgba(11, 15, 20, .06);
+
+  --accent-capture:  0 120 143;
+  --accent-measure:  47 122 22;
+  --accent-quantify: 191 63 23;
+  --accent-idle:     84 96 104;
+
+  --rule-primary:   var(--fg-16);
+  --rule-secondary: var(--fg-09);
+  --rule-measure:   var(--fg-38);
+
+  background: var(--bg);
+  color: var(--fg);
+  color-scheme: light;
+}
+
+/* A light section is opaque and sits over the fixed canvas. */
+section[data-tone="light"] { position: relative; z-index: 2; }
+
+/* The accent re-derivation has to happen INSIDE the light scope too, or a
+   light section inherits the derived cyan from the dark region above it. */
+[data-tone="light"],
+[data-tone="light"] [data-svc] {
+  --accent-c:   rgb(var(--accent));
+  --accent-70:  rgb(var(--accent) / .70);
+  --accent-40:  rgb(var(--accent) / .40);
+  --accent-18:  rgb(var(--accent) / .18);
+  --accent-08:  rgb(var(--accent) / .08);
+}
+[data-tone="light"] { --accent: var(--accent-idle); --accent-mix: 0; }
+
+/* A light section may still be an accent SCOPE (theme.js writes
+   data-accent to every top-level section). Re-resolve against the ink
+   values declared above. */
+[data-tone="light"][data-accent="capture"]  { --accent: var(--accent-capture);  --accent-mix: 1; }
+[data-tone="light"][data-accent="measure"]  { --accent: var(--accent-measure);  --accent-mix: 1; }
+[data-tone="light"][data-accent="quantify"] { --accent: var(--accent-quantify); --accent-mix: 1; }
+
+/* ============================================================
+   SERVICE IDENTIFIERS — `data-svc` on ANY ground.
+
+   The three colours are identifiers: a card, a row, a chip says which
+   service it belongs to. On a dark ground the token is the display
+   colour; inside a light scope the same attribute resolves to the ink
+   variant, because the ramp above was re-declared there.
+   ============================================================ */
+[data-svc="capture"]  { --accent: var(--accent-capture);  --accent-mix: 1; }
+[data-svc="measure"]  { --accent: var(--accent-measure);  --accent-mix: 1; }
+[data-svc="quantify"] { --accent: var(--accent-quantify); --accent-mix: 1; }
+[data-svc] {
+  --accent-c:   rgb(var(--accent));
+  --accent-70:  rgb(var(--accent) / .70);
+  --accent-40:  rgb(var(--accent) / .40);
+  --accent-18:  rgb(var(--accent) / .18);
+  --accent-08:  rgb(var(--accent) / .08);
+}
+
+/* ============================================================
+   NO EM-DASH PLACEHOLDERS IN PRODUCTION.
+
+   Every derived figure on the site is written into the markup at boot.
+   The markup used to carry "—" as its no-JS fallback, which the brief
+   names as a defect: a dash reads as missing data. The elements are
+   EMPTY now, and an empty figure hides its whole row — a field with no
+   value is not shown, which is the second option the brief allows.
+   ============================================================ */
+[data-q]:empty,
+[data-dsc-fill]:empty { display: none; }
+.readout__data > div:has(> dd:empty),
+.chapter__values > div:has(> dd:empty),
+.sv-data > div:has(> dd:empty),
+.xf__val:has(> b:empty),
+.ex__kpi:has(> b:empty) { display: none; }
+.sv-tbl tbody:empty { display: none; }
+
+/* ============================================================
+   SECTION SCAFFOLD for the new blocks
+   ============================================================ */
+.ovw, .xf, .trust, .flow8-sec, .legalp { position: relative; padding-inline: var(--gutter); }
+.ovw, .xf { padding-block: var(--sec-y); }
+
+.sec-title {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: var(--fs-dl); font-weight: 500;
+  line-height: var(--lh-d); letter-spacing: var(--ls-dl);
+  text-wrap: balance;
+}
+.sec-title .line { display: block; overflow: hidden; padding-block: .06em; margin-block: -.06em; }
+.sec-title .line__in { display: block; }
+.sec-lede--wide { max-width: 58ch; margin-top: clamp(18px, 2.4vw, 32px); }
+.sec-head { max-width: 1180px; margin-bottom: clamp(36px, 6vh, 84px); }
+
+/* One CTA, one colour. A quiet secondary beside it. */
+.cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: clamp(10px, 1.4vw, 18px); }
+.btn--quiet { border-color: var(--rule-primary); color: var(--fg-60); }
+.btn--quiet:hover, .btn--quiet:focus-visible { border-color: var(--fg); color: var(--fg); }
+
+/* ============================================================
+   02 — ÁTTEKINTÉS: three services, three media cards. LIGHT.
+
+   The first thing a visitor reads after the hero. Each card is one
+   service: a media field (a sample video, or a drawn figure where no
+   footage exists yet), the Hungarian name as the title, the English
+   key as a secondary mark, what it is for, who it is for, and two
+   actions ranked — the neutral CTA and a quiet detail link.
+   ============================================================ */
+.ovw__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(18px, 2.6vw, 44px);
+}
+.svc {
+  position: relative;
+  display: grid; align-content: start; gap: 0;
+  background: var(--bg-lift);
+  border: var(--rule-w) solid var(--rule-primary);
+}
+/* the identifier: a 3 px rule in the service colour, nothing else */
+.svc::before {
+  content: ''; position: absolute; left: -1px; right: -1px; top: -1px; height: 3px;
+  background: var(--accent-c);
+}
+.svc__media {
+  position: relative; aspect-ratio: 16 / 10; overflow: hidden;
+  background: #0B0F14;
+  border-bottom: var(--rule-w) solid var(--rule-secondary);
+}
+.svc__media video, .svc__media img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.svc__media svg { width: 100%; height: 100%; display: block; }
+.media-tag {
+  position: absolute; left: 0; bottom: 0; z-index: 1;
+  padding: 6px 10px;
+  background: rgba(8, 10, 11, .78); color: #F1F0EB;
+  font-family: var(--ff-label); font-size: var(--fs-micro); font-weight: 500;
+  letter-spacing: var(--ls-micro); text-transform: uppercase;
+  border-top: 1px solid rgb(var(--accent) / .7);
+  border-right: 1px solid rgb(var(--accent) / .7);
+}
+.svc__body { display: grid; gap: clamp(12px, 1.4vw, 18px); padding: clamp(18px, 2.2vw, 30px) clamp(18px, 2vw, 28px) clamp(20px, 2.4vw, 32px); }
+.svc__idx {
+  display: flex; align-items: baseline; gap: 10px;
+  font-family: var(--ff-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
+  color: var(--accent-c); font-variant-numeric: tabular-nums;
+}
+.svc__idx i { font-family: var(--ff-label); font-size: var(--fs-micro); letter-spacing: var(--ls-micro); color: var(--fg-38); text-transform: uppercase; font-weight: 500; }
+.svc__t {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: clamp(1.32rem, 1.55vw + .5rem, 2.1rem);
+  font-weight: 500; line-height: .98; letter-spacing: -.026em;
+  text-wrap: balance;
+}
+.svc__t small { display: block; margin-top: .3em; font-size: .55em; letter-spacing: .01em; color: var(--fg-60); font-weight: 500; }
+.svc__c { font-size: var(--fs-body); line-height: 1.58; color: var(--fg-60); letter-spacing: -.004em; text-wrap: pretty; }
+.svc__k {
+  font-family: var(--ff-label); font-size: var(--fs-micro); letter-spacing: var(--ls-micro);
+  text-transform: uppercase; color: var(--fg-38); font-weight: 500;
+  padding-top: 12px; border-top: var(--rule-w) solid var(--rule-secondary);
+}
+.svc__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.svc__list li {
+  display: flex; gap: 12px; align-items: baseline;
+  font-size: clamp(.86rem, .95vw, .98rem); line-height: 1.5; color: var(--fg);
+}
+.svc__list li::before { content: ''; flex: none; width: 12px; height: 1px; background: var(--accent-c); transform: translateY(-.35em); }
+.svc__who { font-size: clamp(.84rem, .92vw, .94rem); line-height: 1.55; color: var(--fg-60); }
+.svc__who b { color: var(--fg); font-weight: 500; }
+.svc__acts { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 6px; }
+.svc__acts .btn { padding: .8em 1.1em; }
+
+@media (max-width: 1024px) {
+  .ovw__grid { grid-template-columns: 1fr; gap: clamp(16px, 3vw, 28px); }
+  .svc { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+  .svc__media { aspect-ratio: auto; min-height: 100%; border-bottom: 0; border-right: var(--rule-w) solid var(--rule-secondary); }
+}
+@media (max-width: 640px) {
+  .svc { grid-template-columns: 1fr; }
+  .svc__media { aspect-ratio: 16 / 10; min-height: 0; border-right: 0; border-bottom: var(--rule-w) solid var(--rule-secondary); }
+}
+
+/* ============================================================
+   04 — VALÓSÁGBÓL ADAT: the transformation strips. LIGHT.
+
+   Three rows, one per service, each reading left to right:
+   INPUT → PROCESS → OUTPUT → RESULT. The result column carries the
+   figures the demonstration project actually produces, written at boot
+   from the same modules the canvas is drawn from — and it says so.
+   ============================================================ */
+.xf__rows { display: grid; gap: clamp(22px, 3.4vw, 44px); }
+.xf__row {
+  display: grid;
+  grid-template-columns: minmax(11rem, 15rem) minmax(0, 1fr);
+  gap: clamp(18px, 2.6vw, 40px);
+  padding-top: clamp(20px, 2.8vw, 34px);
+  border-top: var(--rule-w) solid var(--rule-primary);
+}
+.xf__row:first-child { border-top-width: 0; padding-top: 0; }
+.xf__id { display: grid; gap: 8px; align-content: start; }
+.xf__id .svc__idx { color: var(--accent-c); }
+.xf__name {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: clamp(1.15rem, 1.3vw + .4rem, 1.7rem); font-weight: 500;
+  line-height: 1; letter-spacing: -.024em;
+}
+.xf__id a { font-size: var(--fs-micro); font-family: var(--ff-label); letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--accent-c); font-weight: 500; width: max-content; border-bottom: 1px solid var(--accent-40); padding-bottom: 2px; }
+.xf__id a:hover { border-color: var(--accent-c); }
+
+.xf__chain {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  border: var(--rule-w) solid var(--rule-primary);
+  background: var(--bg-lift);
+}
+.xf__step {
+  position: relative;
+  display: grid; align-content: start; gap: 10px;
+  padding: clamp(14px, 1.8vw, 24px);
+  min-height: 12.5rem;
+}
+.xf__step + .xf__step { border-left: var(--rule-w) solid var(--rule-secondary); }
+/* the arrow between steps, drawn once on the rule */
+.xf__step + .xf__step::before {
+  content: '→'; position: absolute; left: -.62em; top: 50%; transform: translateY(-50%);
+  width: 1.2em; height: 1.2em; display: grid; place-items: center;
+  background: var(--bg-lift); color: var(--fg-38);
+  font-family: var(--ff-mono); font-size: .95rem; line-height: 1;
+}
+.xf__k {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--ff-label); font-size: var(--fs-micro); letter-spacing: var(--ls-micro);
+  text-transform: uppercase; color: var(--fg-38); font-weight: 500;
+}
+.xf__k .gl { --gl-size: 16px; color: var(--accent-c); }
+.xf__fig { aspect-ratio: 5 / 3; }
+.xf__fig svg { width: 100%; height: 100%; }
+.xf__t { font-size: clamp(.9rem, 1vw, 1.02rem); line-height: 1.4; color: var(--fg); font-weight: 500; letter-spacing: -.008em; }
+.xf__c { font-size: clamp(.8rem, .88vw, .9rem); line-height: 1.5; color: var(--fg-60); }
+.xf__step--out { background: rgb(var(--accent) / .06); }
+.xf__vals { display: grid; gap: 6px; margin-top: 2px; }
+.xf__val { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; padding: 6px 0; border-top: var(--rule-w) solid var(--rule-secondary); }
+.xf__val span { font-family: var(--ff-label); font-size: var(--fs-micro); letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--fg-50); font-weight: 500; }
+.xf__val b { font-family: var(--ff-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono); color: var(--accent-c); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.xf__demo {
+  margin-top: clamp(18px, 2.4vw, 28px);
+  font-size: var(--fs-micro); color: var(--fg-50); max-width: 70ch; line-height: 1.6;
+}
+
+@media (max-width: 1100px) {
+  .xf__row { grid-template-columns: 1fr; gap: 16px; }
+  .xf__chain { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .xf__step:nth-child(3) { border-left: 0; }
+  .xf__step:nth-child(n + 3) { border-top: var(--rule-w) solid var(--rule-secondary); }
+  .xf__step:nth-child(3)::before { display: none; }
+}
+@media (max-width: 560px) {
+  .xf__chain { grid-template-columns: 1fr; }
+  .xf__step + .xf__step { border-left: 0; border-top: var(--rule-w) solid var(--rule-secondary); }
+  .xf__step + .xf__step::before { left: auto; right: 14px; top: -.62em; transform: none; content: '↓'; }
+  .xf__step { min-height: 0; }
+}
+
+/* drawn figures inside the chain — small, one stroke, two weights */
+.fig-line { fill: none; stroke: var(--fg-38); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.fig-line--thin { stroke: var(--fg-16); }
+.fig-acc { fill: none; stroke: var(--accent-c); stroke-width: 1.4; vector-effect: non-scaling-stroke; }
+.fig-dot { fill: var(--accent-c); stroke: none; }
+.fig-fill { fill: rgb(var(--accent) / .12); stroke: none; }
+.fig-txt { font-family: var(--ff-mono); font-size: 7px; fill: var(--fg-50); letter-spacing: .04em; }
+.fig-grid { fill: none; stroke: var(--fg-09); stroke-width: 1; vector-effect: non-scaling-stroke; }
+
+/* ============================================================
+   THE BIG MEDIA FIELD — a real site, full width. Dark by nature.
+   Sample footage now; real project footage later, same slot.
+   ============================================================ */
+.reality {
+  position: relative; z-index: 2;
+  background: #0B0F14;
+  border-block: var(--rule-w) solid var(--rule-secondary);
+}
+.reality__frame { position: relative; aspect-ratio: 21 / 9; max-height: 82svh; overflow: hidden; background: #0B0F14; }
+.reality__frame video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.reality__cap {
+  position: absolute; left: var(--gutter); bottom: clamp(18px, 3vh, 34px); right: var(--gutter);
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px;
+  color: #F1F0EB; pointer-events: none;
+}
+.reality__k {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: clamp(1.4rem, 3.2vw, 3.6rem); font-weight: 500; line-height: .95; letter-spacing: -.03em;
+  text-shadow: 0 1px 24px rgba(0,0,0,.6);
+}
+.reality__k b { color: var(--accent-c); font-weight: inherit; }
+.reality__m {
+  font-family: var(--ff-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
+  color: rgba(241,240,235,.7); text-shadow: 0 1px 12px rgba(0,0,0,.7);
+}
+@media (max-width: 700px) { .reality__frame { aspect-ratio: 4 / 3; } }
+
+/* ============================================================
+   07 — MIÉRT: the outcomes. LIGHT.
+   Not the technology — what changes for the client.
+   ============================================================ */
+.why[data-tone="light"] { background: var(--bg); }
+.outc {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0;
+  border-top: var(--rule-w) solid var(--rule-primary);
+  border-left: var(--rule-w) solid var(--rule-primary);
+}
+.outc__i {
+  display: grid; align-content: start; gap: 12px;
+  padding: clamp(20px, 2.4vw, 34px) clamp(18px, 2vw, 30px) clamp(24px, 3vw, 40px);
+  border-right: var(--rule-w) solid var(--rule-primary);
+  border-bottom: var(--rule-w) solid var(--rule-primary);
+  background: var(--bg-lift);
+}
+.outc__n { font-family: var(--ff-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono); color: var(--fg-38); }
+.outc__k {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: clamp(1.1rem, 1.2vw + .4rem, 1.6rem); font-weight: 500; line-height: 1; letter-spacing: -.022em;
+}
+.outc__c { font-size: clamp(.86rem, .95vw, .98rem); line-height: 1.55; color: var(--fg-60); text-wrap: pretty; }
+
+/* ============================================================
+   BIZALOM — the trust block. Any ground.
+   ============================================================ */
+.trust { padding-block: clamp(40px, 7vh, 96px); }
+.trust__grid {
+  display: grid;
+  grid-template-columns: minmax(12rem, 22rem) minmax(0, 1fr);
+  gap: clamp(20px, 4vw, 80px);
+  padding-top: clamp(20px, 3vh, 34px);
+  border-top: var(--rule-w) solid var(--rule-primary);
+}
+.trust__k {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: var(--fs-dm); font-weight: 500; line-height: .95; letter-spacing: var(--ls-dm);
+}
+.trust__k small { display: block; margin-top: .6em; font-family: var(--ff-label); font-size: var(--fs-micro); letter-spacing: var(--ls-micro); color: var(--fg-38); font-weight: 500; }
+.trust__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(14px, 2vw, 28px) clamp(18px, 3vw, 48px); }
+.trust__list li { display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; font-size: clamp(.88rem, .98vw, 1.02rem); line-height: 1.55; color: var(--fg-60); }
+.trust__list li .gl { --gl-size: 20px; color: var(--accent-c); margin-top: .1em; }
+.trust__list b { display: block; color: var(--fg); font-weight: 500; margin-bottom: 2px; }
+@media (max-width: 860px) {
+  .trust__grid { grid-template-columns: 1fr; }
+  .trust__list { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   NAGYOBB PROJEKTEK — the eight-step strip. Any ground.
+   ============================================================ */
+.flow8-sec { padding-block: clamp(40px, 7vh, 96px); }
+.flow8__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px 24px; margin-bottom: clamp(18px, 2.4vw, 30px); }
+.flow8__t { font-family: var(--ff-display); text-transform: uppercase; font-size: var(--fs-dm); font-weight: 500; line-height: .95; letter-spacing: var(--ls-dm); }
+.flow8__n { font-size: var(--fs-lede); color: var(--fg-60); max-width: 48ch; line-height: 1.55; }
+.flow8 {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(8, minmax(0, 1fr));
+  border-top: var(--rule-w) solid var(--rule-primary);
+  counter-reset: f8;
+}
+.flow8 li {
+  position: relative; counter-increment: f8;
+  padding: 16px clamp(10px, 1.2vw, 18px) 18px 0;
+  display: grid; gap: 8px; align-content: start;
+  border-right: var(--rule-w) solid var(--rule-secondary);
+}
+.flow8 li:last-child { border-right: 0; }
+.flow8 li + li { padding-left: clamp(10px, 1.2vw, 18px); }
+.flow8 li::before {
+  content: counter(f8, decimal-leading-zero);
+  font-family: var(--ff-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
+  color: var(--accent-c); font-variant-numeric: tabular-nums;
+}
+.flow8 b { font-family: var(--ff-label); font-size: var(--fs-micro); letter-spacing: .1em; text-transform: uppercase; color: var(--fg); font-weight: 500; line-height: 1.4; }
+.flow8 span { font-size: clamp(.76rem, .84vw, .86rem); line-height: 1.45; color: var(--fg-50); }
+.flow8 li[data-you]::after {
+  content: attr(data-you); position: absolute; right: clamp(10px, 1.2vw, 18px); top: 17px;
+  font-family: var(--ff-label); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-38); font-weight: 500;
+}
+.flow8__note { margin-top: 14px; font-size: var(--fs-micro); color: var(--fg-50); max-width: 70ch; line-height: 1.6; }
+@media (max-width: 1100px) { .flow8 { grid-template-columns: repeat(4, minmax(0, 1fr)); } .flow8 li:nth-child(4) { border-right: 0; } .flow8 li:nth-child(n + 5) { border-top: var(--rule-w) solid var(--rule-secondary); } .flow8 li:nth-child(5) { padding-left: 0; } }
+@media (max-width: 560px) { .flow8 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .flow8 li:nth-child(even) { border-right: 0; } .flow8 li:nth-child(odd) { padding-left: 0; } .flow8 li:nth-child(n + 3) { border-top: var(--rule-w) solid var(--rule-secondary); } }
+
+/* ============================================================
+   SERVICE PAGES — the unified reading order, and the EXAMPLE block
+   ============================================================ */
+/* the local index under the hero: the eight questions, in order */
+.sv-index {
+  position: relative; z-index: 2;
+  display: flex; flex-wrap: wrap; gap: 6px 22px;
+  padding: 14px var(--gutter);
+  border-block: var(--rule-w) solid var(--rule-secondary);
+  background: var(--bg);
+}
+.sv-index a {
+  display: inline-flex; align-items: baseline; gap: 7px;
+  font-family: var(--ff-label); font-size: var(--fs-micro); letter-spacing: var(--ls-micro);
+  text-transform: uppercase; color: var(--fg-50); font-weight: 500; padding: 4px 0;
+  border-bottom: 1px solid transparent;
+}
+.sv-index a i { font-family: var(--ff-mono); letter-spacing: var(--ls-mono); color: var(--accent-c); }
+.sv-index a:hover, .sv-index a:focus-visible { color: var(--fg); border-color: var(--accent-c); }
+
+/* the three-question block: what / for what / for whom */
+.sv-what { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 3vw, 56px); }
+.sv-what__col { display: grid; align-content: start; gap: 14px; padding-top: 16px; border-top: var(--rule-w) solid var(--rule-primary); }
+.sv-what__q { font-family: var(--ff-label); font-size: var(--fs-micro); letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--accent-c); font-weight: 500; }
+.sv-what__q i { color: var(--fg-38); margin-right: .6em; font-family: var(--ff-mono); letter-spacing: var(--ls-mono); }
+.sv-what__t { font-size: clamp(1rem, 1.15vw, 1.2rem); line-height: 1.5; color: var(--fg); letter-spacing: -.008em; text-wrap: pretty; }
+.sv-what__c { font-size: var(--fs-body); line-height: 1.6; color: var(--fg-60); text-wrap: pretty; }
+.sv-what__list { list-style: none; margin: 0; padding: 0; display: grid; }
+.sv-what__list li { display: flex; gap: 12px; align-items: baseline; padding: 9px 0; border-bottom: var(--rule-w) solid var(--rule-secondary); font-size: clamp(.9rem, 1vw, 1.02rem); color: var(--fg); line-height: 1.45; }
+.sv-what__list li::before { content: ''; flex: none; width: 12px; height: 1px; background: var(--accent-c); transform: translateY(-.35em); }
+.sv-what__list li small { color: var(--fg-50); font-size: .86em; }
+@media (max-width: 900px) { .sv-what { grid-template-columns: 1fr; } }
+
+/* the example: figure + Excel-like sheet */
+.ex { display: grid; gap: clamp(22px, 3.4vw, 48px); }
+.ex__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(18px, 2.6vw, 40px); align-items: start; }
+.ex__fig {
+  position: relative; margin: 0;
+  background: var(--bg-lift); border: var(--rule-w) solid var(--rule-primary);
+  padding: clamp(14px, 1.8vw, 24px);
+  display: grid; gap: 12px;
+}
+.ex__fig svg { width: 100%; height: auto; display: block; }
+.ex__fig video { width: 100%; height: auto; display: block; background: #0B0F14; }
+.ex__figk { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-family: var(--ff-label); font-size: var(--fs-micro); letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--fg-50); font-weight: 500; }
+.ex__figk b { color: var(--accent-c); font-weight: 500; }
+.ex__figc { font-size: var(--fs-micro); color: var(--fg-50); line-height: 1.55; }
+.ex__kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 0; border: var(--rule-w) solid var(--rule-primary); background: var(--bg-lift); }
+.ex__kpi { display: grid; gap: 6px; padding: 14px 16px; border-right: var(--rule-w) solid var(--rule-secondary); }
+.ex__kpi:last-child { border-right: 0; }
+.ex__kpi span { font-family: var(--ff-label); font-size: var(--fs-micro); letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--fg-50); font-weight: 500; }
+.ex__kpi b { font-family: var(--ff-mono); font-size: clamp(1.05rem, 1.4vw, 1.5rem); letter-spacing: 0; color: var(--accent-c); font-weight: 500; font-variant-numeric: tabular-nums; }
+.ex__row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(18px, 2.6vw, 40px); }
+@media (max-width: 900px) { .ex__grid, .ex__row { grid-template-columns: 1fr; } }
+
+/* the "PDF → Excel" strip above the sheets */
+.p2x { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); align-items: stretch; gap: 0; border: var(--rule-w) solid var(--rule-primary); background: var(--bg-lift); }
+.p2x__s { display: grid; gap: 10px; align-content: start; padding: clamp(14px, 1.8vw, 24px); }
+.p2x__a { display: grid; place-items: center; padding: 0 clamp(6px, 1vw, 14px); color: var(--fg-38); font-family: var(--ff-mono); font-size: 1.1rem; border-inline: var(--rule-w) solid var(--rule-secondary); }
+.p2x__s > svg:not(.gl) { width: 100%; height: auto; aspect-ratio: 4 / 3; }
+@media (max-width: 760px) { .p2x { grid-template-columns: 1fr; } .p2x__a { padding: 6px; border-inline: 0; border-block: var(--rule-w) solid var(--rule-secondary); } .p2x__a::before { content: '↓'; } .p2x__a span { display: none; } }
+
+/* THE SHEET — an Excel-shaped table. White, gridded, column letters,
+   row numbers, a sheet tab. The data in it is written by JS from the
+   same building the drawing is generated from. */
+.xls { display: grid; gap: 0; background: var(--bg-lift); border: var(--rule-w) solid var(--rule-primary); min-width: 0; }
+.xls__bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 12px; border-bottom: var(--rule-w) solid var(--rule-primary); background: var(--grey); }
+.xls__name { display: inline-flex; align-items: center; gap: 8px; font-family: var(--ff-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono); color: var(--fg); }
+.xls__name i { display: inline-grid; place-items: center; width: 18px; height: 18px; font-size: 9px; font-weight: 700; color: #fff; background: #1D6F42; font-family: var(--ff-label); letter-spacing: 0; }
+.xls__k { font-family: var(--ff-label); font-size: var(--fs-micro); letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--accent-c); font-weight: 500; }
+.xls__scroll { overflow-x: auto; }
+.xls table { width: 100%; border-collapse: collapse; font-family: var(--ff-text); font-size: clamp(.78rem, .85vw, .9rem); }
+.xls th, .xls td { padding: 7px 10px; border: 1px solid var(--grey-line); text-align: left; white-space: nowrap; vertical-align: top; }
+.xls td:not(.n):not(.k) { white-space: normal; min-width: 9rem; }
+.xls thead th { background: var(--grey); font-family: var(--ff-label); font-size: .64rem; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-60); font-weight: 500; }
+.xls thead th:first-child, .xls tbody th { width: 2.4rem; text-align: center; color: var(--fg-38); background: var(--grey); font-family: var(--ff-mono); font-weight: 400; font-size: .68rem; }
+.xls td.n, .xls th.n { text-align: right; font-family: var(--ff-mono); font-variant-numeric: tabular-nums; }
+.xls tbody td.k { font-family: var(--ff-mono); color: var(--accent-c); }
+.xls tfoot td { font-weight: 500; background: rgb(var(--accent) / .07); }
+.xls__tabs { display: flex; gap: 2px; padding: 6px 8px 0; border-top: var(--rule-w) solid var(--rule-primary); background: var(--grey); }
+.xls__tab { padding: 4px 10px; font-family: var(--ff-label); font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-50); background: var(--bg-lift); border: 1px solid var(--grey-line); border-bottom: 0; }
+.xls__tab.is-on { color: var(--fg); font-weight: 500; border-top: 2px solid var(--accent-c); }
+.xls__cap { padding: 8px 12px; font-size: var(--fs-micro); color: var(--fg-50); line-height: 1.5; border-top: var(--rule-w) solid var(--rule-secondary); }
+
+/* the capture example: a derived floor plan with the capture round on it */
+.plan-ex svg { width: 100%; height: auto; }
+.plan-ex .pe-room { fill: rgb(var(--accent) / .04); stroke: var(--fg-16); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.plan-ex .pe-room--ref { fill: rgb(var(--accent) / .14); }
+.plan-ex .pe-out { fill: none; stroke: var(--fg); stroke-width: 1.6; vector-effect: non-scaling-stroke; }
+.plan-ex .pe-st { fill: var(--accent-c); stroke: var(--bg-lift); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.plan-ex .pe-path { fill: none; stroke: var(--accent-c); stroke-width: 1; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; opacity: .7; }
+.plan-ex .pe-lbl { font-family: var(--ff-mono); font-size: 13px; fill: var(--fg-60); }
+.plan-ex .pe-name { font-family: var(--ff-text); font-size: 11px; fill: var(--fg-38); }
+.plan-ex a.pe-st-link { cursor: pointer; }
+.plan-ex .pe-legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: var(--fs-micro); color: var(--fg-50); }
+.plan-ex .pe-legend b { display: inline-block; width: 9px; height: 9px; background: var(--accent-c); margin-right: 6px; vertical-align: middle; border-radius: 50%; }
+
+/* the terrain example */
+.terr-ex .te-grid { fill: none; stroke: var(--fg-09); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.terr-ex .te-c { fill: none; stroke: var(--accent-c); stroke-width: 1; vector-effect: non-scaling-stroke; opacity: .85; }
+.terr-ex .te-c--major { stroke-width: 1.6; opacity: 1; }
+.terr-ex .te-cut { fill: rgb(var(--accent) / .16); stroke: none; }
+.terr-ex .te-lbl { font-family: var(--ff-mono); font-size: 7px; fill: var(--fg-50); }
+.terr-ex .te-line { fill: none; stroke: var(--fg-38); stroke-width: 1; vector-effect: non-scaling-stroke; }
+
+/* the sample-video block on a service page */
+.sample-media { position: relative; margin: 0; background: #0B0F14; border: var(--rule-w) solid var(--rule-primary); aspect-ratio: 16 / 9; overflow: hidden; }
+.sample-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ============================================================
+   LEGAL PAGES — impresszum, adatkezelés
+   ============================================================ */
+body[data-tone="light"] { background: var(--bg); color: var(--fg); }
+body[data-tone="light"] .foot { background: var(--bg); }
+.legalp { padding-block: calc(var(--nav-safe) + clamp(40px, 8vh, 96px)) var(--sec-y); }
+.legalp > * { max-width: 52rem; }
+.legalp h1 { font-family: var(--ff-display); text-transform: uppercase; font-size: var(--fs-dl); font-weight: 500; line-height: var(--lh-d); letter-spacing: var(--ls-dl); margin-bottom: clamp(24px, 3vw, 40px); }
+.legalp h2 { font-family: var(--ff-display); text-transform: uppercase; font-size: clamp(1.1rem, 1.3vw + .3rem, 1.6rem); font-weight: 500; letter-spacing: -.02em; margin: clamp(30px, 4vh, 48px) 0 12px; padding-top: 14px; border-top: var(--rule-w) solid var(--rule-primary); }
+.legalp p, .legalp li { font-size: var(--fs-body); line-height: 1.65; color: var(--fg-60); }
+.legalp ul { padding-left: 1.2em; }
+.legalp dl { display: grid; grid-template-columns: minmax(9rem, 14rem) 1fr; gap: 8px 18px; margin-top: 16px; }
+.legalp dt { font-family: var(--ff-label); font-size: var(--fs-micro); letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--fg-38); font-weight: 500; padding-top: 3px; }
+.legalp dd { color: var(--fg); }
+.legalp .ph { color: var(--accent-c); font-family: var(--ff-mono); font-size: var(--fs-mono); }
+.legalp a { color: var(--fg); border-bottom: 1px solid var(--accent-40); }
+.legalp .legal-warn { margin-top: 20px; padding: 14px 16px; border: 1px dashed var(--accent-40); font-size: var(--fs-micro); line-height: 1.6; color: var(--fg-60); }
+@media (max-width: 640px) { .legalp dl { grid-template-columns: 1fr; gap: 2px 0; } .legalp dd { margin-bottom: 10px; } }
+
+/* The request form's service-specific groups */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 9px 13px; cursor: pointer; border: var(--rule-w) solid var(--rule-primary); font-family: var(--ff-label); font-size: var(--fs-micro); letter-spacing: .1em; text-transform: uppercase; color: var(--fg-60); font-weight: 500; transition: border-color var(--motion-ui) var(--ease-out), color var(--motion-ui) var(--ease-out), background-color var(--motion-ui) var(--ease-out); }
+.chip:hover { border-color: var(--fg-38); color: var(--fg); }
+.chip input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.chip::before { content: ''; width: 8px; height: 8px; border: 1px solid var(--fg-38); flex: none; transition: background-color var(--motion-ui) var(--ease-out), border-color var(--motion-ui) var(--ease-out); }
+.chip:has(input:checked) { border-color: var(--accent-c); color: var(--fg); background: rgb(var(--accent) / .07); }
+.chip:has(input:checked)::before { background: var(--accent-c); border-color: var(--accent-c); }
+.chip:has(input:focus-visible) { outline: 1px solid var(--accent-c); outline-offset: 2px; }
+.fld--group { grid-column: 1 / -1; }
+.fld--group > label { margin-bottom: 4px; }
+.fld__help { font-family: var(--ff-text); font-size: var(--fs-micro); color: var(--fg-50); line-height: 1.5; }
+
+/* PHASE 12 — the Hungarian service names are the KEYS on the hero rail
+   now, and TERÜLETFELMÉRÉS / MENNYISÉGSZÁMÍTÁS do not fit a third of a
+   390 px frame at the phone key size. Soft hyphens in the markup say
+   where they may break; this lets them. */
+@media (max-width: 700px) {
+  .mode__key { font-size: clamp(.72rem, 3.1vw, .95rem); letter-spacing: -.012em; line-height: 1.05; overflow-wrap: anywhere; hyphens: manual; }
+  .mode__body { min-width: 0; }
+}
+
+/* the section tracker takes the tone of the section it is reading, so its
+   numbers stay legible over a light block */
+.tracker[data-tone="light"] .tk { color: var(--fg-50); }
+.tracker[data-tone="light"] .tk.is-on { color: var(--accent-c); }
+
+/* the nav drawer CTA takes the neutral CTA colour, not the accent */
+.nav__drawer-cta { color: var(--fg) !important; }
+
+/* ============================================================
+   MOTION SAFETY — sample videos never move for a reader who asked
+   them not to; posters stand in.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  video[data-autoplay] { display: none; }
+  .media-still { display: block !important; }
+}
+.media-still { display: none; width: 100%; height: 100%; object-fit: cover; }

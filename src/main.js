@@ -22,6 +22,8 @@ import { initTracker } from './modules/tracker.js';
 import { playIntro } from './modules/intro.js';
 import { initHeroWindow } from './modules/heroWindow.js';
 import { initEvidence } from './modules/evidence.js';
+import { initExamples } from './modules/examples.js';
+import { initMedia } from './modules/media.js';
 import { assertAccentColors } from './core/assert.js';
 
 /* ------------------------------------------------------------------
@@ -143,6 +145,10 @@ function verticalFor(id) {
 /* Everything below the fold is independent of the renderer, so it is
    wired immediately rather than waiting on the WebGL chunk. */
 initQuantities();
+/* PHASE 12 — the derived examples and the sample media, wired before the
+   renderer so the light sections are complete on every device. */
+initExamples();
+initMedia();
 initManifesto();
 initProcess({ scanPlane });
 mountRequest(document.getElementById('projectMount'));

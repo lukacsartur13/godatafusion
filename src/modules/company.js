@@ -8,6 +8,11 @@ import { COMPANY } from '../data/company.js';
    authority and, in development, says loudly when the two have drifted.
    That is the whole mechanism preventing a placeholder address from
    surviving in one corner of the site after the real one is set.
+
+   PHASE 12 — the impressum fields. A `[data-company="field"]` element
+   receives the value if there is one and is hidden if there is not; a
+   `[data-company="field-ph"]` element is the visible "kitöltendő" note
+   and is shown ONLY while the field is still a placeholder.
    ============================================================ */
 export function applyCompany(root = document) {
   const email = COMPANY.email.value;
@@ -29,10 +34,12 @@ export function applyCompany(root = document) {
     el.hidden = !COMPANY.email.placeholder;
   });
   set('legal-company', (el) => {
+    const n = COMPANY.legalName.value;
     const r = COMPANY.registration.value;
     const a = COMPANY.address.value;
-    el.textContent = r || a
-      ? [COMPANY.name, a, r].filter(Boolean).join(' · ')
+    const v = COMPANY.vat.value;
+    el.textContent = n || r || a
+      ? [n || COMPANY.name, a, r && `Cg. ${r}`, v && `Adószám: ${v}`].filter(Boolean).join(' · ')
       : COMPANY.legal.company;
   });
   set('phone', (el) => {
@@ -42,6 +49,19 @@ export function applyCompany(root = document) {
     el.textContent = p;
     el.setAttribute('href', `tel:${p.replace(/[^\d+]/g, '')}`);
   });
+  set('cookies', (el) => { el.textContent = COMPANY.legal.cookies; });
+
+  /* impressum-style fields, one attribute each */
+  for (const k of ['legalName', 'address', 'registration', 'vat', 'representative', 'hosting']) {
+    const f = COMPANY[k];
+    set(k, (el) => {
+      if (f.value) { el.textContent = f.value; el.hidden = false; }
+      else el.hidden = true;
+    });
+    set(`${k}-ph`, (el) => { el.hidden = Boolean(f.value) && !f.placeholder; });
+  }
+  set('impressum-href', (el) => el.setAttribute('href', COMPANY.routes.impressum));
+  set('privacy-href', (el) => el.setAttribute('href', COMPANY.routes.privacy));
 }
 
 function warnDrift(inMarkup, inConfig, label) {

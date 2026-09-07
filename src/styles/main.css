@@ -16,6 +16,7 @@
 @import './service.css';
 @import './rhythm.css';
 @import './panorama.css';
+@import './tone.css';
 
 /* ============================================================
    pre-boot state — everything animated starts hidden so the

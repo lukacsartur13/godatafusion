@@ -11,6 +11,9 @@ import { initTransition } from './modules/transition.js';
 import { mountRequest } from './modules/request.js';
 import { initServiceSections } from './modules/serviceSections.js';
 import { initEvidence } from './modules/evidence.js';
+import { initExamples } from './modules/examples.js';
+import { initMedia } from './modules/media.js';
+import { applyCompany } from './modules/company.js';
 import { assertAccentColors } from './core/assert.js';
 import { SERVICES } from './data/services.js';
 
@@ -46,6 +49,7 @@ const cfg = SERVICES[id];
 if (!cfg) throw new Error(`[gdf] unknown service route "${id}"`);
 
 initNav();
+applyCompany();
 
 /* The renderer is a lazy chunk, so the accent channel has to be able to
    reach a scene that does not exist yet. Without this the WebGL side never
@@ -70,6 +74,12 @@ store.setScroll(id);
 document.body.dataset.mode = id;
 
 initServiceSections({ scanPlane });
+
+/* PHASE 12 — the example block: derived tables, the floor plan with the
+   capture round, the contour figure. No three.js, so it is on the page
+   whether or not the renderer ever arrives. */
+initExamples();
+initMedia();
 
 const mount = document.getElementById('projectMount');
 if (mount) mountRequest(mount, { service: id, lockAccent: true });

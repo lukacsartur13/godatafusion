@@ -11,7 +11,12 @@ npm run dev            # http://localhost:5173
 npm test               # the narrative stop-table invariants
 npm run build
 npm run preview        # serves dist/ WITH the API endpoint
+npm run check:live     # fails while company.js still holds a placeholder
 ```
+
+**Phase 12** added the sales layer — light sections, the service-specific
+request form, the derived example blocks, the legal pages and the sample
+media. See PHASE-12.md for the map and the go-live checklist.
 
 ## Routes
 
@@ -21,6 +26,8 @@ npm run preview        # serves dist/ WITH the API endpoint
 | `/360-camera/` | CAPTURE | `#42E8FF` | `src/service.js` → `src/service/capture.js` |
 | `/teruletfelmeres/` | MEASURE | `#B8FF3D` | `src/service.js` → `src/service/measure.js` |
 | `/mennyisegszamitas/` | QUANTIFY | `#FF6846` | `src/service.js` → `src/service/quantify.js` |
+| `/impresszum/` | — | — | `src/legal.js` |
+| `/adatkezeles/` | — | — | `src/legal.js` |
 | `/404.html` | — | — | `src/notfound.js` |
 
 Real directories, not a client-side router: back/forward, direct entry,
@@ -77,6 +84,8 @@ src/
     request.js          START PROJECT — one component, four pages, real POST
     transition.js       the page-transition field over native navigation
     company.js          applies data/company.js to every [data-company]
+    examples.js         PHASE 12 — derived tables, floor plan, contours; no three.js
+    media.js            PHASE 12 — lazy, viewport-gated sample video
     stops.js            the narrative arithmetic, pure and testable
     serviceSections.js  section reveals for the three service pages
     scanplane.js        the Scan Plane, re-aimed at whatever is being read
@@ -97,6 +106,7 @@ src/
     annotations.js    3D-anchored measurement callouts
     scene.js          renderer, mode blending, camera, render loop
   styles/             tokens → base → nav → hero → modes → manifesto → cursor
+    tone.css            PHASE 12 — the light surface, service ink colours, new blocks
 ```
 
 ### The one rule that holds it together

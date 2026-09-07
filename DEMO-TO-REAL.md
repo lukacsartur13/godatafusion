@@ -86,6 +86,17 @@ with identification removed, and the quantity schedule that came out of it.
 
 ---
 
+## 4b — PHASE 12: the example blocks and the sample media
+
+| current demo | what it is | future real source | how it is swapped |
+|---|---|---|---|
+| `public/media/minta-360-helyszin.mp4`, `minta-teruletfelmeres.mp4` | sample footage, labelled `MINTAFELVÉTEL · NEM VÉGLEGES ANYAG` | the company's own site footage | replace the file, keep the name — or change `data-src` in the four documents. Remove the `.media-tag` label when the footage is real. |
+| The Excel-shaped sheets (`tbody[data-xls]`) | rows written by `modules/examples.js` from `webgl/levels.js` | an anonymised client schedule | write the rows from the real schedule in `fillSheets()`, or author them statically and drop the `data-xls` hook. Change the `.xls__cap` caption. |
+| The rétegrend sheet on `/mennyisegszamitas/` | a **static illustration**, labelled as one | a real, anonymised layer schedule | static markup — replace the rows and the caption. |
+| The floor plan with the capture round (`[data-plan-ex]`) | drawn from `levelFeatures()` + `CAPTURE_ROUND` | the real plan with the real stations | `drawPlan()` takes rooms and stations; feed it the real lists, or replace the figure with an image. |
+| The contour figure (`[data-terrain-ex]`) | marching squares over `heightAt()` | the real terrain | `heightAt()` is the seam (§2); the figure follows. |
+| Every `[data-q]` figure | `modules/examples.js` → `figures()` | the real project's figures | one value table. |
+
 ## 5 — Where a real project actually lands
 
 `src/data/evidence.js`. One entry:

@@ -10,14 +10,15 @@
    src/data/services.js, the same module the browser validates against.
    ============================================================ */
 
-import { SERVICES, UPLOAD, LIMITS } from '../src/data/services.js';
+import { SERVICES, UPLOAD, LIMITS, MEASURE_OUTPUTS, QUANTIFY_TASKS } from '../src/data/services.js';
 import { sendMail, MailError } from './mail.mjs';
 
 /* Every field the endpoint will look at. Anything else in the body is a
    rejection, not a silent ignore — an unexpected field means either a
    stale client or someone probing. */
 const ALLOWED = new Set([
-  'service', 'name', 'email', 'phone', 'site', 'brief',
+  'service', 'name', 'email', 'phone', 'site', 'size', 'brief',
+  'task', 'outputs',
   'files', 'company', 'started',
 ]);
 
@@ -172,7 +173,7 @@ export async function handleProjectRequest(request, { env = {}, ip = null } = {}
   /* ---- text fields ---- */
   const values = {};
   const errors = {};
-  for (const key of ['name', 'email', 'phone', 'site', 'brief']) {
+  for (const key of ['name', 'email', 'phone', 'site', 'size', 'brief']) {
     const rule = cfg.fields[key];
     const raw = clean(form.get(key), LIMITS[key]);
     if (!rule) {
@@ -185,6 +186,29 @@ export async function handleProjectRequest(request, { env = {}, ip = null } = {}
     else if (key === 'email' && raw && !RE_MAIL.test(raw)) errors[key] = 'Érvényes email címet adjon meg.';
     else if (key === 'brief' && raw && raw.length < LIMITS.briefMin) errors[key] = 'Néhány szóval írja le a feladatot.';
     else if (raw.length >= LIMITS[key]) errors[key] = `Legfeljebb ${LIMITS[key]} karakter.`;
+  }
+
+  /* ---- the structured questions (PHASE 12) ----
+     QUANTIFY asks which schedule; MEASURE asks which results. Both are
+     validated against the lists the browser rendered them from, so an
+     unknown value is a stale client or a probe, never a silent pass. */
+  const rawTask = String(form.get('task') || '');
+  if (cfg.fields.task) {
+    if (cfg.fields.task === 'req' && !rawTask) errors.task = 'Válassza ki, milyen kimutatást kér.';
+    else if (rawTask && !QUANTIFY_TASKS[rawTask]) errors.task = 'Ismeretlen feladattípus.';
+    else if (rawTask) values.task = rawTask;
+  } else if (rawTask) {
+    errors.task = 'Ez a mező nem tartozik a kiválasztott szolgáltatáshoz.';
+  }
+
+  const rawOutputs = form.getAll('outputs').map(String);
+  if (cfg.fields.outputs) {
+    const bad = rawOutputs.filter((o) => !MEASURE_OUTPUTS[o]);
+    if (bad.length) errors.outputs = 'Ismeretlen eredménytípus.';
+    else if (cfg.fields.outputs === 'req' && !rawOutputs.length) errors.outputs = 'Jelölje meg, milyen eredményre van szüksége.';
+    else values.outputs = [...new Set(rawOutputs)];
+  } else if (rawOutputs.length) {
+    errors.outputs = 'Ez a mező nem tartozik a kiválasztott szolgáltatáshoz.';
   }
 
   /* ---- files ---- */
@@ -295,7 +319,11 @@ function compose({ cfg, values, attachments, reference, ip }) {
   L.push(`${pad('SZOLGÁLTATÁS', 16)}${cfg.key} — ${cfg.sub}`);
   L.push(`${pad('BEÉRKEZETT', 16)}${new Date().toISOString()}`);
   L.push(RULE);
-  const rows = [['NÉV / CÉG', 'name'], ['EMAIL', 'email'], ['TELEFON', 'phone'], ['HELYSZÍN', 'site']];
+  if (values.task) L.push(`${pad('KIMUTATÁS', 16)}${QUANTIFY_TASKS[values.task]}`);
+  if (values.outputs?.length) {
+    L.push(`${pad('EREDMÉNY', 16)}${values.outputs.map((o) => MEASURE_OUTPUTS[o]).join(', ')}`);
+  }
+  const rows = [['NÉV / CÉG', 'name'], ['EMAIL', 'email'], ['TELEFON', 'phone'], ['HELYSZÍN', 'site'], ['KB. MÉRET', 'size']];
   rows.forEach(([label, key]) => {
     if (values[key]) L.push(`${pad(label, 16)}${values[key]}`);
   });
@@ -312,7 +340,7 @@ function compose({ cfg, values, attachments, reference, ip }) {
   if (cfg.large) {
     L.push(RULE);
     L.push('Nagyobb projekt: a teljes dokumentáció az elfogadott ajánlat után,');
-    L.push('a dedikált Drive projektfelületen.');
+    L.push('a dedikált Drive projektmappában.');
   }
   L.push(RULE);
   L.push(`forrás IP: ${ip || 'ismeretlen'}`);

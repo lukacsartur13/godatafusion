@@ -14,6 +14,9 @@ const pages = {
   measure: resolve(import.meta.dirname, 'teruletfelmeres/index.html'),
   quantify: resolve(import.meta.dirname, 'mennyisegszamitas/index.html'),
   notfound: resolve(import.meta.dirname, '404.html'),
+  /* PHASE 12 — the two legal documents. Static, one small entry. */
+  impressum: resolve(import.meta.dirname, 'impresszum/index.html'),
+  privacy: resolve(import.meta.dirname, 'adatkezeles/index.html'),
 };
 
 export default defineConfig(({ mode }) => {

@@ -23,6 +23,9 @@ export function initTracker() {
     if (id === active) return;
     active = id;
     links.forEach((a, key) => a.classList.toggle('is-on', key === id));
+    /* PHASE 12 — the rail sits over light and dark sections alike; it takes
+       the tone of whichever it is reading so its ink stays legible. */
+    if (rail) rail.dataset.tone = el?.dataset.tone || 'dark';
     if (index && el) {
       index.textContent = `${el.dataset.section} / ${el.dataset.sectionName}`;
     }

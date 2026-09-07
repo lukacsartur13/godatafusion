@@ -2,12 +2,15 @@ import gsap from 'gsap';
 import { ScrollTrigger } from '../core/scroll.js';
 import { env } from '../core/env.js';
 import { store } from '../core/store.js';
-import { SERVICES, SERVICE_IDS, UPLOAD, LIMITS, ENDPOINT, serviceFromQuery } from '../data/services.js';
+import {
+  SERVICES, SERVICE_IDS, UPLOAD, LIMITS, ENDPOINT,
+  MEASURE_OUTPUTS, QUANTIFY_TASKS, serviceFromQuery, taskFromQuery,
+} from '../data/services.js';
 import { COMPANY } from '../data/company.js';
 import { glyph } from '../glyphs/glyphs.js';
 
 /* ============================================================
-   START PROJECT — one component, four pages.
+   PROJEKT INDÍTÁSA — one component, four pages.
 
    Phase 2 had this markup inline in index.html and its behaviour in
    project.js. A service page needs the identical experience with its own
@@ -15,6 +18,18 @@ import { glyph } from '../glyphs/glyphs.js';
    data/services.js and mounted wherever a page puts `#projectMount`.
    Three pages cannot drift from the homepage because there is only one
    of it.
+
+   PHASE 12 — the form is SERVICE-SHAPED, not generic. Picking a service
+   rewrites the field set:
+
+     360° KAMERA        helyszín · feladat · kb. terület / épületméret ·
+                        alaprajz (opcionális) · kapcsolat
+     TERÜLETFELMÉRÉS    helyszín · feladat · szükséges eredmény
+                        (m² / m³ / fm / szintvonal / 3D) · terv (ha van) ·
+                        kapcsolat
+     MENNYISÉGSZÁMÍTÁS  feladat típusa (konszignáció / helyiségkönyv /
+                        rétegrend / padlóburkolat / egyéb) · PDF mintarajz
+                        (kötelező) · feladatleírás · kapcsolat
 
    It submits. `POST multipart/form-data` to the endpoint in
    data/services.js, which is the same handler in dev, preview and
@@ -35,20 +50,13 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) => (
   { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
 ));
 
-/* §18 — PROJECT INPUT, not a contact form.
-   The first question a project intake asks is not "which product would you
+/* The first question a project intake asks is not "which product would you
    like": it is WHAT ARE WE WORKING WITH. So each selector leads with the
-   OBJECT — a site, a terrain, a drawing — and names the service second.
-   The three GDF service glyphs (§19) carry it, secondary to the words. */
+   OBJECT — a site, a terrain, a drawing — and names the service second. */
 const PICK_OBJ = {
   capture: 'Egy meglévő helyszín',
   measure: 'Egy felmérendő terep',
   quantify: 'Egy meglévő tervrajz',
-};
-const PICK_SUB = {
-  capture: '360° kamera · virtuális bejárás',
-  measure: 'Területfelmérés · szintvonal · m² / m³',
-  quantify: 'Mennyiségszámítás · konszignáció · rétegrend',
 };
 
 /* ---------------------------------------------------------------- markup */
@@ -56,37 +64,104 @@ function markup() {
   const picks = SERVICE_IDS.map((id) => {
     const s = SERVICES[id];
     return `
-        <label class="pick hv-glyph" data-service="${id}">
+        <label class="pick hv-glyph" data-service="${id}" data-svc="${id}">
           <input type="radio" name="service" value="${id}" class="sr-only" />
           <span class="pick__top">
             <span class="pick__idx">${s.index}</span>
             ${glyph(id, { cls: 'pick__gl gl--24 gl--anim' })}
           </span>
           <span class="pick__obj">${esc(PICK_OBJ[id])}</span>
-          <span class="pick__key">${esc(s.label)}</span>
-          <span class="pick__hu">${esc(PICK_SUB[id])}</span>
+          <span class="pick__key">${esc(s.key)}</span>
+          <span class="pick__hu">${esc(s.sub)}</span>
           <span class="pick__bar" aria-hidden="true"></span>
         </label>`;
   }).join('');
+
+  const outputs = Object.entries(MEASURE_OUTPUTS).map(([k, v]) => `
+            <label class="chip"><input type="checkbox" name="outputs" value="${k}" /><span>${esc(v)}</span></label>`).join('');
+  const tasks = Object.entries(QUANTIFY_TASKS).map(([k, v]) => `
+            <label class="chip"><input type="radio" name="task" value="${k}" /><span>${esc(v)}</span></label>`).join('');
 
   return `
     <form class="pf" id="projectForm" novalidate enctype="multipart/form-data">
       <fieldset class="pf__pick">
         <legend class="pf__legend pf__legend--entry">
           <span class="pf__step">01</span>
-          <span class="pf__q">WHAT ARE WE<br>WORKING WITH?</span>
+          <span class="pf__q">MIVEL<br>DOLGOZUNK?</span>
         </legend>
         <div class="picks" role="radiogroup" aria-labelledby="pickLabel">
           <span class="sr-only" id="pickLabel">Szolgáltatás kiválasztása</span>${picks}
         </div>
-        <p class="pf__hint" id="pfHint">Válasszon szolgáltatást — az űrlap ehhez igazodik.</p>
+        <p class="pf__hint" id="pfHint">Válasszon szolgáltatást — az űrlap mezői ehhez igazodnak.</p>
       </fieldset>
 
       <div class="pf__body" id="pfBody" hidden>
        <div class="pf__grid">
         <div class="pf__main">
         <fieldset class="pf__fields">
-          <legend class="pf__legend"><span class="pf__step">02</span> PROJEKT ADATOK</legend>
+          <legend class="pf__legend"><span class="pf__step">02</span> <span id="pfFieldsTitle">A FELADAT</span></legend>
+
+          <div class="fld fld--group" data-field="task">
+            <label id="lblTask">${glyph('quantify', { cls: 'fld__gl gl--16' })}Mit szeretne? <b aria-hidden="true">*</b><i>opcionális</i></label>
+            <div class="chips" role="radiogroup" aria-labelledby="lblTask">${tasks}
+            </div>
+            <p class="fld__help">Egy kimutatás egy kérésben. Több típusnál írja a leírásba, melyeket kéri.</p>
+            <p class="fld__err" id="errTask" hidden></p>
+          </div>
+
+          <div class="fld" data-field="site">
+            <label for="fSite">${glyph('location', { cls: 'fld__gl gl--16' })}Projekt helyszíne <b aria-hidden="true">*</b><i>opcionális</i></label>
+            <input id="fSite" name="site" type="text" maxlength="${LIMITS.site}" placeholder="Település, cím vagy megnevezés" />
+            <p class="fld__err" id="errSite" hidden></p>
+          </div>
+
+          <div class="fld" data-field="size">
+            <label for="fSize">${glyph('area', { cls: 'fld__gl gl--16' })}Kb. terület / épületméret <b aria-hidden="true">*</b><i>opcionális</i></label>
+            <input id="fSize" name="size" type="text" maxlength="${LIMITS.size}" placeholder="pl. 1 200 m², 3 szint" />
+            <p class="fld__err" id="errSize" hidden></p>
+          </div>
+
+          <div class="fld fld--group" data-field="outputs">
+            <label id="lblOutputs">${glyph('measure', { cls: 'fld__gl gl--16' })}Szükséges eredmény <b aria-hidden="true">*</b><i>opcionális</i></label>
+            <div class="chips" role="group" aria-labelledby="lblOutputs">${outputs}
+            </div>
+            <p class="fld__help">Több is jelölhető. Ha nem biztos benne, hagyja üresen — a feladatleírásból kiderül.</p>
+            <p class="fld__err" id="errOutputs" hidden></p>
+          </div>
+
+          <div class="fld fld--wide" data-field="brief">
+            <label for="fBrief">${glyph('data', { cls: 'fld__gl gl--16' })}A feladat rövid leírása <b aria-hidden="true">*</b><i>opcionális</i></label>
+            <textarea id="fBrief" name="brief" rows="4" maxlength="${LIMITS.brief}" placeholder="Mit kell elkészíteni, és mire fogja használni?"></textarea>
+            <p class="fld__err" id="errBrief" hidden></p>
+          </div>
+        </fieldset>
+
+        <fieldset class="pf__files">
+          <legend class="pf__legend"><span class="pf__step">03</span> <span id="upTitle">DOKUMENTÁCIÓ</span></legend>
+          <p class="pf__uphint" id="upHint"></p>
+
+          <div class="drop hv-glyph" id="drop" tabindex="0" role="button"
+               aria-describedby="upHint upLimits" aria-label="Fájl hozzáadása — tallózás vagy húzza ide">
+            ${glyph('upload', { cls: 'drop__gl gl--32 gl--anim' })}
+            <span class="drop__k" id="dropTitle">FÁJL HOZZÁADÁSA</span>
+            <span class="drop__c">Húzza ide, vagy kattintson a tallózáshoz</span>
+            <span class="drop__f" id="dropFormats">PDF</span>
+            <input type="file" id="fileInput" class="sr-only" multiple />
+          </div>
+
+          <p class="pf__limits" id="upLimits">Legfeljebb ${UPLOAD.maxFiles} fájl, fájlonként ${Math.round(UPLOAD.maxFileBytes / MB)} MB, összesen ${Math.round(UPLOAD.maxTotalBytes / MB)} MB.</p>
+          <ul class="files" id="fileList"></ul>
+          <p class="fld__err" id="errFiles" hidden></p>
+
+          <p class="pf__large" id="pfLarge" hidden>
+            Nagyobb projekt esetén első körben elegendő egy reprezentatív mintarajz.
+            Az árajánlat elfogadása után dedikált Drive projektmappát biztosítunk a
+            teljes dokumentáció feltöltéséhez — a nyilvános űrlap nem dokumentumtár.
+          </p>
+        </fieldset>
+
+        <fieldset class="pf__fields">
+          <legend class="pf__legend"><span class="pf__step">04</span> KAPCSOLAT</legend>
 
           <div class="fld" data-field="name">
             <label for="fName">Név / cég <b aria-hidden="true">*</b><i>opcionális</i></label>
@@ -105,53 +180,18 @@ function markup() {
             <input id="fPhone" name="phone" type="tel" autocomplete="tel" maxlength="${LIMITS.phone}" />
             <p class="fld__err" id="errPhone" hidden></p>
           </div>
-
-          <div class="fld" data-field="site">
-            <label for="fSite">${glyph('location', { cls: 'fld__gl gl--16' })}Projekt helyszín <b aria-hidden="true">*</b><i>opcionális</i></label>
-            <input id="fSite" name="site" type="text" maxlength="${LIMITS.site}" />
-            <p class="fld__err" id="errSite" hidden></p>
-          </div>
-
-          <div class="fld fld--wide" data-field="brief">
-            <label for="fBrief">${glyph('data', { cls: 'fld__gl gl--16' })}Feladat leírása <b aria-hidden="true">*</b><i>opcionális</i></label>
-            <textarea id="fBrief" name="brief" rows="4" maxlength="${LIMITS.brief}"></textarea>
-            <p class="fld__err" id="errBrief" hidden></p>
-          </div>
-        </fieldset>
-
-        <fieldset class="pf__files">
-          <legend class="pf__legend"><span class="pf__step">03</span> <span id="upTitle">DOKUMENTÁCIÓ</span></legend>
-          <p class="pf__uphint" id="upHint"></p>
-
-          <div class="drop hv-glyph" id="drop" tabindex="0" role="button"
-               aria-describedby="upHint upLimits" aria-label="Fájl hozzáadása — tallózás vagy húzza ide">
-            ${glyph('upload', { cls: 'drop__gl gl--32 gl--anim' })}
-            <span class="drop__k" id="dropTitle">DROP SAMPLE DRAWING</span>
-            <span class="drop__c">Húzza ide, vagy kattintson a tallózáshoz</span>
-            <span class="drop__f" id="dropFormats">PDF</span>
-            <input type="file" id="fileInput" class="sr-only" multiple />
-          </div>
-
-          <p class="pf__limits" id="upLimits">Legfeljebb ${UPLOAD.maxFiles} fájl, fájlonként ${Math.round(UPLOAD.maxFileBytes / MB)} MB, összesen ${Math.round(UPLOAD.maxTotalBytes / MB)} MB.</p>
-          <ul class="files" id="fileList"></ul>
-          <p class="fld__err" id="errFiles" hidden></p>
-
-          <p class="pf__large" id="pfLarge" hidden>
-            Nagyobb projekt esetén első körben elegendő egy reprezentatív mintarajz.
-            Az árajánlat elfogadása után dedikált Drive felületet biztosítunk a
-            teljes dokumentáció feltöltéséhez.
-          </p>
         </fieldset>
 
         <div class="pf__foot">
           <button class="btn btn--solid btn--primary hv-scan pf__send" type="submit" data-cursor="start">
-            <span class="pf__sendl">KÉRÉS ELKÜLDÉSE</span>
+            <span class="pf__sendl">AJÁNLATKÉRÉS ELKÜLDÉSE</span>
             ${glyph('delivery', { cls: 'gl--16' })}
             <i class="pf__spin" aria-hidden="true"></i>
           </button>
           <p class="pf__backend" id="pfBackend">
             A kérés titkosított kapcsolaton keresztül érkezik hozzánk. A megadott
-            adatokat kizárólag az ajánlatadáshoz használjuk.
+            adatokat és a csatolt anyagot bizalmas projektadatként kezeljük, és
+            kizárólag az ajánlatadáshoz használjuk. <a data-company="privacy-href" href="/adatkezeles/">Adatkezelési tájékoztató</a>
           </p>
         </div>
         </div>
@@ -160,8 +200,9 @@ function markup() {
           <p class="pf__sk">${glyph('project-space', { cls: 'gl--16' })}MI TÖRTÉNIK EZUTÁN</p>
           <ol class="pf__next">
             <li><span>01</span> Átnézzük a beküldött anyagot és a feladat terjedelmét.</li>
-            <li><span>02</span> A projekt alapján egyedi árajánlatot küldünk.</li>
-            <li><span>03</span> Elfogadás után dedikált Drive projektfelületet kap a teljes dokumentációhoz.</li>
+            <li><span>02</span> Egyedi árajánlatot küldünk — a ténylegesen elvégzendő munkára.</li>
+            <li><span>03</span> Elfogadás után dedikált Drive projektmappát kap a teljes dokumentációhoz.</li>
+            <li><span>04</span> Feldolgozás, emberi ellenőrzéssel — majd a strukturált eredmény átadása.</li>
           </ol>
           <p class="pf__sn">
             Nem kell mindent egyszerre feltölteni. Nagyobb munkánál egyetlen
@@ -214,14 +255,23 @@ export function mountRequest(mount, opts = {}) {
   const sendBtn = form.querySelector('.pf__send');
   const sendLabel = form.querySelector('.pf__sendl');
   const trap = form.querySelector('#fCompany');
+  const privacy = form.querySelector('[data-company="privacy-href"]');
+  if (privacy) privacy.setAttribute('href', COMPANY.routes.privacy);
 
+  /* Single-value fields. The two structured groups are read separately. */
   const F = {
     name: form.querySelector('#fName'),
     email: form.querySelector('#fEmail'),
     phone: form.querySelector('#fPhone'),
     site: form.querySelector('#fSite'),
+    size: form.querySelector('#fSize'),
     brief: form.querySelector('#fBrief'),
   };
+  const GROUPS = {
+    outputs: () => [...form.querySelectorAll('input[name="outputs"]')],
+    task: () => [...form.querySelectorAll('input[name="task"]')],
+  };
+  const ALL = [...Object.keys(F), ...Object.keys(GROUPS)];
   const wrap = (k) => form.querySelector(`.fld[data-field="${k}"]`);
   const errOf = (k) => form.querySelector(`#err${k[0].toUpperCase()}${k.slice(1)}`);
 
@@ -244,9 +294,10 @@ export function mountRequest(mount, opts = {}) {
     });
 
     form.dataset.service = id;
+    form.dataset.svc = id;
     if (!opts.lockAccent) store.setScroll(id);
 
-    for (const k in F) {
+    for (const k of ALL) {
       const rule = cfg.fields[k];
       const w = wrap(k);
       if (!w) continue;
@@ -257,7 +308,11 @@ export function mountRequest(mount, opts = {}) {
       const star = w.querySelector('label b');
       if (star) star.hidden = rule !== 'req';
       if (F[k]) F[k].required = rule === 'req';
-      if (!rule) { clearErr(k); F[k].value = ''; }
+      if (!rule) {
+        clearErr(k);
+        if (F[k]) F[k].value = '';
+        if (GROUPS[k]) GROUPS[k]().forEach((i) => { i.checked = false; });
+      }
     }
 
     upTitle.textContent = cfg.upload.title;
@@ -295,7 +350,18 @@ export function mountRequest(mount, opts = {}) {
     }
 
     if (scroll) body.scrollIntoView({ behavior: env.reducedMotion ? 'auto' : 'smooth', block: 'start' });
-    if (focus) setTimeout(() => F.name?.focus({ preventScroll: true }), env.reducedMotion ? 0 : 620);
+    if (focus) {
+      const first = service === 'quantify'
+        ? GROUPS.task()[0]
+        : F.site;
+      setTimeout(() => first?.focus({ preventScroll: true }), env.reducedMotion ? 0 : 620);
+    }
+  }
+
+  /** Preset the QUANTIFY task from a deep link or a CTA. */
+  function setTask(t) {
+    if (!QUANTIFY_TASKS[t]) return;
+    GROUPS.task().forEach((i) => { i.checked = i.value === t; });
   }
 
   picks.forEach((p) => {
@@ -307,25 +373,13 @@ export function mountRequest(mount, opts = {}) {
     });
   });
 
-  /* Any CTA that stays on THIS document can preselect the form.
+  /* Any CTA that stays on THIS document can preselect the form. A
+     `data-service` link that navigates somewhere else is tagged with the
+     service so the transition field can borrow its accent, and must not
+     also rewrite this page's URL on the way out.
 
-     A `data-service` link that navigates somewhere else — the chapter's
-     "read more" button, the About system list — is tagged with the service
-     so the transition field can borrow its accent. It must not also rewrite
-     this page's URL on the way out, or the back button returns the visitor
-     to a homepage that has silently opened a request form they never asked
-     for. */
-  /* Only real CONTROLS. `[data-service]` on its own also matches the
-     document element — every service page carries `data-service` on `<html>`
-     so the route knows what it is — and a click listener there fires for a
-     click ANYWHERE on the page. On /360-camera/ that meant every station
-     chip, every floor button and every drag inside the 360 viewer silently
-     ran `select('capture', { focus: true })`, which took focus into the
-     request form 620 ms later and, in any browser that does not honour
-     `preventScroll`, scrolled the reader out of the viewer and down to it.
-
-     That is the "it drops me into the form" bug, and it was never in the
-     viewer: it was one selector matching one element too many. */
+     Only real CONTROLS: `[data-service]` on its own also matches the
+     document element on every service page. */
   document.querySelectorAll('a[data-service], button[data-service]').forEach((el) => {
     if (el.classList.contains('pick')) return;
     const href = el.getAttribute('href');
@@ -333,7 +387,10 @@ export function mountRequest(mount, opts = {}) {
       const u = new URL(href, window.location.href);
       if (u.pathname !== window.location.pathname) return;   // it leaves; not ours
     }
-    el.addEventListener('click', () => select(el.dataset.service, { focus: true }));
+    el.addEventListener('click', () => {
+      select(el.dataset.service, { focus: true });
+      if (el.dataset.task) setTask(el.dataset.task);
+    });
   });
 
   /* ---------------- files ---------------- */
@@ -352,7 +409,7 @@ export function mountRequest(mount, opts = {}) {
         `<span class="file__t">${ext(f.name).toUpperCase()}</span>`
         + `<span class="file__n">${esc(f.name)}</span>`
         + `<span class="file__s">${fmtSize(f.size)}</span>`
-        + '<span class="file__st">READY</span>'
+        + '<span class="file__st">KÉSZ</span>'
         + `<button class="file__x" type="button" aria-label="${esc(f.name)} eltávolítása">×</button>`;
       li.querySelector('.file__x').addEventListener('click', () => {
         files.splice(i, 1);
@@ -412,25 +469,37 @@ export function mountRequest(mount, opts = {}) {
 
   /* ---------------- validation ---------------- */
   function setErr(k, msg) {
-    const el = F[k], e = errOf(k), w = wrap(k);
-    if (!el || !e) return;
+    const e = errOf(k), w = wrap(k);
+    if (!e) return;
     e.textContent = msg;
     e.hidden = !msg;
-    el.setAttribute('aria-invalid', msg ? 'true' : 'false');
-    if (msg) el.setAttribute('aria-describedby', e.id);
-    else el.removeAttribute('aria-describedby');
     w?.classList.toggle('is-bad', Boolean(msg));
+    const el = F[k];
+    if (el) {
+      el.setAttribute('aria-invalid', msg ? 'true' : 'false');
+      if (msg) el.setAttribute('aria-describedby', e.id);
+      else el.removeAttribute('aria-describedby');
+    }
   }
   const clearErr = (k) => setErr(k, '');
+
+  const groupValue = (k) => GROUPS[k]().filter((i) => i.checked).map((i) => i.value);
 
   function validate() {
     const cfg = SERVICES[service];
     const bad = [];
-    for (const k in F) {
+    for (const k of ALL) {
       const rule = cfg.fields[k];
       if (!rule) { clearErr(k); continue; }
-      const v = (F[k].value || '').trim();
       let msg = '';
+      if (GROUPS[k]) {
+        const v = groupValue(k);
+        if (rule === 'req' && !v.length) msg = k === 'task' ? 'Válassza ki, milyen kimutatást kér.' : 'Kötelező mező.';
+        setErr(k, msg);
+        if (msg) bad.push(GROUPS[k]()[0]);
+        continue;
+      }
+      const v = (F[k].value || '').trim();
       if (rule === 'req' && !v) msg = 'Kötelező mező.';
       else if (k === 'email' && v && !RE_MAIL.test(v)) msg = 'Érvényes email címet adjon meg.';
       else if (k === 'brief' && v && v.length < LIMITS.briefMin) msg = 'Néhány szóval írja le a feladatot.';
@@ -438,7 +507,7 @@ export function mountRequest(mount, opts = {}) {
       if (msg) bad.push(F[k]);
     }
     if (cfg.upload.required && !files.length) {
-      setFileErr('Ehhez a szolgáltatáshoz egy reprezentatív mintarajz szükséges. Ha most nincs kéznél, írjon inkább közvetlenül emailben.');
+      setFileErr('Ehhez a szolgáltatáshoz egy reprezentatív PDF mintarajz szükséges. Ha most nincs kéznél, írjon inkább közvetlenül emailben.');
       bad.push(drop);
     } else if (!errFiles.textContent) setFileErr('');
     return bad;
@@ -446,6 +515,9 @@ export function mountRequest(mount, opts = {}) {
 
   Object.entries(F).forEach(([k, el]) => {
     el?.addEventListener('input', () => { if (el.getAttribute('aria-invalid') === 'true') clearErr(k); });
+  });
+  Object.keys(GROUPS).forEach((k) => {
+    GROUPS[k]().forEach((i) => i.addEventListener('change', () => clearErr(k)));
   });
 
   /* ---------------- states ---------------- */
@@ -456,7 +528,7 @@ export function mountRequest(mount, opts = {}) {
     form.classList.toggle('is-sending', on);
     sendBtn.disabled = on;                    // one submission at a time
     sendBtn.setAttribute('aria-busy', String(on));
-    sendLabel.textContent = on ? 'KÜLDÉS…' : 'KÉRÉS ELKÜLDÉSE';
+    sendLabel.textContent = on ? 'KÜLDÉS…' : 'AJÁNLATKÉRÉS ELKÜLDÉSE';
   }
 
   const mailHref = (subject, bodyText) =>
@@ -466,8 +538,8 @@ export function mountRequest(mount, opts = {}) {
     const dev = transport === 'console';
     out.className = 'pfout is-ok';
     out.innerHTML = `
-      <p class="pfout__k">REQUEST RECEIVED</p>
-      <p class="pfout__lede">Köszönjük — a kérés megérkezett. Munkanapon belül válaszolunk a megadott email címre.</p>
+      <p class="pfout__k">A KÉRÉS MEGÉRKEZETT</p>
+      <p class="pfout__lede">Köszönjük. Átnézzük az anyagot, és munkanapon belül válaszolunk a megadott email címre — nagyobb projektnél a következő lépés az árajánlat, majd a dedikált projektmappa.</p>
       ${reference ? `<p class="pfout__ref"><span>AZONOSÍTÓ</span><b>${esc(reference)}</b></p>` : ''}
       ${dev ? '<p class="pfout__dev">DEV TRANSPORT — a beküldés a szerver naplójába került, email nem ment ki. Éles környezetben ez az állapot nem fordulhat elő.</p>' : ''}
       <div class="pfout__acts">
@@ -493,7 +565,7 @@ export function mountRequest(mount, opts = {}) {
       <p class="pfout__lede">${esc(message)}</p>
       <div class="pfout__acts">
         ${retryable ? '<button class="btn" type="button" data-act="retry">ÚJRAPRÓBÁLÁS</button>' : ''}
-        <a class="btn btn--ghost" href="${mailHref('GoDataFusion — projekt kérés', summary)}">KÜLDÉS EMAIL-BEN HELYETTE</a>
+        <a class="btn btn--ghost" href="${mailHref('GoDataFusion — ajánlatkérés', summary)}">KÜLDÉS EMAILBEN HELYETTE</a>
       </div>
       <p class="pfout__note">A beírt adatok megmaradtak — az email gomb ezekkel nyitja meg a levelezőt. A csatolmányokat kézzel kell mellékelni.</p>`;
     out.hidden = false;
@@ -521,15 +593,24 @@ export function mountRequest(mount, opts = {}) {
     paintFiles();
     setFileErr('');
     Object.keys(F).forEach((k) => { F[k].value = ''; clearErr(k); });
-    F.name.focus();
+    Object.keys(GROUPS).forEach((k) => { GROUPS[k]().forEach((i) => { i.checked = false; }); clearErr(k); });
+    (F.site.closest('.fld').hidden ? F.brief : F.site).focus();
   }
 
   /** Plain-text fallback body, used only when delivery failed. */
   function plainSummary() {
     const cfg = SERVICES[service] || {};
     const L = [`SZOLGÁLTATÁS: ${cfg.key || '—'}`];
-    [['Név / cég', 'name'], ['Email', 'email'], ['Telefon', 'phone'], ['Helyszín', 'site']]
-      .forEach(([label, k]) => { if (F[k]?.value.trim()) L.push(`${label}: ${F[k].value.trim()}`); });
+    if (cfg.fields?.task) {
+      const t = groupValue('task')[0];
+      if (t) L.push(`KIMUTATÁS: ${QUANTIFY_TASKS[t]}`);
+    }
+    if (cfg.fields?.outputs) {
+      const o = groupValue('outputs');
+      if (o.length) L.push(`SZÜKSÉGES EREDMÉNY: ${o.map((k) => MEASURE_OUTPUTS[k]).join(', ')}`);
+    }
+    [['Név / cég', 'name'], ['Email', 'email'], ['Telefon', 'phone'], ['Helyszín', 'site'], ['Kb. méret', 'size']]
+      .forEach(([label, k]) => { if (cfg.fields?.[k] && F[k]?.value.trim()) L.push(`${label}: ${F[k].value.trim()}`); });
     L.push('', 'FELADAT:', F.brief?.value.trim() || '—');
     if (files.length) L.push('', `Csatolmány (kézzel mellékelendő): ${files.map((f) => f.name).join(', ')}`);
     return L.join('\n');
@@ -559,9 +640,12 @@ export function mountRequest(mount, opts = {}) {
 
     const fd = new FormData();
     fd.set('service', service);
+    const cfg = SERVICES[service];
     for (const k in F) {
-      if (SERVICES[service].fields[k]) fd.set(k, F[k].value.trim());
+      if (cfg.fields[k]) fd.set(k, F[k].value.trim());
     }
+    if (cfg.fields.task) { const t = groupValue('task')[0]; if (t) fd.set('task', t); }
+    if (cfg.fields.outputs) groupValue('outputs').forEach((v) => fd.append('outputs', v));
     fd.set('company', trap.value);
     fd.set('started', String(openedAt));
     files.forEach((f) => fd.append('files', f, f.name));
@@ -579,7 +663,7 @@ export function mountRequest(mount, opts = {}) {
       } else if (res.status === 422 && data?.fields) {
         showError({ message: data.message || 'Néhány mezőt javítani kell.', fields: data.fields });
         const firstKey = Object.keys(data.fields)[0];
-        (firstKey === 'files' ? drop : F[firstKey])?.focus();
+        (firstKey === 'files' ? drop : (F[firstKey] || GROUPS[firstKey]?.()[0]))?.focus();
       } else if (res.status === 503) {
         showError({
           message: data?.message || 'Az üzenetküldés jelenleg nem elérhető.',
@@ -606,6 +690,8 @@ export function mountRequest(mount, opts = {}) {
   /* ---------------- entry state ---------------- */
   const initial = opts.service || serviceFromQuery();
   if (initial) select(initial);
+  const task = taskFromQuery();
+  if (task) { if (!service) select('quantify'); setTask(task); }
 
   if (!opts.lockAccent) {
     ScrollTrigger.create({
@@ -623,5 +709,5 @@ export function mountRequest(mount, opts = {}) {
         scrollTrigger: { trigger: form.querySelector('.picks'), start: 'top 82%', once: true } });
   }
 
-  return { select, get service() { return service; } };
+  return { select, setTask, get service() { return service; } };
 }

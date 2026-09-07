@@ -158,6 +158,8 @@
   margin-top: .7em; color: var(--fg-28); text-transform: none;
   font-family: var(--ff-text); font-size: var(--fs-micro);
 }
+.readout__note a { color: var(--fg); border-bottom: 1px solid var(--accent-40); white-space: nowrap; }
+.readout__note a:hover { border-color: var(--accent-c); }
 .readout__note--legal { color: var(--accent-c); }
 .readout__note--legal::before { content: '⚠ '; }
 
