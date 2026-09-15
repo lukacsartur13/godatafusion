@@ -172,5 +172,6 @@
   "qQuantity",
   "src/data/company.js",
   "placeholder",
-  "npm run check:live"
+  "npm run check:live",
+  "01 / 01"
 ]

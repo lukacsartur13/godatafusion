@@ -136,6 +136,28 @@
         <a class="btn btn--ghost" data-company="email-href" href="mailto:hello@godatafusion.hu">EMAIL ÍRÁSA</a>
       </div>
     </div>
+
+    <!-- ============ the title block ============
+         PHASE 14 — this page's reading of the master grid. CAPTURE reads
+         it horizontally as a walk, MEASURE vertically as a datum,
+         QUANTIFY as a drawing; the contact document reads it as the
+         sheet's FIELDS — the part of a drawing a person fills in.
+
+         It boots UNFILLED, and that is the whole idea: the reader is
+         looking at a request that has not been written yet, and the form
+         below is what writes it. Picking a service sets the subject line
+         in that service's ink; the name field sets the client. The date
+         and the response time are true on load and need nobody.
+
+         Not aria-hidden: the response time is a real commitment and the
+         blank fields are honestly blank. -->
+    <dl class="ctb" id="contactStamp" aria-label="Ajánlatkérő lap fejléce">
+      <div class="ctb__f"><dt>MEGRENDELŐ</dt><dd data-stamp="client"></dd></div>
+      <div class="ctb__f"><dt>TÁRGY</dt><dd data-stamp="subject"></dd></div>
+      <div class="ctb__f"><dt>DÁTUM</dt><dd data-stamp="date"></dd></div>
+      <div class="ctb__f"><dt>VÁLASZIDŐ</dt><dd>1 MUNKANAP</dd></div>
+      <div class="ctb__f"><dt>LAP</dt><dd>01 / 01</dd></div>
+    </dl>
   </section>
 
   <!-- ================= 02 · ELÉRHETŐSÉG ================= -->

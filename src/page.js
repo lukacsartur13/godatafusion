@@ -11,6 +11,7 @@ import { initExamples } from './modules/examples.js';
 import { initMedia } from './modules/media.js';
 import { mountRequest } from './modules/request.js';
 import { applyCompany } from './modules/company.js';
+import { initStamp } from './modules/stamp.js';
 
 /* ============================================================
    THE FLAT PAGES — /rolunk/, /kapcsolat/, /impresszum/,
@@ -36,6 +37,8 @@ initExamples();
 initMedia();
 initSections();
 initSeams();
+
+initStamp();
 
 const mount = document.getElementById('projectMount');
 if (mount) mountRequest(mount);

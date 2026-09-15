@@ -59,5 +59,11 @@
   "A három szolgáltatás": "The three services",
   "Capture · rögzítés": "Capture · recording",
   "Measure · felmérés": "Measure · surveying",
-  "Quantify · kimutatás": "Quantify · schedules"
+  "Quantify · kimutatás": "Quantify · schedules",
+  "Ajánlatkérő lap fejléce": "Request sheet title block",
+  "MEGRENDELŐ": "CLIENT",
+  "DÁTUM": "DATE",
+  "VÁLASZIDŐ": "RESPONSE TIME",
+  "1 MUNKANAP": "1 WORKING DAY",
+  "LAP": "SHEET"
 }

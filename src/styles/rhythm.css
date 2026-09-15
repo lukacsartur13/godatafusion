@@ -257,3 +257,94 @@
   .qtb { grid-template-columns: repeat(2, auto); justify-content: start; justify-items: start; }
   .qtb div { justify-items: start; }
 }
+
+
+/* ============================================================
+   CONTACT — THE TITLE BLOCK
+
+   §25 — the fourth reading of the master grid, and the one the flat
+   pages never had. CAPTURE reads the grid HORIZONTALLY, MEASURE
+   VERTICALLY, QUANTIFY as a DRAWING. /kapcsolat/ reads it as the
+   sheet's FIELDS: the ruled stamp in the corner of a drawing, where the
+   client, the subject and the date get written in by hand.
+
+   This is why the hero can be plain white and not read as empty. The
+   page is not missing a picture; it is a sheet waiting to be filled.
+
+   The stamp takes the hero's second grid row, which the flat pages left
+   unused — the service pages put their output rail there. It is an
+   unfilled form on load, and every blank field carries the rule you
+   would write on.
+   ============================================================ */
+/* A title block sits close to the edge of its sheet, so the hero that
+   carries one closes tighter than the ones that carry an output rail. */
+.sv-hero:has(.ctb) { padding-bottom: clamp(40px, 6vh, 84px); }
+
+.ctb {
+  justify-self: end; align-self: end;
+  width: min(30rem, 100%);
+  /* A FLOOR, not the gap. The hero's second row is already pushed to the
+     bottom by `align-content: space-between`, so this only guarantees the
+     stamp never touches the call to action on a short window. Anything
+     more and the hero stops fitting one screen, which puts the last row
+     of a title block under the fold — the one thing that makes it read
+     as a bug rather than as a stamp. */
+  margin-top: clamp(24px, 3vh, 48px);
+  position: relative;
+  border: var(--rule-w) solid var(--rule-primary);
+}
+/* The registration cross that marks every frame on this site, sitting on
+   the stamp's outer corner. Same mark, third size — see base.css §16. */
+.ctb::before, .ctb::after {
+  content: ''; position: absolute; background: var(--rule-measure);
+}
+.ctb::before {
+  left: calc(var(--tick-m) * -1); right: auto; width: calc(var(--tick-m) * 2);
+  top: calc(var(--rule-w) * -.5); height: var(--rule-w);
+}
+.ctb::after {
+  top: calc(var(--tick-m) * -1); height: calc(var(--tick-m) * 2);
+  left: calc(var(--rule-w) * -.5); width: var(--rule-w);
+}
+
+.ctb__f {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 36%) 1fr;
+  align-items: baseline;
+  gap: 0 clamp(12px, 1.6vw, 22px);
+  padding: clamp(8px, 1vh, 13px) clamp(13px, 1.7vw, 21px);
+  border-top: var(--rule-w) solid var(--rule-secondary);
+}
+.ctb__f:first-child { border-top: 0; }
+
+.ctb dt {
+  font-family: var(--ff-label); font-size: var(--fs-micro); font-weight: 500;
+  letter-spacing: var(--ls-micro); text-transform: uppercase; color: var(--fg-38);
+}
+.ctb dd {
+  margin: 0; min-height: 1.15em;
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); color: var(--fg-60);
+  font-variant-numeric: tabular-nums;
+  /* The value is written on ONE line. A company name long enough to wrap
+     would push the stamp's rows out of register with each other, and a
+     title block whose rows do not line up is not a title block. */
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* `:empty`, not a class: the field carries its fill-in rule exactly as
+   long as nothing has been written in it, and stops the moment something
+   is — with no state for anyone to set, clear or forget. */
+.ctb dd:empty { border-bottom: var(--rule-w) solid var(--rule-measure); }
+/* The subject takes the ink of the service it names. `data-svc` is the
+   site-wide accent contract; tone.css resolves it to the light-ground
+   value on its own. */
+.ctb dd[data-svc] { color: var(--accent-c); }
+
+@media (max-width: 860px) {
+  .ctb {
+    justify-self: stretch;
+    width: 100%;
+    margin-top: clamp(34px, 6vh, 64px);
+  }
+  .ctb__f { grid-template-columns: minmax(6.5rem, 40%) 1fr; }
+}
