@@ -63,7 +63,7 @@ const FIGURES = () => {
   const R = referenceFacts();
   return [
     { n: fmtNum(Q.total.area, 1), k: t('M² · HASZNOS ALAPTERÜLET'),
-      a: '2 / 2 / 4 / 8', am: '2 / 1 / 4 / 5', fz: 'clamp(1.9rem, 5.4vw, 5.4rem)' },
+      a: '2 / 1 / 4 / 7', am: '2 / 1 / 4 / 5', fz: 'clamp(1.7rem, 4.6vw, 4.6rem)' },
     { n: String(Q.total.windows), k: t('ABLAK · ÖSSZESEN'),
       a: '2 / 9 / 4 / 13', am: '2 / 5 / 4 / 9', fz: 'clamp(1.7rem, 4.4vw, 4.4rem)', j: 'end' },
     { n: String(Q.total.doors), k: t('AJTÓ · ÖSSZESEN'),
@@ -87,10 +87,13 @@ const LEVEL = 'L01';
 /* How far the camera steps back to open the margin the figures stand in.
    Measured against the ring rather than chosen: the plan is wider than it
    is tall, so the SIDE bands are the tight ones, and at 1.13 the drawing
-   still reached under the left-hand figures. Small enough that the
-   drawing is plainly still the subject; large enough that not one number
-   sits on a line it was counted from. */
-const PULL_BACK = 1.26;
+   still reached under the left-hand figures. Measured again at 1.26: the
+   headline figure — the widest number in the set — still crossed the
+   top-left corner of the outline, so the margin opens once more and that
+   figure now sits in the corner instead of across it. Small enough that
+   the drawing is plainly still the subject; large enough that not one
+   number sits on a line it was counted from. */
+const PULL_BACK = 1.4;
 
 /* How present the drawing is once the closing sentence is on it. Faint
    enough that the sentence is never read against linework, present enough
