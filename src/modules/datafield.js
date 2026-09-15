@@ -45,36 +45,57 @@ const el = (name, attrs = {}) => {
 
 /**
  * The eight values, and where each one sits on the block's own 12 x 12
- * field. Both are authored here rather than in CSS because they belong to
- * the composition of THIS set of numbers: the floor area is the largest
- * thing on the page because it is the largest claim, and the identifiers
- * are small because they are evidence rather than headline.
+ * field.
+ *
+ * THEY GO AROUND THE DRAWING, NOT ON IT. Every figure was read OFF the
+ * plan, and a number printed over the linework it was counted from hides
+ * its own evidence — the drawing stops being the thing the claim rests on
+ * and becomes a texture behind it. So the plan keeps the middle of the
+ * frame, the figures take the margin, and the camera steps back far
+ * enough to open that margin (PULL_BACK).
+ *
+ * The order is the ring, clockwise from the top left, because that is the
+ * order the eye can follow; the largest claim still comes first because
+ * the ring starts where reading starts.
  */
-function figures() {
+const FIGURES = () => {
   const Q = buildingQuantities();
   const R = referenceFacts();
   return [
     { n: fmtNum(Q.total.area, 1), k: t('M² · HASZNOS ALAPTERÜLET'),
-      a: '2 / 2 / 5 / 10', am: '2 / 2 / 4 / 9', fz: 'clamp(2.8rem, 10.5vw, 11rem)' },
+      a: '2 / 2 / 4 / 8', am: '2 / 1 / 4 / 5', fz: 'clamp(1.9rem, 5.4vw, 5.4rem)' },
     { n: String(Q.total.windows), k: t('ABLAK · ÖSSZESEN'),
-      a: '5 / 8 / 8 / 13', am: '4 / 4 / 6 / 9', fz: 'clamp(2.4rem, 8.5vw, 9rem)', j: 'end' },
+      a: '2 / 9 / 4 / 13', am: '2 / 5 / 4 / 9', fz: 'clamp(1.7rem, 4.4vw, 4.4rem)', j: 'end' },
     { n: String(Q.total.doors), k: t('AJTÓ · ÖSSZESEN'),
-      a: '2 / 10 / 4 / 13', am: '2 / 6 / 4 / 9', fz: 'clamp(1.8rem, 5.4vw, 5.4rem)', j: 'end' },
+      a: '5 / 11 / 7 / 13', am: '4 / 5 / 6 / 9', fz: 'clamp(1.5rem, 3.6vw, 3.6rem)', j: 'end' },
     { n: fmtNum(R.area, 1), k: `M² · ${R.uid}`,
-      a: '8 / 2 / 11 / 7', am: '6 / 2 / 8 / 7', fz: 'clamp(2.4rem, 8.5vw, 9rem)' },
+      a: '8 / 11 / 10 / 13', am: '4 / 1 / 6 / 5', fz: 'clamp(1.3rem, 3vw, 3rem)', j: 'end' },
     { n: String(Q.total.windowTypes.W03), k: t('W03 · TELJES BELMAGASSÁGÚ'),
-      a: '6 / 2 / 8 / 6', am: '8 / 2 / 10 / 6', fz: 'clamp(1.5rem, 4.2vw, 4.2rem)' },
+      a: '10 / 9 / 12 / 13', am: '9 / 5 / 11 / 9', fz: 'clamp(1.2rem, 2.6vw, 2.6rem)', j: 'end' },
     { n: String(Q.total.doorTypes.D01), k: t('D01 · EGYSZÁRNYÚ AJTÓ'),
-      a: '5 / 5 / 7 / 8', am: '8 / 5 / 10 / 9', fz: 'clamp(1.3rem, 3.4vw, 3.4rem)', j: 'end' },
+      a: '10 / 2 / 12 / 8', am: '9 / 1 / 11 / 5', fz: 'clamp(1.2rem, 2.6vw, 2.6rem)' },
     { n: `+${fmtNum(Q.total.height, 2)}`, k: t('M · ÉPÜLETMAGASSÁG'),
-      a: '11 / 8 / 13 / 13', am: '10 / 4 / 12 / 9', fz: 'clamp(1.3rem, 3.8vw, 3.8rem)', j: 'end' },
+      a: '8 / 1 / 10 / 4', am: '11 / 1 / 13 / 5', fz: 'clamp(1.2rem, 2.8vw, 2.8rem)' },
     { n: String(Q.total.rooms), k: t('HELYISÉG · 3 SZINTEN'),
-      a: '11 / 2 / 13 / 5', am: '10 / 2 / 12 / 4', fz: 'clamp(1.3rem, 3.4vw, 3.4rem)' },
+      a: '5 / 1 / 7 / 4', am: '11 / 5 / 13 / 9', fz: 'clamp(1.3rem, 3vw, 3rem)' },
   ];
-}
+};
 
 /** Which storey the block resolves the scene to, and captions. */
 const LEVEL = 'L01';
+
+/* How far the camera steps back to open the margin the figures stand in.
+   Measured against the ring rather than chosen: the plan is wider than it
+   is tall, so the SIDE bands are the tight ones, and at 1.13 the drawing
+   still reached under the left-hand figures. Small enough that the
+   drawing is plainly still the subject; large enough that not one number
+   sits on a line it was counted from. */
+const PULL_BACK = 1.26;
+
+/* How present the drawing is once the closing sentence is on it. Faint
+   enough that the sentence is never read against linework, present enough
+   that it is still a drawing rather than a texture. */
+const PLAN_UNDER_TEXT = 0.34;
 
 /**
  * The drawing the numbers were read out of — one storey, rooms and
@@ -129,7 +150,7 @@ export function initDataField(root = document, { getScene } = {}) {
 
   const list = block.querySelector('[data-dfield-set]');
   if (list) {
-    const items = figures();
+    const items = FIGURES();
     const narrow = window.matchMedia('(max-width: 900px)');
     list.textContent = '';
     items.forEach((it, i) => {
@@ -184,7 +205,7 @@ export function initDataField(root = document, { getScene } = {}) {
       const sc = S();
       if (sc) {
         sc.setDrawingOnly(1); sc.setCallouts(0); sc.setFloorLabels(0, 0);
-        sc.setLevel(LEVEL); sc.setFocusSide(0, 0);
+        sc.setLevel(LEVEL); sc.setFocusSide(0, 0); sc.setPullBack(PULL_BACK);
         return;
       }
       if (++tries < 40) requestAnimationFrame(settle);
@@ -204,16 +225,35 @@ export function initDataField(root = document, { getScene } = {}) {
     return vh / Math.max(1, block.offsetHeight + vh);
   };
 
-  let applied = -1;
+  /* Once the eight are gone the frame belongs to one sentence, and the
+     drawing under it steps back to being the ground it is read against.
+     By this point the canvas holds NOTHING but the plan, so fading the
+     canvas is fading the drawing — there is no second thing on it to
+     lose. The narrative owns this property inside its own range and has
+     long since finished; on the way back up it takes it again. */
+  const stage = document.getElementById('stage');
+  const planFade = (q) => {
+    if (!stage) return;
+    const k = Math.max(0, Math.min(1, (q - 0.55) / 0.16));
+    stage.style.opacity = (1 - (1 - PLAN_UNDER_TEXT) * k).toFixed(3);
+  };
+
   ScrollTrigger.create({
     trigger: block,
     start: 'top bottom',
     end: 'bottom top',
     scrub: true,
     onUpdate: (self) => {
+      /* EVERY value, on EVERY update. There was a guard here that skipped
+         the work when the resolution had stopped changing, and it made
+         the block's state depend on the ORDER its own callbacks happened
+         to fire in: a leave-backwards that landed after the last update
+         reset the scene and nothing wrote it again, so the reader got the
+         callouts and three storeys back under a sentence. The setters
+         each ignore a value they already hold, so saying it every time
+         costs nothing and cannot go stale. */
+      planFade(self.progress);
       const p = Math.min(1, self.progress / resolveSpan());
-      if (Math.abs(p - applied) < 0.004) return;
-      applied = p;
       const sc = S();
       if (!sc) return;
       sc.setDrawingOnly(p);
@@ -231,6 +271,8 @@ export function initDataField(root = document, { getScene } = {}) {
          are a reading of ONE sheet, and three stacked drawings under them
          would be three readings. */
       sc.setLevel(p > 0.02 ? LEVEL : null);
+      /* The margin the ring stands in. */
+      sc.setPullBack(1 + (PULL_BACK - 1) * p);
       /* The chapters hold the object off to one side to leave the reading
          column clear. Nothing is beside it here — the figures are ON it —
          so it comes back to the middle of the frame as it resolves. The
@@ -239,13 +281,14 @@ export function initDataField(root = document, { getScene } = {}) {
       sc.setFocusSide(-0.9 * (1 - p), 0);
     },
     onLeaveBack: () => {
-      applied = -1;
       const sc = S();
       if (!sc) return;
       sc.setDrawingOnly(0);
       sc.setCallouts(1);
       sc.setLevel(null);
       sc.setFocusSide(-0.9, 0);
+      sc.setPullBack(1);
+      stage.style.opacity = '';
       /* Back into QUANTIFY, which is a mode that wants its floor marks. */
       sc.setFloorLabels(1, 0);
     },

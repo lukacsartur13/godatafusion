@@ -2184,6 +2184,19 @@ export function createScene({ canvas, stage, annoContainer, callouts, route = 'h
       invalidate();
     },
 
+    /**
+     * Pull the camera back, as a multiplier on its distance from the
+     * target. 1 is the authored framing. The data field uses it to open a
+     * margin around the drawing for the figures that are read off it —
+     * the same lever the intro uses, which is why there is no second one.
+     */
+    setPullBack(v) {
+      const n = v < 1 ? 1 : v > 1.6 ? 1.6 : v;
+      if (Math.abs(n - state.camZoom) < 0.004) return;
+      state.camZoom = n;
+      invalidate();
+    },
+
     /** How present every projected callout family is. 0 hides all of them. */
     setCallouts(v) {
       const n = v < 0 ? 0 : v > 1 ? 1 : v;

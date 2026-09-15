@@ -231,7 +231,11 @@
 .dfield {
   position: relative;
   z-index: 2;
-  height: 210svh;
+  /* Three viewports: one to rise, two of hold. The eight figures arrive
+     inside the hold, stand together, clear completely, and only then does
+     the sentence come — that sequence needs the room, and it is the one
+     place on the page where the reader is meant to stop. */
+  height: 280svh;
   /* Under the light sections, which wipe over it — the same place in the
      stack the bridge takes. */
   z-index: 1;
@@ -304,7 +308,7 @@
   grid-template-rows: repeat(12, 1fr);
 }
 .dfield__set li {
-  --lv: clamp(0, calc((var(--t, 0) - var(--i) * .040) * 9), 1);
+  --lv: clamp(0, calc((var(--t, 0) - .26 - var(--i) * .028) * 16), 1);
   grid-area: var(--a);
   display: grid; align-content: center; gap: .25em;
   justify-items: var(--j, start);
@@ -343,16 +347,17 @@
   pointer-events: none;
 }
 .dfield__end span {
-  --lv: clamp(0, calc((var(--t, 0) - .48 - var(--d, 0)) * 9), 1);
+  --lv: clamp(0, calc((var(--t, 0) - .655 - var(--d, 0)) * 13), 1);
   opacity: var(--lv);
   transform: translate3d(0, calc((1 - var(--lv)) * 1.6vh), 0);
 }
 /* The field's own numbers step back as the sentence lands, so the two
    never compete for the same frame. */
-/* The figures stand down BEFORE the sentence arrives, not while it is
-   arriving: they are the evidence and it is the conclusion, and a frame
-   carrying both at full is a frame carrying neither. */
-.dfield__set { opacity: calc(1 - .74 * clamp(0, calc((var(--t, 0) - .34) * 8), 1)); }
+/* The figures go COMPLETELY, and before the sentence starts — not dimmed
+   under it. They are the evidence and it is the conclusion; a frame
+   carrying both is a frame carrying neither, and a ghost of eight numbers
+   behind a sentence is the worst of the two. */
+.dfield__set { opacity: calc(1 - clamp(0, calc((var(--t, 0) - .55) * 12.5), 1)); }
 .dfield__e1 {
   grid-area: 3 / 2 / 5 / 8; align-self: center;
   font-size: clamp(2.6rem, 9vw, 10rem);
@@ -362,13 +367,13 @@
   font-size: clamp(1rem, 2.2vw, 2.2rem);
   color: rgba(241, 240, 235, .55);
   padding-right: clamp(12px, 2vw, 34px);
-  --d: .045;
+  --d: .03;
 }
 .dfield__e3 {
   grid-area: 8 / 1 / 12 / 13; align-self: center;
   font-size: clamp(3.2rem, 14.5vw, 16rem);
   margin-left: -3vw;
-  --d: .09;
+  --d: .06;
 }
 
 .dfield__demo {
@@ -381,7 +386,7 @@
 }
 
 @media (max-width: 900px) {
-  .dfield { height: 185svh; }
+  .dfield { height: 250svh; }
   .dfield__stick { grid-template-columns: repeat(8, 1fr); }
   .dfield__set { grid-template-columns: repeat(8, 1fr); }
   .dfield__set b { font-size: clamp(1.6rem, 12vw, 3.6rem); }
