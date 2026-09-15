@@ -1103,6 +1103,14 @@
     rgba(8, 10, 11, .18) 72%,
     rgba(8, 10, 11, 0) 88%);
 }
+/* The pools are a scrim for LIT GROUND: they exist so display type stays
+   legible over a canvas that is drawing behind it. A light page has no
+   canvas — /kapcsolat/ and /rolunk/ are paper — and there the dark pool
+   painted a near-black blob under near-black type, which is how the
+   contact hero became unreadable. Ground decides, not the page: wherever
+   the ground is light there is nothing to scrim. */
+[data-tone="light"] .sv-hero__content::before { display: none; }
+
 /* Below 900px the canvas is already atmosphere at .34 and the pools would
    only flatten the page. */
 @media (max-width: 899px) {

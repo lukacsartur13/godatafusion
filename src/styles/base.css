@@ -378,6 +378,13 @@ dl, dd, dt, p, h1, h2, h3, figure { margin: 0; }
   position: absolute; inset: 0;
   background: radial-gradient(120% 92% at 50% 44%, transparent 42%, rgba(0,0,0,.55) 100%);
 }
+/* The vignette is written for the dark ground: 55% black at the edge of
+   #080A0B is a deepening nobody reads as a shape. Over paper it is a grey
+   frame — on /kapcsolat/ and /rolunk/ it greyed most of the hero, and the
+   page stopped looking white. Paper gets no vignette. The homepage flips
+   this attribute mid-scroll, but only underneath an opaque section that
+   has already covered the canvas, so nothing of it is on screen. */
+.atmos[data-tone="light"] .atmos__vignette { background: none; }
 /* PHASE 8.3 — the grain is a PLAIN LAYER now.
 
    `mix-blend-mode: overlay` on a full-viewport element makes the
