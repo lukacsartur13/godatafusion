@@ -1,0 +1,376 @@
+/* ============================================================
+   PHASE 13 — THE SEAMS
+
+   The homepage is four readings of one argument, and the brief for this
+   phase was that it must not read as four blocks stacked on a page.
+   Nothing here is decoration: every rule in this file exists to remove
+   an EDGE.
+
+   Three devices, and only three.
+
+   01  THE BRIDGE. The sample footage is no longer a block between two
+       sections — it IS the hand-over from the hero to the results. Its
+       frame is held for one viewport (sticky) while the hero's canvas
+       leaves behind it, and the light results ground then rises over the
+       held frame, because an opaque section scrolling over a sticky one
+       is a wipe that costs nothing and cannot desynchronise.
+
+   02  THE SEAM BANDS. Between two grounds there is never a line. There
+       is a band, the height of a sixth of a viewport, whose background
+       is the gradient from the ground above to the ground below — and a
+       hairline that DRAWS across it as the reader crosses, carrying the
+       index of the section being entered. The reader sees the page
+       change ground, not a section end.
+
+   03  THE RUN-UPS. A section that paints its own ground (the quote
+       block, the footer) gets that ground faded in above itself, so even
+       where there is no seam element there is no step.
+
+   `--t` on each seam is 0 → 1 across its own crossing, written by
+   modules/seams.js. Everything below interpolates on it, so the browser
+   does the work and nothing is animated per frame from JavaScript.
+   ============================================================ */
+
+:root {
+  --ground-dark:  #080A0B;
+  --ground-light: #F5F6F7;
+  --seam-h: clamp(96px, 15vh, 210px);
+}
+
+/* ============================================================
+   01 — THE BRIDGE
+   ============================================================ */
+.bridge {
+  position: relative;
+  /* One viewport of hold, plus the distance the results ground needs to
+     travel over it. Shorter than this and the wipe is a jump cut. */
+  height: 178svh;
+  z-index: 1;            /* under the light sections, which wipe over it */
+  background: var(--ground-dark);
+}
+.bridge__stick {
+  position: sticky; top: 0;
+  height: 100svh;
+  overflow: clip;
+}
+.bridge__frame {
+  position: absolute; inset: 0;
+  background: #0B0F14;
+  overflow: clip;
+}
+.bridge__frame video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  /* The footage settles as the reader arrives: a 4 % drift, ending at
+     rest exactly where the results ground starts to cover it. */
+  transform: scale(calc(1.045 - .045 * var(--t, 0)));
+  transform-origin: 50% 40%;
+}
+/* Top and bottom falloff, so the frame has no hard edge of its own
+   against the hero above it or the ground arriving below. */
+.bridge__scrim {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(8,10,11,.86), rgba(8,10,11,0) 26%),
+    linear-gradient(0deg,   rgba(8,10,11,.92), rgba(8,10,11,0) 46%);
+}
+.bridge__cap {
+  position: absolute;
+  left: var(--gutter); right: var(--gutter);
+  bottom: clamp(30px, 9vh, 92px);
+  display: grid;
+  gap: clamp(10px, 1.4vh, 18px);
+  max-width: 54rem;
+  color: #F1F0EB;
+  /* Rises with the crossing rather than sitting still on a moving frame. */
+  transform: translate3d(0, calc((1 - var(--t, 0)) * 26px), 0);
+  opacity: clamp(0, calc(var(--t, 0) * 3.4), 1);
+}
+.bridge__k {
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: clamp(1.7rem, 5vw, 4.6rem);
+  font-weight: 500; line-height: .94; letter-spacing: -.034em;
+  text-shadow: 0 1px 26px rgba(0,0,0,.6);
+}
+.bridge__k b { color: var(--accent-c); font-weight: inherit; }
+.bridge__lede {
+  max-width: 34rem;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: rgba(241,240,235,.78);
+  text-shadow: 0 1px 16px rgba(0,0,0,.65);
+}
+.bridge__m {
+  font-family: var(--ff-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
+  color: rgba(241,240,235,.62);
+  text-shadow: 0 1px 12px rgba(0,0,0,.7);
+}
+/* The measurement rule the rest of the page uses, drawn once here — it is
+   the same gesture the seam bands perform, so the bridge reads as the
+   first of them rather than as a different kind of thing. */
+.bridge__rule {
+  position: absolute; left: var(--gutter); right: var(--gutter);
+  bottom: clamp(18px, 5vh, 56px);
+  height: var(--rule-w);
+  background: var(--accent-c);
+  opacity: .8;
+  transform: scaleX(clamp(0, calc(var(--t, 0) * 1.25), 1));
+  transform-origin: left;
+}
+
+@media (max-width: 700px) {
+  .bridge { height: 152svh; }
+  .bridge__cap { max-width: none; bottom: clamp(24px, 7vh, 64px); }
+}
+
+/* ============================================================
+   02 — THE SEAM BANDS
+   ============================================================ */
+.seam {
+  position: relative;
+  z-index: 2;
+  height: var(--seam-h);
+  pointer-events: none;
+}
+.seam[data-from="light"][data-to="dark"] {
+  background: linear-gradient(180deg, var(--ground-light) 0%, #C8CDD1 34%, #3A4146 72%, var(--ground-dark) 100%);
+}
+/* Dark → light must never interpolate through transparent-black: the
+   canvas shows through the top of this band, so the fade starts from the
+   light ground at zero alpha, not from `transparent`. */
+.seam[data-from="dark"][data-to="light"] {
+  background: linear-gradient(180deg,
+    rgba(245,246,247,0) 0%,
+    rgba(245,246,247,.06) 22%,
+    rgba(245,246,247,.42) 58%,
+    var(--ground-light) 100%);
+}
+.seam__rule {
+  position: absolute; left: var(--gutter); right: var(--gutter);
+  top: 50%;
+  height: var(--rule-w);
+  background: currentColor;
+  opacity: .28;
+  transform: scaleX(clamp(0, calc(var(--t, 0) * 1.6), 1));
+  transform-origin: left;
+}
+.seam__k {
+  position: absolute; right: var(--gutter); top: calc(50% + 10px);
+  display: flex; align-items: baseline; gap: .7em;
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  opacity: calc(var(--t, 0) * .62);
+  transform: translate3d(calc((1 - var(--t, 0)) * 16px), 0, 0);
+}
+.seam__k i { font-style: normal; opacity: .55; }
+/* The band carries the ink of the ground it is arriving at. */
+.seam[data-to="dark"]  { color: #F1F0EB; }
+.seam[data-to="light"] { color: #0B0F14; }
+
+/* ============================================================
+   03 — THE RUN-UPS
+
+   A section with its own opaque ground fades that ground in above
+   itself. `.process::before` in base.css did this for one section; the
+   pattern is general, and these are the two that still need it.
+   ============================================================ */
+.project::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 18vh;
+  background: linear-gradient(180deg, rgba(8,10,11,0), var(--ground-dark) 82%);
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+/* The results block opens directly under the bridge, so its first rule
+   must not read as the top edge of a new box. */
+.xf { padding-block-start: clamp(56px, 9vh, 120px); }
+
+@media (prefers-reduced-motion: reduce) {
+  /* The grounds still grade; nothing tracks the scroll. */
+  .bridge { height: auto; }
+  .bridge__stick { position: static; height: auto; }
+  .bridge__frame { position: relative; inset: auto; aspect-ratio: 21 / 9; max-height: 82svh; }
+  .bridge__frame video { transform: none; }
+  .bridge__cap { transform: none; opacity: 1; }
+  .bridge__rule, .seam__rule { transform: none; }
+  .seam__k { opacity: .62; transform: none; }
+}
+
+/* ============================================================
+   04 — THE DATA FIELD
+
+   The last frame of the Phase 11 journey, kept as the crossing from the
+   results block into the three services. A drawing, and over it the
+   figures counted out of the drawing.
+
+   The block is a twelve-by-twelve field and every figure is PLACED on it
+   (`--a`, a grid area authored in modules/datafield.js beside the value
+   it positions). That is what keeps it a composition rather than a list:
+   the floor area is large and high, the identifiers are small and low,
+   and the eye reads them in the order the argument is made.
+
+   Each figure resolves from the block's own `--t`, offset by its `--i`,
+   so the set arrives in reading order with no tween per element and
+   nothing to fall out of step.
+   ============================================================ */
+.dfield {
+  position: relative;
+  z-index: 2;
+  height: 210svh;
+  background: var(--ground-dark);
+  color: #F1F0EB;
+  /* The light results block above ends against this, and a hard edge
+     between two grounds is the one thing this phase is removing. */
+  border-top: var(--rule-w) solid rgba(241, 240, 235, .12);
+}
+.dfield__stick {
+  position: sticky; top: 0;
+  height: 100svh;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  padding: var(--nav-safe) var(--gutter) clamp(18px, 4vh, 48px);
+  overflow: clip;
+}
+
+/* ---- the drawing ---- */
+.dfield__plan {
+  grid-area: 1 / 1 / 13 / 13;
+  place-self: center;
+  width: min(86%, 1180px);
+  margin: 0;
+  /* Evidence, not subject: it resolves early and stays under everything. */
+  opacity: calc(.10 + .26 * clamp(0, calc(var(--t, 0) * 4), 1));
+  transform: scale(calc(1.06 - .06 * clamp(0, calc(var(--t, 0) * 3), 1)));
+}
+.dfield__plan svg { width: 100%; height: auto; max-height: 76svh; }
+.dfield__plan figcaption {
+  margin-top: 10px;
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); color: rgba(241, 240, 235, .38);
+}
+.df-room { fill: rgb(var(--accent) / .05); stroke: rgba(241,240,235,.20); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.df-room--ref { fill: rgb(var(--accent) / .22); }
+.df-out { fill: none; stroke: rgba(241,240,235,.55); stroke-width: 1.6; vector-effect: non-scaling-stroke; }
+.df-dim { fill: none; stroke: var(--accent-c); stroke-width: 1; vector-effect: non-scaling-stroke; opacity: .6; }
+
+/* ---- the key line ---- */
+.dfield__k {
+  grid-area: 1 / 2 / 2 / 9;
+  align-self: center;
+  display: flex; flex-wrap: wrap; gap: .5em;
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: rgba(241, 240, 235, .5);
+  opacity: clamp(0, calc(var(--t, 0) * 5), 1);
+}
+.dfield__k2 { color: var(--accent-c); }
+
+/* ---- the figures ---- */
+.dfield__set {
+  grid-area: 1 / 1 / 13 / 13;
+  list-style: none; margin: 0; padding: 0;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+}
+.dfield__set li {
+  --lv: clamp(0, calc((var(--t, 0) - var(--i) * .052) * 7), 1);
+  grid-area: var(--a);
+  display: grid; align-content: center; gap: .25em;
+  justify-items: var(--j, start);
+  /* A number may crop at the edge of the frame; a LABEL that loses its
+     last letter is a defect rather than a crop. */
+  padding-inline: clamp(12px, 2vw, 34px);
+  opacity: var(--lv);
+  transform: translate3d(0, calc((1 - var(--lv)) * 2.2vh), 0);
+}
+.dfield__set b {
+  font-family: var(--ff-display); font-weight: 500;
+  font-size: var(--fz, clamp(2rem, 7vw, 8rem));
+  line-height: .8; letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums;
+  color: #FFFEFA;
+  white-space: nowrap;
+}
+.dfield__set i {
+  font-style: normal;
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: var(--accent-c);
+}
+
+/* ---- the closing statement ----
+   Three separate placements, not a centred lockup: the sentence is
+   assembled by reading the frame, which is what the whole block has been
+   asking the reader to do. It arrives last, once every figure is in. */
+.dfield__end {
+  grid-area: 1 / 1 / 13 / 13;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-weight: 500; line-height: .82; letter-spacing: -.04em;
+  pointer-events: none;
+}
+.dfield__end span {
+  --lv: clamp(0, calc((var(--t, 0) - .62 - var(--d, 0)) * 7), 1);
+  opacity: var(--lv);
+  transform: translate3d(0, calc((1 - var(--lv)) * 1.6vh), 0);
+}
+/* The field's own numbers step back as the sentence lands, so the two
+   never compete for the same frame. */
+.dfield__set { opacity: calc(1 - .72 * clamp(0, calc((var(--t, 0) - .62) * 5), 1)); }
+.dfield__plan { }
+.dfield__e1 {
+  grid-area: 3 / 2 / 5 / 8; align-self: center;
+  font-size: clamp(2.6rem, 9vw, 10rem);
+}
+.dfield__e2 {
+  grid-area: 6 / 8 / 7 / 12; align-self: center; justify-self: end;
+  font-size: clamp(1rem, 2.2vw, 2.2rem);
+  color: rgba(241, 240, 235, .55);
+  padding-right: clamp(12px, 2vw, 34px);
+  --d: .06;
+}
+.dfield__e3 {
+  grid-area: 8 / 1 / 12 / 13; align-self: center;
+  font-size: clamp(3.2rem, 14.5vw, 16rem);
+  margin-left: -3vw;
+  --d: .12;
+}
+
+.dfield__demo {
+  grid-area: 12 / 2 / 13 / 13;
+  align-self: end;
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: rgba(241, 240, 235, .34);
+  opacity: clamp(0, calc(var(--t, 0) * 4), 1);
+}
+
+@media (max-width: 900px) {
+  .dfield { height: 185svh; }
+  .dfield__stick { grid-template-columns: repeat(8, 1fr); }
+  .dfield__set { grid-template-columns: repeat(8, 1fr); }
+  .dfield__set b { font-size: clamp(1.6rem, 12vw, 3.6rem); }
+  .dfield__end { grid-template-columns: repeat(8, 1fr); }
+  .dfield__e1 { grid-area: 3 / 2 / 5 / 9; font-size: clamp(2.2rem, 15vw, 4.4rem); }
+  .dfield__e2 { grid-area: 6 / 4 / 7 / 9; font-size: clamp(.9rem, 4vw, 1.2rem); }
+  .dfield__e3 { grid-area: 8 / 1 / 11 / 9; font-size: clamp(2.2rem, 14vw, 5.6rem); margin-left: -5vw; }
+  .dfield__k { grid-area: 1 / 2 / 2 / 9; }
+  .dfield__demo { grid-area: 12 / 1 / 13 / 9; padding-inline: clamp(12px, 2vw, 34px); }
+  .dfield__plan { width: 94%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Every figure resolved, nothing driven. The block is still the
+     drawing and the numbers read out of it — that is a statement, not an
+     animation — so it keeps its frame and stops moving. */
+  .dfield { height: auto; }
+  .dfield__stick { position: static; height: 100svh; }
+  .dfield__set li, .dfield__end span, .dfield__k, .dfield__demo { opacity: 1; transform: none; }
+  .dfield__set { opacity: 1; }
+  .dfield__plan { opacity: .3; transform: none; }
+}

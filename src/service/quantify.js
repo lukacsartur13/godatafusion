@@ -6,6 +6,7 @@ import {
 import { REF_UID, REF_LEVEL, referenceFacts } from '../webgl/reference.js';
 import { extractsFor } from '../webgl/annotations.js';
 import { createStage } from './stage.js';
+import { t } from '../i18n/t.js';
 import { env } from '../core/env.js';
 
 /* ============================================================
@@ -43,9 +44,9 @@ const anchorsOf = (level) => {
   const F = levelFeatures(level);
   const y = F.rooms[0] ? PLAN.y : PLAN.y;
   return [
-    { set: 'quantify', p: [-2.4, y + 0.06, -1.9], k: 'AJTÓ', v: `${F.doors.length} DB` },
-    { set: 'quantify', p: [-3.0, y + 0.06, -0.2], k: 'ABLAK', v: `${F.windows.length} DB` },
-    { set: 'quantify', p: [-2.0, y + 0.06, 1.9], k: 'HELYISÉG', v: `${F.rooms.length} DB` },
+    { set: 'quantify', p: [-2.4, y + 0.06, -1.9], k: t('AJTÓ'), v: `${F.doors.length} ${t('DB')}` },
+    { set: 'quantify', p: [-3.0, y + 0.06, -0.2], k: t('ABLAK'), v: `${F.windows.length} ${t('DB')}` },
+    { set: 'quantify', p: [-2.0, y + 0.06, 1.9], k: t('HELYISÉG'), v: `${F.rooms.length} ${t('DB')}` },
   ];
 };
 
@@ -185,8 +186,8 @@ function fillLayers() {
      number. Printing it converted twice was the first thing this readout
      did wrong. */
   const mm = (v) => `${Math.round(v * 1000)} mm`;
-  set('qLayers', `vasbeton födém ${mm(SLAB_T)} · külső fal ${mm(EXT_T)}`
-    + ` · válaszfal ${mm(INT_T)} · ${Object.keys(FINISHES).length} padlótípus`);
+  set('qLayers', `${t('vasbeton födém')} ${mm(SLAB_T)} · ${t('külső fal')} ${mm(EXT_T)}`
+    + ` · ${t('válaszfal')} ${mm(INT_T)} · ${Object.keys(FINISHES).length} ${t('padlótípus')}`);
 }
 
 /** The three summary callouts, for the floor being read. */
@@ -194,9 +195,9 @@ function repaintAnchors(stage) {
   const isAll = floor === 'ALL';
   const F = levelFeatures(isAll ? 'L00' : floor);
   stage?.scene?.annotations?.setAnchorValues?.({
-    'AJTÓ': `${isAll ? Q.total.doors : F.doors.length} DB`,
-    'ABLAK': `${isAll ? Q.total.windows : F.windows.length} DB`,
-    'HELYISÉG': `${isAll ? Q.total.rooms : F.rooms.length} DB`,
+    [t('AJTÓ')]: `${isAll ? Q.total.doors : F.doors.length} ${t('DB')}`,
+    [t('ABLAK')]: `${isAll ? Q.total.windows : F.windows.length} ${t('DB')}`,
+    [t('HELYISÉG')]: `${isAll ? Q.total.rooms : F.rooms.length} ${t('DB')}`,
   });
 }
 
@@ -254,7 +255,7 @@ function fillFloorTable() {
     for (const l of Q.levels) {
       const tr = document.createElement('tr');
       tr.dataset.floor = l.id;
-      tr.innerHTML = `<th scope="row">${l.id} · ${l.label}</th>`
+      tr.innerHTML = `<th scope="row">${l.id} · ${t(l.label)}</th>`
         + `<td>${elevationLabel(l.id)}</td>`
         + `<td>${l.rooms}</td><td>${l.doors}</td><td>${l.windows}</td>`
         + `<td>${m2(l.area)}</td>`;
@@ -279,7 +280,7 @@ function fillCounts() {
   set('qDoors', String(isAll ? Q.total.doors : F.doors.length));
   set('qWindows', String(isAll ? Q.total.windows : F.windows.length));
   set('qRooms', String(isAll ? Q.total.rooms : F.rooms.length));
-  set('qAreaK', isAll ? 'ÖSSZES SZINT' : 'SZINT');
+  set('qAreaK', t(isAll ? 'ÖSSZES SZINT' : 'SZINT'));
   set('qFloor', m2(isAll ? Q.total.area : q.area));
   for (const t of ['D01', 'D02', 'D03']) set(`q${t}`, num(doors[t]));
   for (const t of ['W01', 'W02', 'W03']) set(`q${t}`, num(wins[t]));
@@ -288,7 +289,7 @@ function fillCounts() {
     .filter((r) => r.kind !== 'CIRC' && r.kind !== 'CORE')
     .sort((a, b) => b.area - a.area)[0];
   set('qRoomArea', room ? m2(room.area) : '—');
-  set('qScope', isAll ? 'A TELJES ÉPÜLET' : `${floor} · ${levelById(floor).label}`);
+  set('qScope', isAll ? t('A TELJES ÉPÜLET') : `${floor} · ${t(levelById(floor).label)}`);
   set('qSheetNo', isAll
     ? `SHEET 01–${num(LEVEL_IDS.length)} / ${num(LEVEL_IDS.length)}`
     : `SHEET ${num(LEVEL_IDS.indexOf(floor) + 1)} / ${num(LEVEL_IDS.length)}`);
@@ -299,13 +300,13 @@ function fillCounts() {
       return acc;
     }, {})
     : q.finishes).sort((a, b) => b[1] - a[1])[0];
-  set('qFinish', fin ? `${fin[0]} — ${FINISHES[fin[0]].label}, ${m2(Math.round(fin[1] * 10) / 10)}` : '—');
+  set('qFinish', fin ? `${fin[0]} — ${t(FINISHES[fin[0]].label)}, ${m2(Math.round(fin[1] * 10) / 10)}` : '—');
 
   const meta = document.getElementById('qMeta');
   if (meta) {
     const parts = isAll
-      ? [`${LEVEL_IDS.length} SZINT`, `D ×${Q.total.doors}`,
-         `W ×${Q.total.windows}`, `${Q.total.rooms} HELYISÉG`, m2(Q.total.area)]
+      ? [`${LEVEL_IDS.length} ${t('SZINT')}`, `D ×${Q.total.doors}`,
+         `W ×${Q.total.windows}`, `${Q.total.rooms} ${t('HELYISÉG')}`, m2(Q.total.area)]
       : [floor, `D ×${num(F.doors.length)}`, `W ×${num(F.windows.length)}`,
          room ? room.id : '—', m2(q.area)];
     meta.innerHTML = parts

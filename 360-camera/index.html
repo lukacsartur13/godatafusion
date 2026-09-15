@@ -6,6 +6,10 @@
 <title>360° kamera — helyszíni dokumentáció és virtuális bejárás | GoDataFusion</title>
 <meta name="description" content="360° kamerás helyszíni dokumentáció: alaprajzhoz kötött felvételi pontok, kattintható 360° virtuális bejárás, állapotrögzítés és referenciafotók. Ingatlanosoknak, kivitelezőknek, beruházóknak, hoteleknek." />
 <link rel="canonical" href="https://godatafusion.hu/360-camera/" />
+<link rel="alternate" hreflang="hu" href="https://godatafusion.hu/360-camera/" />
+<link rel="alternate" hreflang="en" href="https://godatafusion.hu/en/360-camera/" />
+<link rel="alternate" hreflang="de" href="https://godatafusion.hu/de/360-kamera/" />
+<link rel="alternate" hreflang="x-default" href="https://godatafusion.hu/360-camera/" />
 <meta name="theme-color" content="#080A0B" />
 <link rel="preload" href="/fonts/gdf-display.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="/fonts/gdf-text.woff2" as="font" type="font/woff2" crossorigin />
@@ -34,8 +38,7 @@
       "@type": "BreadcrumbList",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "GoDataFusion", "item": "https://godatafusion.hu/" },
-        { "@type": "ListItem", "position": 2, "name": "Szolgáltatások", "item": "https://godatafusion.hu/#szolgaltatasok" },
-        { "@type": "ListItem", "position": 3, "name": "360° kamera" }
+        { "@type": "ListItem", "position": 2, "name": "360° kamera" }
       ]
     }
   ]
@@ -95,6 +98,11 @@
   <span class="scanplane__line"></span>
 </div>
 
+<!-- ============ navigation ============
+     PHASE 13 — the header is a ROUTE INDEX, not a table of contents.
+     Every item goes to a document of its own: the three services behind
+     one disclosure, the company, the contact. The only in-page target
+     left is the call to action, which is the point of the page. -->
 <header class="nav" id="nav">
   <a class="nav__brand" href="/" aria-label="GoDataFusion — kezdőlap">
     <span class="nav__glyph" aria-hidden="true"></span>
@@ -102,15 +110,45 @@
   </a>
 
   <nav class="nav__links" aria-label="Fő navigáció">
-    <a href="/#szolgaltatasok">Szolgáltatások</a>
-    <a href="/#eredmeny">Eredmény</a>
-    <a href="/#process">Folyamat</a>
-    <a href="/#about">Rólunk</a>
-    <a href="/#contact">Kapcsolat</a>
+    <div class="navmenu" id="navServices">
+      <button class="navmenu__btn" type="button" id="navServicesBtn"
+              aria-expanded="false" aria-controls="navServicesPanel">
+        <span>Szolgáltatások</span>
+        <i class="navmenu__caret" aria-hidden="true"></i>
+      </button>
+      <div class="navmenu__panel" id="navServicesPanel" hidden>
+        <a class="navmenu__i" href="/360-camera/" data-service="capture" data-svc="capture">
+          <span class="navmenu__x" aria-hidden="true">01</span>
+          {{glyph:capture navmenu__gl gl--20}}
+          <b class="navmenu__k">360° kamera</b>
+          <span class="navmenu__c">Helyszíni dokumentáció, virtuális bejárás</span>
+        </a>
+        <a class="navmenu__i" href="/teruletfelmeres/" data-service="measure" data-svc="measure">
+          <span class="navmenu__x" aria-hidden="true">02</span>
+          {{glyph:measure navmenu__gl gl--20}}
+          <b class="navmenu__k">Területfelmérés</b>
+          <span class="navmenu__c">Terepmodell, szintvonal, m² / m³ / fm</span>
+        </a>
+        <a class="navmenu__i" href="/mennyisegszamitas/" data-service="quantify" data-svc="quantify">
+          <span class="navmenu__x" aria-hidden="true">03</span>
+          {{glyph:quantify navmenu__gl gl--20}}
+          <b class="navmenu__k">Mennyiségszámítás</b>
+          <span class="navmenu__c">PDF tervrajzból strukturált Excel</span>
+        </a>
+      </div>
+    </div>
+    <a href="/rolunk/">Rólunk</a>
+    <a href="/kapcsolat/">Kapcsolat</a>
   </nav>
 
-  <a class="btn btn--cta btn--primary" href="#project" data-cursor="start" data-no-transition>
-    <span>AJÁNLATKÉRÉS</span>
+  <div class="langsw" role="group" aria-label="Nyelv">
+    <a data-lang="hu" hreflang="hu" href="/360-camera/" aria-current="true">HU</a>
+    <a data-lang="en" hreflang="en" href="/en/">EN</a>
+    <a data-lang="de" hreflang="de" href="/de/">DE</a>
+  </div>
+
+  <a class="btn btn--cta btn--primary hv-scan" href="#project" data-cursor="start">
+    <span>PROJEKT INDÍTÁSA</span>
     {{glyph:arrow gl--16}}
   </a>
 
@@ -120,12 +158,14 @@
 </header>
 
 <nav class="nav__drawer" id="navLinksMobile" aria-label="Mobil navigáció" hidden>
-  <a href="/360-camera/">360° kamera</a>
-  <a href="/teruletfelmeres/">Területfelmérés</a>
-  <a href="/mennyisegszamitas/">Mennyiségszámítás</a>
-  <a href="/#process">Folyamat</a>
-  <a href="/#about">Rólunk</a>
-  <a class="nav__drawer-cta" href="#project" data-no-transition>AJÁNLATKÉRÉS ↗</a>
+  <p class="nav__drawer-k">Szolgáltatások</p>
+  <a href="/360-camera/">{{glyph:capture gl--20}}360° kamera<i aria-hidden="true">01</i></a>
+  <a href="/teruletfelmeres/">{{glyph:measure gl--20}}Területfelmérés<i aria-hidden="true">02</i></a>
+  <a href="/mennyisegszamitas/">{{glyph:quantify gl--20}}Mennyiségszámítás<i aria-hidden="true">03</i></a>
+  <p class="nav__drawer-k">GoDataFusion</p>
+  <a href="/rolunk/">{{glyph:project-space gl--20}}Rólunk</a>
+  <a href="/kapcsolat/">{{glyph:delivery gl--20}}Kapcsolat</a>
+  <a class="nav__drawer-cta" href="#project" data-no-transition>PROJEKT INDÍTÁSA {{glyph:arrow gl--16}}</a>
 </nav>
 
 <main id="main">
@@ -136,9 +176,7 @@
       <nav class="sv-crumb" aria-label="Morzsamenü">
         <a href="/">GODATAFUSION</a>
         <span aria-hidden="true">/</span>
-        <a href="/#szolgaltatasok">SZOLGÁLTATÁSOK</a>
-        <span aria-hidden="true">/</span>
-        <span aria-current="page">360° KAMERA</span>
+                <span aria-current="page">360° KAMERA</span>
       </nav>
 
       <p class="sv-eyebrow"><span>01</span> CAPTURE · 360° KAMERA</p>
@@ -592,9 +630,8 @@
     <nav class="foot__nav" aria-label="Lábléc navigáció">
       <p class="foot__k">OLDAL</p>
       <a href="/">Kezdőlap</a>
-      <a href="/#eredmeny">Eredmény</a>
-      <a href="/#process">Folyamat</a>
-      <a href="/#about">Rólunk</a>
+      <a href="/rolunk/">Rólunk</a>
+      <a href="/kapcsolat/">Kapcsolat</a>
       <a href="#project" data-no-transition>Ajánlatkérés</a>
     </nav>
 

@@ -24,8 +24,10 @@ for (const k of ['legalName', 'address', 'vat', 'email']) {
   if (!COMPANY[k]?.value) problems.push(`src/data/company.js: "${k}" has no value`);
 }
 
-const pages = ['index.html', '360-camera/index.html', 'teruletfelmeres/index.html',
-  'mennyisegszamitas/index.html', 'impresszum/index.html', 'adatkezeles/index.html'];
+/* Every document, from the one table that knows them all — a page added
+   without being checked is exactly how a placeholder reaches production. */
+const { PAGES } = await import('./i18n/core.mjs');
+const pages = Object.values(PAGES).filter((p) => p !== '404.html');
 const RE = [
   [/<dd[^>]*>\s*—\s*<\/dd>/g, 'an em-dash placeholder value'],
   [/kitöltendő/gi, 'a "kitöltendő" note'],

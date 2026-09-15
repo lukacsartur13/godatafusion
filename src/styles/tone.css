@@ -28,6 +28,7 @@
 
 [data-tone="light"] {
   --bg:        #F5F6F7;
+  --bg-rgb:    245 246 247;
   --bg-lift:   #FFFFFF;
   --fg:        #0B0F14;
   --fg-hi:     #000000;
@@ -128,7 +129,7 @@ section[data-tone="light"] { position: relative; z-index: 2; }
   line-height: var(--lh-d); letter-spacing: var(--ls-dl);
   text-wrap: balance;
 }
-.sec-title .line { display: block; overflow: hidden; padding-block: .06em; margin-block: -.06em; }
+.sec-title .line { display: block; overflow: hidden; } /* mask padding: the global .line rule in hero.css */
 .sec-title .line__in { display: block; }
 .sec-lede--wide { max-width: 58ch; margin-top: clamp(18px, 2.4vw, 32px); }
 .sec-head { max-width: 1180px; margin-bottom: clamp(36px, 6vh, 84px); }

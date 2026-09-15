@@ -3,6 +3,8 @@ import { defineConfig, loadEnv } from 'vite';
 import { apiPlugin } from './server/vite-api.mjs';
 import { glyphsPlugin } from './tools/glyphs-plugin.mjs';
 import { basePlugin } from './tools/base-plugin.mjs';
+import { i18nPlugin } from './tools/i18n-plugin.mjs';
+import { generateAll, outputPath, PAGES as I18N_PAGES, TARGET_LANGS } from './tools/i18n/core.mjs';
 
 /* Four documents, one build. The service routes are directories so the
    clean URLs (`/360-camera/`) are what the static host serves natively —
@@ -17,7 +19,28 @@ const pages = {
   /* PHASE 12 — the two legal documents. Static, one small entry. */
   impressum: resolve(import.meta.dirname, 'impresszum/index.html'),
   privacy: resolve(import.meta.dirname, 'adatkezeles/index.html'),
+  /* PHASE 13 — the company and the contact are documents of their own,
+     because the header sends people to them by name. */
+  about: resolve(import.meta.dirname, 'rolunk/index.html'),
+  contact: resolve(import.meta.dirname, 'kapcsolat/index.html'),
 };
+
+/* ============================================================
+   PHASE 14 — THREE LANGUAGES, ONE SOURCE.
+
+   The Hungarian documents above are the only markup anybody writes. The
+   English and German documents are generated from them before the build
+   reads its inputs (tools/i18n/core.mjs), so `/en/site-survey/` is a real
+   directory with a real index.html — the same deal the Hungarian routes
+   get. Nothing is translated in the browser and no language is a query
+   string.
+   ============================================================ */
+generateAll({ log: console });
+for (const lang of TARGET_LANGS) {
+  for (const key of Object.keys(I18N_PAGES)) {
+    pages[`${key}-${lang}`] = resolve(import.meta.dirname, outputPath(key, lang));
+  }
+}
 
 export default defineConfig(({ mode }) => {
   /* The dev/preview API middleware reads process.env, exactly as the
@@ -33,7 +56,7 @@ export default defineConfig(({ mode }) => {
   return {
     appType: 'mpa',
     base,
-    plugins: [glyphsPlugin(), apiPlugin(), basePlugin(base)],
+    plugins: [i18nPlugin(), glyphsPlugin(), apiPlugin(), basePlugin(base)],
     // Honour an injected PORT so the harness can place the dev server on a
     // free port; falls back to Vite's own default locally.
     server: { host: true, port: process.env.PORT ? Number(process.env.PORT) : undefined },

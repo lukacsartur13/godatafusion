@@ -35,7 +35,9 @@
 .tk:hover { color: var(--fg-42); }
 .tk:hover b { max-width: 14ch; opacity: 1; }
 .tk.is-on { color: var(--accent-c); }
-.tk.is-on b { max-width: 14ch; opacity: 1; }
+/* The column is numbers only. The active label is written out only while
+   the cursor is over the tracker; any row spells itself out under the cursor. */
+.tracker:hover .tk.is-on b { max-width: 14ch; opacity: 1; }
 .tk.is-on::after { width: 20px; }
 
 /* The telemetry column already owns the top-right of the hero; below

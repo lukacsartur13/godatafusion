@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "GoDataFusion — Turn reality into data.",
+  "description": "GoDataFusion \u2014 Turn reality into data.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -11,7 +11,8 @@
     "test": "node --test \"test/*.test.mjs\"",
     "test:browser": "node --test --test-concurrency=1 \"test/browser/*.test.mjs\"",
     "audit": "node tools/audit/model.mjs",
-    "check:live": "node tools/check-live.mjs"
+    "check:live": "node tools/check-live.mjs",
+    "i18n": "node tools/i18n/build.mjs"
   },
   "dependencies": {
     "gsap": "^3.13.0",

@@ -1,6 +1,7 @@
 import { heightAt } from '../webgl/field.js';
 import { STATIONS, LEVELS, levelById } from '../webgl/geometry.js';
 import { createStage } from './stage.js';
+import { t } from '../i18n/t.js';
 import { createFloorMap } from '../modules/floorMap.js';
 import { isReferenceStation, REF_UID } from '../webgl/reference.js';
 import { env } from '../core/env.js';
@@ -100,7 +101,7 @@ function initPanorama(stage) {
   let opening = null;
   let opener = null;                          // focus returns here on exit
 
-  const COMPASS = ['É', 'ÉK', 'K', 'DK', 'D', 'DNy', 'Ny', 'ÉNy'];
+  const COMPASS = ['É', 'ÉK', 'K', 'DK', 'D', 'DNy', 'Ny', 'ÉNy'].map((d) => t(d));
 
   async function ensure() {
     if (viewer) return viewer;
@@ -123,7 +124,7 @@ function initPanorama(stage) {
             cntEl.textContent = `${String(i + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
             const lv = levelById(st.floor);
             statusEl.textContent =
-              `${st.id}, ${lv.label}, ${st.room}. Húzással nézhet körbe.`;
+              `${st.id}, ${t(lv.label)}, ${t(st.room)}. ${t('Húzással nézhet körbe.')}`;
             paintRails(st);
             /* PHASE 9 Part 12 — the map follows the floor, then the point. */
             if (map) {
@@ -160,14 +161,14 @@ function initPanorama(stage) {
         shell.classList.remove('is-loading');
         if (!viewer) {
           shell.classList.add('is-failed');
-          statusEl.textContent = 'A 360°-os nézet ezen az eszközön nem indítható el.';
+          statusEl.textContent = t('A 360°-os nézet ezen az eszközön nem indítható el.');
         }
         return viewer;
       })
       .catch(() => {
         shell.classList.remove('is-loading');
         shell.classList.add('is-failed');
-        statusEl.textContent = 'A 360°-os nézet nem tölthető be.';
+        statusEl.textContent = t('A 360°-os nézet nem tölthető be.');
         return null;
       });
     return opening;
@@ -249,7 +250,7 @@ function initPanorama(stage) {
     document.body.classList.remove('pano-open');
     viewer?.stop();
     stage?.scene.setActive(true);
-    statusEl.textContent = 'A 360°-os nézet bezárva.';
+    statusEl.textContent = t('A 360°-os nézet bezárva.');
     /* Scroll first, focus second: the unlock puts the page back exactly
        where it was, and the opener is then already in view. */
     unlockPageScroll();
@@ -296,17 +297,17 @@ function initPanorama(stage) {
       b.dataset.viewerFloor = l.id;
       /* `<i>` and `<em>` rather than spans: the mobile rail hides both, and
          a floor rail that keeps its labels overflows a 390 px screen. */
-      b.innerHTML = `<b>${l.id}</b><i>${lv.label}</i>`
+      b.innerHTML = `<b>${l.id}</b><i>${t(lv.label)}</i>`
         + `<em>${String(l.stations.length).padStart(2, '0')}</em>`;
       b.setAttribute('aria-label',
-        `${l.id} — ${lv.label}, ${l.stations.length} felvételi pont`);
+        `${l.id} — ${t(lv.label)}, ${l.stations.length} ${t('felvételi pont')}`);
       b.tabIndex = -1;
       b.addEventListener('click', () => { viewer?.goToLevel(l.id); toCanvas(); });
       floorsEl.appendChild(b);
     }
     if (openCountEl) {
       openCountEl.textContent =
-        `${list.length} FELVÉTELI PONT · ${levels.length} SZINT`;
+        `${list.length} ${t('FELVÉTELI PONT · 3 SZINT')}`;
     }
     /* Every station of every floor, once. `paintRails` only decides
        which of them the rail is currently showing. */

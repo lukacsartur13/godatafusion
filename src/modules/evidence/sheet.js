@@ -1,4 +1,5 @@
 import '../../styles/evidence.css';
+import { t } from '../../i18n/t.js';
 
 /* ============================================================
    THE EVIDENCE SHEET
@@ -33,7 +34,7 @@ const el = (tag, cls, text) => {
   return n;
 };
 
-export function renderEvidence({ anchor, items, label = 'EVIDENCE', title = 'VALÓS PROJEKTEK' }) {
+export function renderEvidence({ anchor, items, label = 'EVIDENCE', title = t('VALÓS PROJEKTEK') }) {
   const sec = el('section', 'ev');
   sec.id = 'evidence';
   sec.dataset.sectionName = 'EVIDENCE';

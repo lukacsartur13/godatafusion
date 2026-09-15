@@ -6,6 +6,11 @@
 <title>404 — Ez az oldal nincs meg | GoDataFusion</title>
 <meta name="description" content="A keresett oldal nem található. Vissza a GoDataFusion kezdőlapjára vagy a szolgáltatásokhoz." />
 <meta name="robots" content="noindex" />
+<link rel="canonical" href="https://godatafusion.hu/404.html" />
+<link rel="alternate" hreflang="hu" href="https://godatafusion.hu/404.html" />
+<link rel="alternate" hreflang="en" href="https://godatafusion.hu/en/404.html" />
+<link rel="alternate" hreflang="de" href="https://godatafusion.hu/de/404.html" />
+<link rel="alternate" hreflang="x-default" href="https://godatafusion.hu/404.html" />
 <meta name="theme-color" content="#080A0B" />
 <link rel="preload" href="/fonts/gdf-display.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="/fonts/gdf-text.woff2" as="font" type="font/woff2" crossorigin />
@@ -23,18 +28,75 @@
   <div class="atmos__grain"></div>
 </div>
 
-<header class="nav is-solid" id="nav">
+<!-- ============ navigation ============
+     PHASE 13 — the header is a ROUTE INDEX, not a table of contents.
+     Every item goes to a document of its own: the three services behind
+     one disclosure, the company, the contact. The only in-page target
+     left is the call to action, which is the point of the page. -->
+<header class="nav" id="nav">
   <a class="nav__brand" href="/" aria-label="GoDataFusion — kezdőlap">
     <span class="nav__glyph" aria-hidden="true"></span>
     <span class="nav__word">GoDataFusion</span>
   </a>
+
   <nav class="nav__links" aria-label="Fő navigáció">
-    <a href="/#services">Services</a>
-    <a href="/#process">Process</a>
-    <a href="/#about">About</a>
-    <a href="/#contact">Contact</a>
+    <div class="navmenu" id="navServices">
+      <button class="navmenu__btn" type="button" id="navServicesBtn"
+              aria-expanded="false" aria-controls="navServicesPanel">
+        <span>Szolgáltatások</span>
+        <i class="navmenu__caret" aria-hidden="true"></i>
+      </button>
+      <div class="navmenu__panel" id="navServicesPanel" hidden>
+        <a class="navmenu__i" href="/360-camera/" data-service="capture" data-svc="capture">
+          <span class="navmenu__x" aria-hidden="true">01</span>
+          {{glyph:capture navmenu__gl gl--20}}
+          <b class="navmenu__k">360° kamera</b>
+          <span class="navmenu__c">Helyszíni dokumentáció, virtuális bejárás</span>
+        </a>
+        <a class="navmenu__i" href="/teruletfelmeres/" data-service="measure" data-svc="measure">
+          <span class="navmenu__x" aria-hidden="true">02</span>
+          {{glyph:measure navmenu__gl gl--20}}
+          <b class="navmenu__k">Területfelmérés</b>
+          <span class="navmenu__c">Terepmodell, szintvonal, m² / m³ / fm</span>
+        </a>
+        <a class="navmenu__i" href="/mennyisegszamitas/" data-service="quantify" data-svc="quantify">
+          <span class="navmenu__x" aria-hidden="true">03</span>
+          {{glyph:quantify navmenu__gl gl--20}}
+          <b class="navmenu__k">Mennyiségszámítás</b>
+          <span class="navmenu__c">PDF tervrajzból strukturált Excel</span>
+        </a>
+      </div>
+    </div>
+    <a href="/rolunk/">Rólunk</a>
+    <a href="/kapcsolat/">Kapcsolat</a>
   </nav>
+
+  <div class="langsw" role="group" aria-label="Nyelv">
+    <a data-lang="hu" hreflang="hu" href="/404.html" aria-current="true">HU</a>
+    <a data-lang="en" hreflang="en" href="/en/">EN</a>
+    <a data-lang="de" hreflang="de" href="/de/">DE</a>
+  </div>
+
+  <a class="btn btn--cta btn--primary hv-scan" href="/kapcsolat/" data-cursor="start" data-no-transition>
+    <span>PROJEKT INDÍTÁSA</span>
+    {{glyph:arrow gl--16}}
+  </a>
+
+  <button class="nav__burger" id="navBurger" type="button" aria-expanded="false" aria-controls="navLinksMobile">
+    <span class="sr-only">Menü</span><i aria-hidden="true"></i><i aria-hidden="true"></i>
+  </button>
 </header>
+
+<nav class="nav__drawer" id="navLinksMobile" aria-label="Mobil navigáció" hidden>
+  <p class="nav__drawer-k">Szolgáltatások</p>
+  <a href="/360-camera/">{{glyph:capture gl--20}}360° kamera<i aria-hidden="true">01</i></a>
+  <a href="/teruletfelmeres/">{{glyph:measure gl--20}}Területfelmérés<i aria-hidden="true">02</i></a>
+  <a href="/mennyisegszamitas/">{{glyph:quantify gl--20}}Mennyiségszámítás<i aria-hidden="true">03</i></a>
+  <p class="nav__drawer-k">GoDataFusion</p>
+  <a href="/rolunk/">{{glyph:project-space gl--20}}Rólunk</a>
+  <a href="/kapcsolat/">{{glyph:delivery gl--20}}Kapcsolat</a>
+  <a class="nav__drawer-cta" href="/kapcsolat/" data-no-transition>PROJEKT INDÍTÁSA {{glyph:arrow gl--16}}</a>
+</nav>
 
 <main id="main" class="nf">
   <p class="sv-eyebrow"><span>404</span> NO SIGNAL</p>
@@ -58,6 +120,6 @@
   </p>
 </footer>
 
-<script type="module" src="/src/notfound.js"></script>
+<script type="module" src="/src/page.js"></script>
 </body>
 </html>

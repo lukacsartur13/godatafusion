@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Rólunk — GoDataFusion | építőipari adat és digitális felmérés</title>
+<meta name="description" content="A GoDataFusion modern digitális eszközöket visz be az építőipari munkafolyamatokba: helyszíni dokumentáció, területfelmérés és tervalapú mennyiségszámítás — egy rendszerben, szakemberekkel." />
+<link rel="canonical" href="https://godatafusion.hu/rolunk/" />
+<link rel="alternate" hreflang="hu" href="https://godatafusion.hu/rolunk/" />
+<link rel="alternate" hreflang="en" href="https://godatafusion.hu/en/about/" />
+<link rel="alternate" hreflang="de" href="https://godatafusion.hu/de/ueber-uns/" />
+<link rel="alternate" hreflang="x-default" href="https://godatafusion.hu/rolunk/" />
+<meta name="theme-color" content="#080A0B" />
+<link rel="preload" href="/fonts/gdf-display.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/gdf-text.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/gdf-mono-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23080A0B'/%3E%3Cpath d='M6 20h20M6 12h20' stroke='%23F1F0EB' stroke-width='1.5'/%3E%3C/svg%3E" />
+<meta property="og:title" content="Rólunk — GoDataFusion" />
+<meta property="og:description" content="Egy rendszer, három szolgáltatás. Ugyanaz a projekt, három kérdésre válaszolva." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://godatafusion.hu/rolunk/" />
+<meta property="og:locale" content="hu_HU" />
+</head>
+<body class="sv" data-tone="light">
+
+<a class="skip-link" href="#top">Ugrás a tartalomhoz</a>
+
+<div class="atmos" aria-hidden="true" data-tone="light">
+  <div class="atmos__wash"></div>
+  <div class="atmos__vignette"></div>
+  <div class="atmos__grain"></div>
+</div>
+<!-- ============ navigation ============
+     PHASE 13 — the header is a ROUTE INDEX, not a table of contents.
+     Every item goes to a document of its own: the three services behind
+     one disclosure, the company, the contact. The only in-page target
+     left is the call to action, which is the point of the page. -->
+<!-- ============ navigation ============
+     PHASE 13 — the header is a ROUTE INDEX, not a table of contents.
+     Every item goes to a document of its own: the three services behind
+     one disclosure, the company, the contact. The only in-page target
+     left is the call to action, which is the point of the page. -->
+<header class="nav" id="nav">
+  <a class="nav__brand" href="/" aria-label="GoDataFusion — kezdőlap">
+    <span class="nav__glyph" aria-hidden="true"></span>
+    <span class="nav__word">GoDataFusion</span>
+  </a>
+
+  <nav class="nav__links" aria-label="Fő navigáció">
+    <div class="navmenu" id="navServices">
+      <button class="navmenu__btn" type="button" id="navServicesBtn"
+              aria-expanded="false" aria-controls="navServicesPanel">
+        <span>Szolgáltatások</span>
+        <i class="navmenu__caret" aria-hidden="true"></i>
+      </button>
+      <div class="navmenu__panel" id="navServicesPanel" hidden>
+        <a class="navmenu__i" href="/360-camera/" data-service="capture" data-svc="capture">
+          <span class="navmenu__x" aria-hidden="true">01</span>
+          {{glyph:capture navmenu__gl gl--20}}
+          <b class="navmenu__k">360° kamera</b>
+          <span class="navmenu__c">Helyszíni dokumentáció, virtuális bejárás</span>
+        </a>
+        <a class="navmenu__i" href="/teruletfelmeres/" data-service="measure" data-svc="measure">
+          <span class="navmenu__x" aria-hidden="true">02</span>
+          {{glyph:measure navmenu__gl gl--20}}
+          <b class="navmenu__k">Területfelmérés</b>
+          <span class="navmenu__c">Terepmodell, szintvonal, m² / m³ / fm</span>
+        </a>
+        <a class="navmenu__i" href="/mennyisegszamitas/" data-service="quantify" data-svc="quantify">
+          <span class="navmenu__x" aria-hidden="true">03</span>
+          {{glyph:quantify navmenu__gl gl--20}}
+          <b class="navmenu__k">Mennyiségszámítás</b>
+          <span class="navmenu__c">PDF tervrajzból strukturált Excel</span>
+        </a>
+      </div>
+    </div>
+    <a href="/rolunk/">Rólunk</a>
+    <a href="/kapcsolat/">Kapcsolat</a>
+  </nav>
+
+  <div class="langsw" role="group" aria-label="Nyelv">
+    <a data-lang="hu" hreflang="hu" href="/rolunk/" aria-current="true">HU</a>
+    <a data-lang="en" hreflang="en" href="/en/">EN</a>
+    <a data-lang="de" hreflang="de" href="/de/">DE</a>
+  </div>
+
+  <a class="btn btn--cta btn--primary hv-scan" href="/kapcsolat/" data-cursor="start" data-no-transition>
+    <span>PROJEKT INDÍTÁSA</span>
+    {{glyph:arrow gl--16}}
+  </a>
+
+  <button class="nav__burger" id="navBurger" type="button" aria-expanded="false" aria-controls="navLinksMobile">
+    <span class="sr-only">Menü</span><i aria-hidden="true"></i><i aria-hidden="true"></i>
+  </button>
+</header>
+
+<nav class="nav__drawer" id="navLinksMobile" aria-label="Mobil navigáció" hidden>
+  <p class="nav__drawer-k">Szolgáltatások</p>
+  <a href="/360-camera/">{{glyph:capture gl--20}}360° kamera<i aria-hidden="true">01</i></a>
+  <a href="/teruletfelmeres/">{{glyph:measure gl--20}}Területfelmérés<i aria-hidden="true">02</i></a>
+  <a href="/mennyisegszamitas/">{{glyph:quantify gl--20}}Mennyiségszámítás<i aria-hidden="true">03</i></a>
+  <p class="nav__drawer-k">GoDataFusion</p>
+  <a href="/rolunk/">{{glyph:project-space gl--20}}Rólunk</a>
+  <a href="/kapcsolat/">{{glyph:delivery gl--20}}Kapcsolat</a>
+  <a class="nav__drawer-cta" href="/kapcsolat/" data-no-transition>PROJEKT INDÍTÁSA {{glyph:arrow gl--16}}</a>
+</nav>
+
+<main id="main">
+
+  <section class="sv-hero" id="top">
+    <div class="sv-hero__content">
+      <nav class="sv-crumb" aria-label="Morzsamenü">
+        <a href="/">GODATAFUSION</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">RÓLUNK</span>
+      </nav>
+
+      <p class="sv-eyebrow"><span>01</span> A GODATAFUSIONRŐL</p>
+
+      <h1 class="sv-hero__title">
+        <span class="line"><span class="line__in">FIZIKAI INFORMÁCIÓ,</span></span>
+        <span class="line"><span class="line__in">DIGITÁLIS FORMÁBAN.</span></span>
+      </h1>
+
+      <p class="sv-lede">
+        A GoDataFusion modern digitális eszközöket visz be az építőipari
+        munkafolyamatokba, hogy a fizikai és tervalapú projektinformációt
+        <b>dokumentálni, felmérni és strukturálni</b> lehessen — szakemberekkel,
+        modern technológiával.
+      </p>
+
+      <div class="sv-cta">
+        <a class="btn btn--solid" href="/kapcsolat/" data-cursor="start">
+          <span>PROJEKT INDÍTÁSA</span>
+          {{glyph:arrow gl--16}}
+        </a>
+        <a class="btn btn--ghost" href="#elvek" data-no-transition>AZ ELVEINK</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 02 · EGY RENDSZER, HÁROM SZOLGÁLTATÁS ================= -->
+  <section class="about" id="rendszer" data-tone="light">
+    <div class="about__grid">
+
+      <div class="about__side">
+        <p class="eyebrow eyebrow--section">
+          <span class="eyebrow__idx">02</span>
+          <span class="eyebrow__rule" aria-hidden="true"></span>
+          <span>AMIT CSINÁLUNK</span>
+        </p>
+
+        <p class="about__lede">
+          Egy helyszín, egy terep vagy egy tervrajz háromféle kérdésre tud
+          válaszolni. Mi mindhármat ugyanabból az egy projektből olvassuk ki,
+          ugyanazokkal az azonosítókkal — ezért illeszkedik egymáshoz, amit
+          külön-külön ad át.
+        </p>
+
+        <dl class="about__idx" aria-label="Működési index">
+          <div><dt>TÁRGY</dt><dd>EGY HELYSZÍN</dd></div>
+          <div><dt>OLVASAT</dt><dd>03</dd></div>
+          <div><dt>KIMENET</dt><dd>STRUKTURÁLT ADAT</dd></div>
+        </dl>
+      </div>
+
+      <div class="about__main">
+        <h2 class="about__title">
+          <span class="line"><span class="line__in">EGY VALÓSÁG,</span></span>
+          <span class="line"><span class="line__in">HÁROM OLVASAT.</span></span>
+        </h2>
+
+        <figure class="about__fig">
+          <figcaption class="about__figc" aria-hidden="true">
+            <span class="about__figc-k">EGY VALÓSÁG</span>
+            <span class="about__figc-r"></span>
+            <span class="about__figc-v">HÁROM OLVASAT</span>
+          </figcaption>
+          <svg viewBox="0 0 660 300" preserveAspectRatio="xMaxYMid meet" aria-hidden="true">
+            <defs>
+              <g id="abObj">
+                <path d="M118 232 306 124 494 232 306 340Z"/>
+                <path d="M118 232v-86L306 38l188 108v86L306 340Z"/>
+                <path d="M306 124v216M118 146l188 108 188-108"/>
+                <path d="M212 100 306 46l94 54v-52l-94-54-94 54Z"/>
+              </g>
+              <clipPath id="abC1"><rect x="0"   y="0" width="220" height="300"/></clipPath>
+              <clipPath id="abC2"><rect x="220" y="0" width="220" height="300"/></clipPath>
+              <clipPath id="abC3"><rect x="440" y="0" width="220" height="300"/></clipPath>
+            </defs>
+
+            <g class="ab-slice ab-slice--cap" clip-path="url(#abC1)"><use href="#abObj"/></g>
+            <g class="ab-slice ab-slice--mea" clip-path="url(#abC2)">
+              <use href="#abObj"/>
+              <path class="ab-band" d="M0 178h660M0 205h660M0 232h660M0 259h660"/>
+            </g>
+            <g class="ab-slice ab-slice--qua" clip-path="url(#abC3)"><use href="#abObj"/></g>
+
+            <path class="ab-cut" d="M220 16v268M440 16v268"/>
+          </svg>
+        </figure>
+
+        <nav class="about__sys" aria-label="A három szolgáltatás">
+          <a href="/360-camera/" data-service="capture" data-svc="capture">
+            <span class="about__sys-i">01</span>
+            <b>360° KAMERA</b><i>Capture · rögzítés</i>
+          </a>
+          <a href="/teruletfelmeres/" data-service="measure" data-svc="measure">
+            <span class="about__sys-i">02</span>
+            <b>TERÜLETFELMÉRÉS</b><i>Measure · felmérés</i>
+          </a>
+          <a href="/mennyisegszamitas/" data-service="quantify" data-svc="quantify">
+            <span class="about__sys-i">03</span>
+            <b>MENNYISÉGSZÁMÍTÁS</b><i>Quantify · kimutatás</i>
+          </a>
+        </nav>
+
+        <p class="about__end">Egy rendszer, három szolgáltatás. Ugyanaz a projekt, három kérdésre válaszolva.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="seam" data-seam data-from="light" data-to="dark" aria-hidden="true">
+    <span class="seam__rule"></span>
+    <span class="seam__k"><i>03</i>ELVEK</span>
+  </div>
+
+  <!-- ================= 03 · ELVEK ================= -->
+  <section class="why" id="elvek">
+    <div class="sec-head">
+      <p class="eyebrow eyebrow--section">
+        <span class="eyebrow__idx">03</span>
+        <span class="eyebrow__rule" aria-hidden="true"></span>
+        <span>AHOGY DOLGOZUNK</span>
+      </p>
+      <h2 class="sec-title">
+        <span class="line"><span class="line__in">ÉPÍTŐIPAR,</span></span>
+        <span class="line"><span class="line__in">MÉRHETŐ ADATBAN.</span></span>
+      </h2>
+      <p class="sec-lede sec-lede--wide">
+        Az építőipari döntések nagy részét ma is papíron vagy PDF-ben született
+        információ hajtja. A mi munkánk az, hogy ebből mérhető, kereshető,
+        táblázatba tehető adat legyen.
+      </p>
+    </div>
+
+    <ol class="outc">
+      <li class="outc__i">
+        <p class="outc__n">01</p>
+        <h3 class="outc__k">Valós projekt</h3>
+        <p class="outc__c">Valós helyszínek, valós mennyiségek, valós határidők. Nem absztrakt technológiai demó.</p>
+      </li>
+      <li class="outc__i">
+        <p class="outc__n">02</p>
+        <h3 class="outc__k">Építőipar</h3>
+        <p class="outc__c">Kivitelezőnek, beruházónak, ingatlanosnak — technikai háttértudás nélkül is érthető eredménnyel.</p>
+      </li>
+      <li class="outc__i">
+        <p class="outc__n">03</p>
+        <h3 class="outc__k">Digitalizáció</h3>
+        <p class="outc__c">A fizikai és a tervalapú információból használható, visszakereshető digitális adat.</p>
+      </li>
+      <li class="outc__i">
+        <p class="outc__n">04</p>
+        <h3 class="outc__k">Kevesebb kiszállás</h3>
+        <p class="outc__c">Egyszer rögzítjük, bármikor visszanézhető. Kevesebb újramérés, kevesebb vita.</p>
+      </li>
+      <li class="outc__i">
+        <p class="outc__n">05</p>
+        <h3 class="outc__k">Számolva, nem becsülve</h3>
+        <p class="outc__c">Darabszám és négyzetméter, nem becslés. Digitális feldolgozás, emberi ellenőrzéssel.</p>
+      </li>
+      <li class="outc__i">
+        <p class="outc__n">06</p>
+        <h3 class="outc__k">A feladathoz mért eszköz</h3>
+        <p class="outc__c">360° felvétel, digitális téradat és tervalapú feldolgozás — egy munkafolyamatban, a feladathoz mért eszközzel.</p>
+      </li>
+    </ol>
+  </section>
+
+  <div class="seam" data-seam data-from="dark" data-to="light" aria-hidden="true">
+    <span class="seam__rule"></span>
+    <span class="seam__k"><i>04</i>FOLYAMAT</span>
+  </div>
+
+  <!-- ================= 04 · FOLYAMAT ================= -->
+  <section class="why" id="folyamat" data-tone="light">
+    <div class="sec-head">
+      <p class="eyebrow eyebrow--section">
+        <span class="eyebrow__idx">04</span>
+        <span class="eyebrow__rule" aria-hidden="true"></span>
+        <span>HOGYAN DOLGOZUNK</span>
+      </p>
+      <h2 class="sec-title">
+        <span class="line"><span class="line__in">AZ ELSŐ FÁJLTÓL</span></span>
+        <span class="line"><span class="line__in">A KÉSZ ADATIG.</span></span>
+      </h2>
+      <p class="sec-lede sec-lede--wide">
+        Egy projekt mindig ugyanazon az úton indul. Nem kell mindent egyszerre
+        feltölteni — először csak annyi kell, amiből meg tudjuk ítélni a feladatot.
+      </p>
+    </div>
+
+    <div class="flow8-sec" style="padding-inline:0">
+      <div class="flow8__head">
+        <p class="flow8__t">NAGYOBB PROJEKTEK FOLYAMATA</p>
+        <p class="flow8__n">Nyolc lépés, mindig ugyanabban a sorrendben. Az első körben csak a mintát kérjük.</p>
+      </div>
+      <ol class="flow8">
+        <li data-you="ÖN"><b>Mintarajz / kiinduló anyag</b><span>Egy reprezentatív PDF, helyszínrajz vagy a helyszín megnevezése.</span></li>
+        <li><b>Átnézés</b><span>Terjedelem, összetettség, mi olvasható ki belőle.</span></li>
+        <li><b>Árajánlat</b><span>Egyedi ajánlat a tényleges munkára.</span></li>
+        <li data-you="ÖN"><b>Ajánlat elfogadása</b><span>Írásban — ekkor indul a projekt.</span></li>
+        <li><b>Dedikált Drive projektmappa</b><span>Zárt mappa, csak a projekt résztvevőinek.</span></li>
+        <li data-you="ÖN"><b>Teljes dokumentáció feltöltése</b><span>A mappába, nem a nyilvános űrlapra.</span></li>
+        <li><b>Feldolgozás</b><span>Digitális adatkinyerés, emberi ellenőrzéssel.</span></li>
+        <li><b>Eredmény átadása</b><span>Strukturált, visszakövethető adat.</span></li>
+      </ol>
+    </div>
+
+    <div class="trust" style="padding-inline:0">
+      <div class="trust__grid">
+        <p class="trust__k">Hogyan kezeljük az anyagát<small>BIZALOM ÉS ADATKEZELÉS</small></p>
+        <ul class="trust__list">
+          <li>{{glyph:project-space gl--20}}<div><b>Bizalmas projektadat</b>A beküldött dokumentációt bizalmas projektadatként kezeljük, és kizárólag az ajánlatadáshoz és a megrendelt munkához használjuk.</div></li>
+          <li>{{glyph:scan gl--20}}<div><b>Emberi ellenőrzés</b>A digitális feldolgozás minden lépését szakember ellenőrzi. Nem állítjuk, hogy a munkát teljes egészében algoritmus végzi.</div></li>
+          <li>{{glyph:pdf gl--20}}<div><b>Az eredeti nem változik</b>Az ügyfél eredeti dokumentációját nem módosítjuk — az eredmény külön, új állományban készül.</div></li>
+          <li>{{glyph:data gl--20}}<div><b>Visszakövethető eredmény</b>Strukturált adat, amelynek minden sora visszavezethető a kiinduló rajzra, felvételre vagy felmérésre.</div></li>
+        </ul>
+      </div>
+    </div>
+
+    <aside class="alt">
+      <p class="alt__k">VAN EGY PROJEKTJE?</p>
+      <p class="alt__c">
+        Küldjön egy mintarajzot, egy helyszínt vagy néhány mondatot a feladatról —
+        munkanapon belül válaszolunk.
+      </p>
+      <a class="alt__mail" href="/kapcsolat/">Ajánlatkérés →</a>
+    </aside>
+  </section>
+
+</main>
+
+<footer class="foot" id="contact">
+  <div class="foot__mark is-lit" id="footMark">
+    <span class="foot__line" style="--i:0"><span class="foot__word is-on" data-l="1">REALITY</span></span>
+    <span class="foot__line" style="--i:1"><i class="foot__slash" aria-hidden="true">/</i><span class="foot__word is-on" data-l="2">DATA</span></span>
+    <span class="foot__line" style="--i:2"><i class="foot__slash" aria-hidden="true">/</i><span class="foot__word is-on" data-l="3">FUSED</span></span>
+  </div>
+
+  <div class="foot__grid">
+    <nav class="foot__nav" aria-label="Lábléc navigáció">
+      <p class="foot__k">OLDAL</p>
+      <a href="/">Kezdőlap</a>
+      <a href="/rolunk/">Rólunk</a>
+      <a href="/kapcsolat/">Kapcsolat</a>
+      <a href="/kapcsolat/">Projekt indítása</a>
+    </nav>
+
+    <div class="foot__col">
+      <p class="foot__k">SZOLGÁLTATÁSOK</p>
+      <a href="/360-camera/">360° kamera</a>
+      <a href="/teruletfelmeres/">Területfelmérés</a>
+      <a href="/mennyisegszamitas/">Mennyiségszámítás</a>
+    </div>
+
+    <div class="foot__col foot__col--contact">
+      <p class="foot__k">KAPCSOLAT</p>
+      <a class="foot__mail" id="footMail" data-company="email" href="mailto:hello@godatafusion.hu">hello@godatafusion.hu</a>
+      <a data-company="phone" href="tel:" hidden></a>
+      <p class="foot__ph" data-company="email-note">Ideiglenes elérhetőség — élesítés előtt a végleges címre cserélendő.</p>
+      <p class="foot__legal" data-company="legal-company">Cégadatok, székhely és adószám: élesítés előtt kitöltendő.</p>
+    </div>
+
+    <div class="foot__col">
+      <p class="foot__k">JOGI</p>
+      <a data-company="impressum-href" href="/impresszum/">Impresszum</a>
+      <a data-company="privacy-href" href="/adatkezeles/">Adatkezelési tájékoztató</a>
+      <p class="foot__legal">A felmérés nem minősül hivatalos földmérésnek.</p>
+      <p class="foot__legal">Az oldalon látható mérési értékek egy demonstrációs projektből származnak.</p>
+      <p class="foot__legal" data-company="cookies">Az oldal nem használ követő sütiket és nem futtat külső analitikát.</p>
+    </div>
+  </div>
+
+  <p class="foot__base">
+    <span>© <span id="footYear">2026</span> GoDataFusion</span>
+    <span>TURN REALITY INTO DATA.</span>
+  </p>
+</footer>
+
+<script type="module" src="/src/page.js"></script>
+</body>
+</html>

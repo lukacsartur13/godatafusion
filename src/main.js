@@ -10,15 +10,14 @@ import { initCursor } from './modules/cursor.js';
 import { initTelemetry } from './modules/telemetry.js';
 import { createScanPlane } from './modules/scanplane.js';
 import { initSections } from './modules/sections.js';
-import { initManifesto } from './modules/manifesto.js';
 import { initQuantities } from './modules/quantities.js';
 import { initNarrative } from './modules/narrative.js';
-import { initDescent } from './modules/descent.js';
-import { initProcess } from './modules/process.js';
 import { mountRequest } from './modules/request.js';
 import { initTransition } from './modules/transition.js';
 import { applyCompany } from './modules/company.js';
 import { initTracker } from './modules/tracker.js';
+import { initSeams } from './modules/seams.js';
+import { initDataField } from './modules/datafield.js';
 import { playIntro } from './modules/intro.js';
 import { initHeroWindow } from './modules/heroWindow.js';
 import { initEvidence } from './modules/evidence.js';
@@ -57,7 +56,7 @@ let scene = null;
 initNav();
 applyCompany();
 initTransition();
-initTheme((rgb, mix) => scene?.setAccent(rgb, mix));
+initTheme((rgb, mix, ink) => scene?.setAccent(rgb, mix, ink));
 initScroll();
 initCursor();
 
@@ -149,11 +148,15 @@ initQuantities();
    renderer so the light sections are complete on every device. */
 initExamples();
 initMedia();
-initManifesto();
-initProcess({ scanPlane });
+/* PHASE 13 — the drawing, and the figures counted out of it. Derived, so
+   it is on the page whether or not the renderer ever arrives. */
+initDataField();
 mountRequest(document.getElementById('projectMount'));
 initSections({ scanPlane });
 initTracker();
+/* PHASE 13 — the crossings between the four remaining sections. Written
+   after the sections themselves so a seam measures a laid-out page. */
+initSeams();
 
 /* ------------------------------------------------------------------
    EVIDENCE.
@@ -189,20 +192,6 @@ async function boot() {
   // The narrative reads `scene` through a getter, so it is correct whether
   // the renderer arrived in time or lands a second later.
   initNarrative({ getScene: () => scene, scanPlane });
-  /* ------------------------------------------------------------------
-     PHASE 11 — THE DATA DESCENT.
-
-     Wired AFTER the narrative on purpose. Both read the same scroll and
-     both can write the same frame, and the rule that keeps them out of
-     each other's way is that the journey takes the scene and the
-     narrative checks whether it has been taken (`scene.journeyActive`).
-     Registering the journey second means that on the very first frame
-     after boot the journey's own trigger has already evaluated, so a
-     reader who lands mid-section — a refresh, a deep link, a restored
-     scroll position — is inside the journey rather than watching the
-     narrative hold a stale frame until they move.
-     ------------------------------------------------------------------ */
-  initDescent({ getScene: () => scene });
 
   if (ready === 'timeout') {
     playIntro({ scene: null, scanPlane, telemetry, heroWindow });

@@ -47,7 +47,7 @@ export function playIntro({ scene, scanPlane, telemetry, heroWindow }) {
     .add(scanPlane.pass({ duration: 1.55, peak: 1 }), 0.2)
     .add(scene ? scene.intro() : gsap.timeline(), 0.2)
     .to(content[0], { opacity: 1, y: 0, duration: 0.7 }, 0.55)
-    .fromTo(lines, { yPercent: 105 }, { yPercent: 0, duration: 1.15, stagger: 0.085, ease: 'expo.out' }, 0.68)
+    .fromTo(lines, { yPercent: 135 }, { yPercent: 0, duration: 1.15, stagger: 0.085, ease: 'expo.out' }, 0.68)
     .to(content.slice(1), { opacity: 1, y: 0, duration: 0.85, stagger: 0.1 }, 1.15)
     .to('.telemetry', { opacity: 1, duration: 0.3 }, 1.3)
     .to(telem, { opacity: 1, x: 0, duration: 0.6, stagger: 0.08 }, 1.32)

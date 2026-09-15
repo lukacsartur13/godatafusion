@@ -100,10 +100,10 @@ function ambientAt(phase, out) {
  * Reading `--bg` rather than hardcoding it keeps the two in step: a theme
  * change moves both, or neither.
  */
-function pageBackground() {
+function pageBackground(el = document.documentElement) {
   const c = new THREE.Color(0x080a0b);
   try {
-    const v = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+    const v = getComputedStyle(el).getPropertyValue('--bg').trim();
     if (v) c.set(v);
   } catch { /* no computed style (SSR, detached) — the literal stands */ }
   return c;
@@ -152,11 +152,25 @@ export function createScene({ canvas, stage, annoContainer, callouts, route = 'h
      better-looking frame than rendering it at 1x with MSAA, and it is the
      trade the file already argued for: this hero has no hairlines in it.
 
-     Mobile was already `antialias:false`; this is a desktop change. */
+     Mobile was already `antialias:false`; this is a desktop change.
+
+     PHASE 12.1 — MSAA IS BACK ON. The 8.1 trade above was measured with
+     the transparent drawing buffer still in place, and it is the alpha
+     channel that cost the half-frame; with the opaque context the 4x
+     resolve is 1–2 ms on an M4 at 2x. What it buys is every edge of the
+     building: read straight out of the drawing buffer at device pixels,
+     each diagonal slab edge, window reveal and ribbon line was a hard
+     staircase, and the point sprites were single hard pixels — "nagyon
+     pixeles" is the fair description, and it is worse still at the
+     tuner's lower rungs and on a 1x monitor. Samples on the default
+     framebuffer are requested on the context itself (opaqueContext), which
+     is the only place three respects them once it is handed a context.
+     The resolution tuner below still pays for it where a machine cannot:
+     a 1.5x MSAA frame is a smoother picture than a 2x aliased one. */
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({
-      canvas, context: opaqueContext(canvas), antialias: false, alpha: false,
+      canvas, context: opaqueContext(canvas, { antialias: true }), antialias: true, alpha: false,
       powerPreference: 'high-performance', stencil: false,
     });
   } catch {
@@ -167,7 +181,9 @@ export function createScene({ canvas, stage, annoContainer, callouts, route = 'h
   /* The clear colour IS the page background, read from the live token so it
      can never drift from `--bg`. An opaque canvas that clears to a different
      colour than the page behind it is a visible seam. */
-  renderer.setClearColor(pageBackground(), 1);
+  /* Read off the STAGE, not the root: the stage carries the ground tone
+     (light in the homepage hero, dark elsewhere) — see .stage in hero.css. */
+  renderer.setClearColor(pageBackground(stage), 1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.setPixelRatio(dprCap());
   /* PHASE 7 — the building is lit PBR now and needs a response curve; the
@@ -574,6 +590,7 @@ export function createScene({ canvas, stage, annoContainer, callouts, route = 'h
           archStations.push(marks);
         }
         applyExplode();
+        if (groundLight) applyGround();   // the GLB's own clouds and marks arrived after the sweep
 
         const fade = { v: 0 };
         if (env.reducedMotion) { archMix = 1; invalidate(); warmModes(); return; }
@@ -756,6 +773,72 @@ export function createScene({ canvas, stage, annoContainer, callouts, route = 'h
   };
   const orthoM = new THREE.Matrix4();
   let accentMix = 0;                  // the page's own accent strength
+  let accentRGB = [176, 188, 190];    // display accent — the dark ground
+  let accentInk = [84, 96, 104];      // the same service as ink — the light ground
+
+  /* ------------------------------------------------------------------
+     PHASE 12.1 — THE GROUND.
+
+     The homepage hero stands on a light ground now (styles/hero.css).
+     Every procedural layer in this scene was drawn as light ink on black:
+     white-grey lines, an additive point cloud, surfaces that go from
+     near-black to mid-grey. On #F5F6F7 those are invisible or wrong.
+
+     One switch, read from the stage's own tone so the DOM is the single
+     authority, and it swaps what has to swap and nothing else:
+
+       clear colour   the stage's --bg
+       line work      the same grey, inverted (paper-white → ink)
+       point cloud    additive light dust → normal-blended graphite grains
+       surfaces       the dark/lit pair mirrored, so a lit face is still
+                      the brighter one
+       accent         the service's INK variant (store.js), because cyan
+                      and lime are headline colours on black and 1,5:1 on
+                      white
+       scan plane     normal blending — an additive glow on white is white
+
+     The building is lit PBR and needs nothing: concrete reads as concrete
+     on either ground. The fog is alpha, so it already fades to whatever
+     the clear colour is. Layers that load later (the GLB's own point
+     clouds and station marks) are swept by the same pass when they land.
+     ------------------------------------------------------------------ */
+  let groundLight = stage?.dataset?.tone === 'light';
+  const asSRGB = (c) => { const o = {}; c.getRGB(o, THREE.SRGBColorSpace); return [o.r, o.g, o.b]; };
+  const fromSRGB = (c, [r, g, b]) => c.setRGB(r, g, b, THREE.SRGBColorSpace);
+  const inv = (rgb) => rgb.map((v) => 1 - v);
+
+  function applyAccent() {
+    const rgb = groundLight ? accentInk : accentRGB;
+    scanUniforms.uAccent.value.setRGB(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255, THREE.SRGBColorSpace);
+    scanUniforms.uAccentMix.value = accentMix * (journey.active ? journey.accent : 1);
+  }
+
+  function applyGround() {
+    renderer.setClearColor(pageBackground(stage), 1);
+    scene.traverse((o) => {
+      const m = o.material;
+      const u = m?.uniforms;
+      if (!u) return;
+      const g = (m.userData.ground ??= {});          // the colours as authored
+      if (u.uDraw && u.uColor) {                      // line work
+        g.color ??= asSRGB(u.uColor.value);
+        fromSRGB(u.uColor.value, groundLight ? inv(g.color) : g.color);
+      } else if (u.uSize && u.uColor) {               // point cloud
+        g.color ??= asSRGB(u.uColor.value);
+        fromSRGB(u.uColor.value, groundLight ? [0.16, 0.20, 0.22] : g.color);
+        m.blending = groundLight ? THREE.NormalBlending : THREE.AdditiveBlending;
+      } else if (u.uDark && u.uLight) {               // solid surfaces
+        g.dark ??= asSRGB(u.uDark.value);
+        g.light ??= asSRGB(u.uLight.value);
+        fromSRGB(u.uDark.value, groundLight ? inv(g.light) : g.dark);
+        fromSRGB(u.uLight.value, groundLight ? inv(g.dark) : g.light);
+      } else if (m === scanPlane.material) {
+        m.blending = groundLight ? THREE.NormalBlending : THREE.AdditiveBlending;
+      }
+    });
+    applyAccent();
+    invalidate();
+  }
   let yawGain = 1;                    // how much ambient yaw the scene is allowed
   /* CP-11, the reference room's capture station: the room's plan centre at
      standing eye height on its own level. Derived, not placed — the same
@@ -1737,6 +1820,8 @@ export function createScene({ canvas, stage, annoContainer, callouts, route = 'h
   applyBlend();
   raf = requestAnimationFrame(frame);
 
+  if (groundLight) applyGround();     // the authored palettes are the dark ones
+
   /* ---------------- public API ---------------- */
   return {
     get weights() { return W; },
@@ -2061,8 +2146,9 @@ export function createScene({ canvas, stage, annoContainer, callouts, route = 'h
       if (v) { clock.getDelta(); invalidate(); }
     },
 
-    setAccent(rgb, mix) {
-      scanUniforms.uAccent.value.setRGB(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255, THREE.SRGBColorSpace);
+    setAccent(rgb, mix, ink = null) {
+      accentRGB = rgb;
+      if (ink) accentInk = ink;
       accentMix = mix;
       /* PHASE 11 — the accent is a DOSE inside the journey.
 
@@ -2079,8 +2165,20 @@ export function createScene({ canvas, stage, annoContainer, callouts, route = 'h
          The COLOUR never changes — the page is still lime under the site
          and orange in the drawing, and the tracker and the type say so —
          only how much of it lands on geometry that fills the screen. */
-      scanUniforms.uAccentMix.value = mix * (journey.active ? journey.accent : 1);
+      applyAccent();
       invalidate();
+    },
+
+    /**
+     * PHASE 12.1 — which ground the canvas stands on. `true` is the light
+     * hero; everything the scene draws in ink swaps its palette. Called by
+     * modules/narrative.js where the switch cannot be seen.
+     */
+    setGround(light) {
+      light = !!light;
+      if (light === groundLight) return;
+      groundLight = light;
+      applyGround();
     },
 
     /** Opening choreography: data resolves, one scan pass, geometry draws on. */

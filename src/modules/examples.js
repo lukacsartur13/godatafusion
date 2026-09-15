@@ -6,6 +6,7 @@ import { CAPTURE_ROUND, roundRooms, stationsByLevel, totalStations } from '../we
 import { REF_UID } from '../webgl/reference.js';
 import { SITE, heightAt } from '../webgl/field.js';
 import { metrics, cutFillAt, SCALE, fmt } from '../data/terrain-metrics.js';
+import { t } from '../i18n/t.js';
 
 /* ============================================================
    THE EXAMPLES — PHASE 12
@@ -59,8 +60,8 @@ export function figures() {
     stations: `${totalStations()}`,
     stationsIn: `${CAPTURE_ROUND.length}`,
     stationsByFloor: stationsByLevel().map((l) => String(l.count).padStart(2, '0')).join(' · '),
-    summary: `${Q.total.doors} AJTÓ · ${Q.total.windows} ABLAK · `
-      + `${Q.total.rooms} HELYISÉG · ${Q.total.levels} SZINT · ${m2(Q.total.area)}`,
+    summary: `${Q.total.doors} ${t('AJTÓ')} · ${Q.total.windows} ${t('ABLAK')} · `
+      + `${Q.total.rooms} ${t('HELYISÉG')} · ${Q.total.levels} ${t('SZINT')} · ${m2(Q.total.area)}`,
     l00rooms: `${L0.rooms.length}`,
     l00area: m2(L0.area),
     l00doors: `${L0.doors.length} db`,
@@ -103,17 +104,17 @@ function fillSheets(root) {
   for (const body of root.querySelectorAll('tbody[data-xls="konszignacio"]')) {
     body.textContent = '';
     let n = 1;
-    const row = (id, t, kind, count) => {
+    const row = (id, ty, kind, count) => {
       const tr = document.createElement('tr');
       const th = document.createElement('th'); th.scope = 'row'; th.textContent = String(n++);
-      tr.append(th, td(id, 'k'), td(t.label), td(kind),
-        td(t.w ? `${fmt(t.w, 2)} m` : '', 'n'),
-        td(t.h ? `${fmt(t.h, 2)} m` : (t.full ? 'teljes' : 'mellvédes'), 'n'),
+      tr.append(th, td(id, 'k'), td(t(ty.label)), td(kind),
+        td(ty.w ? `${fmt(ty.w, 2)} m` : '', 'n'),
+        td(ty.h ? `${fmt(ty.h, 2)} m` : t(ty.full ? 'teljes' : 'mellvédes'), 'n'),
         td(String(count), 'n'));
       body.append(tr);
     };
-    for (const [id, t] of Object.entries(DOOR_TYPES)) row(id, t, 'Ajtó', Q.total.doorTypes[id]);
-    for (const [id, t] of Object.entries(WINDOW_TYPES)) row(id, t, 'Ablak', Q.total.windowTypes[id]);
+    for (const [id, ty] of Object.entries(DOOR_TYPES)) row(id, ty, t('Ajtó'), Q.total.doorTypes[id]);
+    for (const [id, ty] of Object.entries(WINDOW_TYPES)) row(id, ty, t('Ablak'), Q.total.windowTypes[id]);
     const foot = body.parentElement?.querySelector('tfoot [data-xls-total]');
     if (foot) foot.textContent = String(Q.total.doors + Q.total.windows);
   }
@@ -126,9 +127,9 @@ function fillSheets(root) {
     L0.rooms.forEach((r, i) => {
       const tr = document.createElement('tr');
       const th = document.createElement('th'); th.scope = 'row'; th.textContent = String(i + 1);
-      tr.append(th, td(r.uid, 'k'), td(r.label),
+      tr.append(th, td(r.uid, 'k'), td(t(r.label)),
         td(m2(r.area), 'n'), td(String(doorsOf(r)), 'n'), td(String(winsOf(r)), 'n'),
-        td(FINISHES[finishOf(r)].label));
+        td(t(FINISHES[finishOf(r)].label)));
       body.append(tr);
     });
     const foot = body.parentElement?.querySelector('tfoot [data-xls-total]');
@@ -143,7 +144,7 @@ function fillSheets(root) {
       if (k === 'F0') continue;
       const tr = document.createElement('tr');
       const th = document.createElement('th'); th.scope = 'row'; th.textContent = String(n++);
-      tr.append(th, td(k, 'k'), td(f.label));
+      tr.append(th, td(k, 'k'), td(t(f.label)));
       for (const l of Q.levels) tr.append(td(l.finishes[k] ? m2(l.finishes[k]) : '–', 'n'));
       tr.append(td(m2(fin[k] || 0), 'n'));
       body.append(tr);
@@ -171,7 +172,7 @@ function drawPlan(fig) {
   const svg = svgEl('svg', {
     viewBox: `0 0 ${(w * S).toFixed(1)} ${(h * S).toFixed(1)}`,
     role: 'img',
-    'aria-label': `Alaprajz felvételi pontokkal — ${levelId} ${levelById(levelId).label}, demonstrációs épület`,
+    'aria-label': `${t('Alaprajz felvételi pontokkal')} — ${levelId} ${t(levelById(levelId).label)}, ${t('demonstrációs épület')}`,
   });
   const X = (x) => ((x - x0) * S).toFixed(1);
   const Z = (z) => ((z - z0) * S).toFixed(1);
@@ -205,7 +206,7 @@ function drawPlan(fig) {
     g.append(svgEl('text', {
       x: (Number(X(s.room.x)) + 10).toFixed(1), y: (Number(Z(s.room.z)) - 10).toFixed(1), class: 'pe-lbl',
     }, `CP-${String(s.n).padStart(2, '0')}`));
-    g.append(svgEl('title', {}, `CP-${String(s.n).padStart(2, '0')} — ${s.room.label}`));
+    g.append(svgEl('title', {}, `CP-${String(s.n).padStart(2, '0')} — ${t(s.room.label)}`));
     svg.append(g);
   }
 
@@ -213,7 +214,7 @@ function drawPlan(fig) {
   fig.prepend(svg);
 
   const cap = fig.querySelector('[data-plan-cap]');
-  if (cap) cap.textContent = `${levelId} · ${levelById(levelId).label} · ${elevationLabel(levelId)} · ${stations.length} felvételi pont · ${F.rooms.length} helyiség`;
+  if (cap) cap.textContent = `${levelId} · ${t(levelById(levelId).label)} · ${elevationLabel(levelId)} · ${stations.length} ${t('felvételi pont')} · ${F.rooms.length} ${t('helyiség')}`;
 }
 
 /* --------------------------------------------------------------- terrain */
@@ -239,7 +240,7 @@ function drawTerrain(fig) {
   const S = 10;   // svg units per cell
   const svg = svgEl('svg', {
     viewBox: `0 0 ${N * S} ${N * S}`, role: 'img',
-    'aria-label': `Szintvonalrajz — demonstrációs parcella, ${M.intervalText} szintközzel, ${M.lines} vonal`,
+    'aria-label': `${t('Szintvonalrajz — demonstrációs parcella')}, ${M.intervalText} ${t('szintközzel')}, ${M.lines} ${t('vonal')}`,
   });
 
   const grid = svgEl('g');
@@ -304,9 +305,9 @@ function drawTerrain(fig) {
 
   /* a datum line and two labels, so the figure reads as a drawing */
   svg.append(svgEl('path', { d: `M${S * 2},${N * S - S * 2}H${N * S - S * 2}`, class: 'te-line' }));
-  svg.append(svgEl('text', { x: S * 2, y: N * S - S * 2 - 4, class: 'te-lbl' }, `SZINTKÖZ ${M.intervalText}`));
+  svg.append(svgEl('text', { x: S * 2, y: N * S - S * 2 - 4, class: 'te-lbl' }, `${t('SZINTKÖZ')} ${M.intervalText}`));
   svg.append(svgEl('text', { x: N * S - S * 2, y: N * S - S * 2 - 4, class: 'te-lbl', 'text-anchor': 'end' },
-    `METSZÉS ${fmt(cutLevel, 2)} m`));
+    `${t('METSZÉS')} ${fmt(cutLevel, 2)} m`));
 
   fig.querySelector('svg')?.remove();
   fig.prepend(svg);

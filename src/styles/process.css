@@ -548,7 +548,7 @@ body.rm-static .pstage__fig { display: block; }
   font-weight: 500; line-height: .94; letter-spacing: var(--ls-dm);
   max-width: 20ch;
 }
-.about__title .line { display: block; overflow: hidden; padding-bottom: .06em; margin-bottom: -.06em; }
+.about__title .line { display: block; overflow: hidden; } /* mask padding: the global .line rule in hero.css */
 .about__title .line__in { display: block; }
 
 /* ---------------- the object ---------------- */

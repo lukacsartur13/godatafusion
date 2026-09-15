@@ -12,23 +12,33 @@ npm test               # the narrative stop-table invariants
 npm run build
 npm run preview        # serves dist/ WITH the API endpoint
 npm run check:live     # fails while company.js still holds a placeholder
+npm run i18n           # regenerate /en/ and /de/ from the Hungarian pages
 ```
 
-**Phase 12** added the sales layer — light sections, the service-specific
-request form, the derived example blocks, the legal pages and the sample
-media. See PHASE-12.md for the map and the go-live checklist.
+**Phase 13–14** cut the homepage to four readings with no visible seam
+between them, moved the company and the contact into documents of their
+own, and published the whole site in **three languages**. See PHASE-13.md.
 
 ## Routes
 
-| Route | Mode | Accent | Entry |
-| --- | --- | --- | --- |
-| `/` | idle → all three | animated | `src/main.js` |
-| `/360-camera/` | CAPTURE | `#42E8FF` | `src/service.js` → `src/service/capture.js` |
-| `/teruletfelmeres/` | MEASURE | `#B8FF3D` | `src/service.js` → `src/service/measure.js` |
-| `/mennyisegszamitas/` | QUANTIFY | `#FF6846` | `src/service.js` → `src/service/quantify.js` |
-| `/impresszum/` | — | — | `src/legal.js` |
-| `/adatkezeles/` | — | — | `src/legal.js` |
-| `/404.html` | — | — | `src/notfound.js` |
+Nine documents, three languages, twenty-seven URLs. The Hungarian column is
+the markup anybody writes; the other two are generated from it at build time
+(see **Three languages** below).
+
+| hu | en | de | Mode | Entry |
+| --- | --- | --- | --- | --- |
+| `/` | `/en/` | `/de/` | idle → all three | `src/main.js` |
+| `/360-camera/` | `/en/360-camera/` | `/de/360-kamera/` | CAPTURE `#42E8FF` | `src/service.js` |
+| `/teruletfelmeres/` | `/en/site-survey/` | `/de/gelaendeaufmass/` | MEASURE `#B8FF3D` | `src/service.js` |
+| `/mennyisegszamitas/` | `/en/quantity-takeoff/` | `/de/mengenermittlung/` | QUANTIFY `#FF6846` | `src/service.js` |
+| `/rolunk/` | `/en/about/` | `/de/ueber-uns/` | — | `src/page.js` |
+| `/kapcsolat/` | `/en/contact/` | `/de/kontakt/` | — | `src/page.js` |
+| `/impresszum/` | `/en/imprint/` | `/de/impressum/` | — | `src/page.js` |
+| `/adatkezeles/` | `/en/privacy/` | `/de/datenschutz/` | — | `src/page.js` |
+| `/404.html` | `/en/404.html` | `/de/404.html` | — | `src/page.js` |
+
+The header is a route index, not a table of contents: the three services
+behind one disclosure, the company, the contact, and the call to action.
 
 Real directories, not a client-side router: back/forward, direct entry,
 view-source and crawling all work without JavaScript, and the transition
@@ -49,6 +59,10 @@ between them is an overlay laid over a native navigation
 
 ```
 index.html            homepage shell — all copy lives here, not in JS
+                      01 hero · the bridge · 02 results · 03 the data field
+                      04 details · 05 why · 06 the request form
+rolunk/               /rolunk/              the company, the principles, the process
+kapcsolat/            /kapcsolat/           contact and the request form
 360-camera/           /360-camera/          CAPTURE
 teruletfelmeres/      /teruletfelmeres/     MEASURE
 mennyisegszamitas/    /mennyisegszamitas/   QUANTIFY
@@ -65,7 +79,13 @@ test/
   stops.test.mjs      narrative stop invariants, DOM-free
 src/
   service.js          shared entry for the three service routes
-  notfound.js         the 404's two lines of behaviour
+  page.js             shared entry for every page with no scene:
+                      /rolunk/, /kapcsolat/, the legal pages, the 404
+  i18n/
+    routes.js         every document's path in every language — one table
+    t.js              the runtime dictionary; t() and the locale's numbers
+    messages.js       the endpoint's answers, in all three languages
+    <lang>/*.json     the dictionaries, keyed by the Hungarian sentence
   data/
     company.js        the ONLY place contact + legal strings exist
     services.js       one definition of the three services, read by four consumers
@@ -81,7 +101,9 @@ src/
     capture.js measure.js quantify.js
   modules/            DOM behaviour, each one a store subscriber
     nav.js modes.js cursor.js telemetry.js intro.js
-    request.js          START PROJECT — one component, four pages, real POST
+    request.js          START PROJECT — one component, five pages, real POST
+    seams.js            PHASE 13 — one number per crossing; the CSS does the rest
+    datafield.js        PHASE 13 — the drawing, and the figures counted out of it
     transition.js       the page-transition field over native navigation
     company.js          applies data/company.js to every [data-company]
     examples.js         PHASE 12 — derived tables, floor plan, contours; no three.js
@@ -375,3 +397,33 @@ and the config have drifted. Phone, address, registration number and VAT are
   rules, hairlines and marks only.
 - CSS owns any opacity that a state class also drives. A GSAP `from` on such
   an element leaves an inline opacity that outranks the class permanently.
+
+
+## Three languages
+
+Hungarian is the source and lives at the root. English and German are real
+directories with translated slugs, generated from the Hungarian documents
+before the build reads its inputs — so every language is a real file a
+crawler can fetch, and nothing is translated in the browser.
+
+```bash
+npm run i18n                            # regenerate /en/ and /de/
+npm run i18n -- --extract               # the keys still missing, in document order
+node tools/i18n/missing.mjs de          # what the German markup cannot say yet
+node tools/i18n/runtime-missing.mjs de  # what the German code cannot say yet
+```
+
+| what | where |
+| --- | --- |
+| the route table | `src/i18n/routes.js` |
+| the generator | `tools/i18n/core.mjs` (+ the Vite plugin beside it) |
+| markup dictionaries | `src/i18n/<lang>/*.json`, keyed by the Hungarian sentence |
+| strings JS writes | the same dictionaries, read through `t()` at render time |
+| the endpoint's answers | `src/i18n/messages.js`; the form posts its `lang` |
+
+`/en/` and `/de/` are generated, so they are **not** committed —
+`npm run build` and `npm run dev` both write them first.
+
+`npm test` fails if any language is missing a line, if two dictionary files
+translate one key differently, if a translated document links out of its own
+language, or if a server message loses a placeholder.

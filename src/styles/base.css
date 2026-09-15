@@ -324,7 +324,7 @@ dl, dd, dt, p, h1, h2, h3, figure { margin: 0; }
 }
 
 /* ============ atmosphere ============ */
-.atmos { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.atmos { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: var(--bg); } /* carries the stage's ground tone — see .stage in hero.css */
 .atmos__wash {
   position: absolute; inset: -10%;
   background: radial-gradient(70% 60% at 22% 8%, rgba(255,255,255,.028) 0%, transparent 62%);

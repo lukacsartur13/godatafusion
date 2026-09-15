@@ -4,24 +4,27 @@
  * which is why hovering a service changes the whole atmosphere at once.
  */
 
+/* `accent` is the display colour, for a dark ground. `ink` is the same
+   service on a light ground — the values styles/tone.css measured against
+   #F5F6F7 — and the WebGL scene picks between them by the stage's tone. */
 export const MODES = {
   capture: {
     id: 'capture', index: '01', label: 'CAPTURE',
-    accent: [66, 232, 255], cursor: 'EXPLORE', hu: '360° kamera',
+    accent: [66, 232, 255], ink: [0, 120, 143], cursor: 'EXPLORE', hu: '360° kamera',
   },
   measure: {
     id: 'measure', index: '02', label: 'MEASURE',
-    accent: [184, 255, 61], cursor: 'SCAN', hu: 'Területfelmérés',
+    accent: [184, 255, 61], ink: [47, 122, 22], cursor: 'SCAN', hu: 'Területfelmérés',
   },
   quantify: {
     id: 'quantify', index: '03', label: 'QUANTIFY',
-    accent: [255, 104, 70], cursor: 'ANALYZE', hu: 'Mennyiségszámítás',
+    accent: [255, 104, 70], ink: [191, 63, 23], cursor: 'ANALYZE', hu: 'Mennyiségszámítás',
   },
 };
 
 export const IDLE = {
   id: null, index: '—', label: 'IDLE',
-  accent: [176, 188, 190], cursor: '', hu: '',
+  accent: [176, 188, 190], ink: [84, 96, 104], cursor: '', hu: '',
 };
 
 const listeners = new Set();

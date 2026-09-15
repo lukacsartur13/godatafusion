@@ -84,7 +84,7 @@ export function refreshAccentScopes() {
 
 export function initTheme(onChange) {
   /* WebGL-only channel. Never touches the document. */
-  const chan = { r: 176, g: 188, b: 190, mix: 0 };
+  const chan = { r: 176, g: 188, b: 190, ri: 84, gi: 96, bi: 104, mix: 0 };
 
   io = new IntersectionObserver((entries) => {
     for (const e of entries) {
@@ -102,15 +102,18 @@ export function initTheme(onChange) {
 
   store.subscribe((id, mode) => {
     const [r, g, b] = mode.accent;
+    /* The ink variant rides along, so the scene can stand on a light
+       ground without asking the store which service this colour was. */
+    const [ri, gi, bi] = mode.ink || mode.accent;
     const mix = id ? 1 : 0;
 
     gsap.to(chan, {
-      r, g, b, mix,
+      r, g, b, ri, gi, bi, mix,
       duration: env.reducedMotion ? 0.16 : 0.85,
       ease: 'power2.out',
       overwrite: true,
-      onUpdate: () => onChange?.([chan.r, chan.g, chan.b], chan.mix),
-      onComplete: () => onChange?.([chan.r, chan.g, chan.b], chan.mix),
+      onUpdate: () => onChange?.([chan.r, chan.g, chan.b], chan.mix, [chan.ri, chan.gi, chan.bi]),
+      onComplete: () => onChange?.([chan.r, chan.g, chan.b], chan.mix, [chan.ri, chan.gi, chan.bi]),
     });
 
     current = id || 'idle';

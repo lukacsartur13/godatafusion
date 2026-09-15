@@ -1,5 +1,6 @@
 import { store, MODES } from '../core/store.js';
 import { env } from '../core/env.js';
+import { t } from '../i18n/t.js';
 
 /**
  * The service selector. Three operating modes of one instrument.
@@ -96,6 +97,6 @@ export function initModes({ onEnter } = {}) {
   // Touch devices get an explicit affordance instead of a hover hint.
   if (env.touch) {
     const hint = document.querySelector('[data-hint="hover"]');
-    if (hint) hint.textContent = 'Koppintson egy üzemmódra — a teljes felület átvált.';
+    if (hint) hint.textContent = t('Koppintson egy üzemmódra — a teljes felület átvált.');
   }
 }

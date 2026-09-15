@@ -37,11 +37,14 @@ export function initSections({ scanPlane } = {}) {
     return;
   }
 
-  /* ---- headlines: everything except the hero, which intro.js owns ---- */
+  /* ---- headlines: everything except the hero, which intro.js owns ----
+     Parked at 135 %, not 105 %: the .line mask is taller than the line box
+     so it can hold the accents (see .line in styles/hero.css), and at 105 %
+     the accents of the parked line would show through it before it plays. */
   document.querySelectorAll(
-    '.manifesto__title, .output__title, .services__title, .process__title, .why__title, .project__title',
+    '.services__title, .why__title, .project__title, .sec-title',
   ).forEach((h) => {
-    gsap.fromTo(h.querySelectorAll('.line__in'), { yPercent: 105 }, {
+    gsap.fromTo(h.querySelectorAll('.line__in'), { yPercent: 135 }, {
       ...LINE, yPercent: 0, clearProps: 'transform',
       scrollTrigger: { trigger: h, start: 'top 84%', once: true },
     });
@@ -64,10 +67,8 @@ export function initSections({ scanPlane } = {}) {
         });
     });
   };
-  rise('.manifesto__lede');
-  rise('.output__lede');
   rise('.services__lede');
-  rise('.process__lede');
+  rise('.sec-lede');
   rise('.about__lede');
   rise('.about__end');
   rise('.about__sys a', { stagger: 0.08 });
@@ -76,7 +77,7 @@ export function initSections({ scanPlane } = {}) {
   rise('.alt');
 
   document.querySelectorAll('.about__title').forEach((h) => {
-    gsap.fromTo(h.querySelectorAll('.line__in'), { yPercent: 105 }, {
+    gsap.fromTo(h.querySelectorAll('.line__in'), { yPercent: 135 }, {
       ...LINE, yPercent: 0, clearProps: 'transform',
       scrollTrigger: { trigger: h, start: 'top 86%', once: true },
     });

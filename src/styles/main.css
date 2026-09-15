@@ -4,9 +4,17 @@
 @import './nav.css';
 @import './hero.css';
 @import './modes.css';
-@import './manifesto.css';
-@import './fusion.css';
-@import './descent.css';
+/* PHASE 13 — THE MANIFESTO, THE OUTPUT BLOCK AND THE DESCENT ARE NOT
+   IMPORTED ANY MORE.
+
+   Their sections left the homepage with this phase, and a stylesheet is
+   not tree-shaken the way a module is: `descent.css` alone is 837 lines
+   that would be parsed by every visitor and match nothing. The files stay
+   on disk — the journey is a finished piece of work and the markup for it
+   is one commit away — but they are not shipped.
+   @import './manifesto.css';
+   @import './fusion.css';
+   @import './descent.css';  */
 @import './services.css';
 @import './process.css';
 @import './project.css';
@@ -17,6 +25,7 @@
 @import './rhythm.css';
 @import './panorama.css';
 @import './tone.css';
+@import './seam.css';
 
 /* ============================================================
    pre-boot state — everything animated starts hidden so the
@@ -27,7 +36,7 @@ html.is-preload .hero__content > *,
 html.is-preload .telemetry,
 html.is-preload .modes,
 html.is-preload .strip { opacity: 0; }
-html.is-preload .line__in { transform: translate3d(0, 105%, 0); }
+html.is-preload .line__in { transform: translate3d(0, 135%, 0); } /* matches the 135 % park in intro.js — the .line mask is taller than the line box */
 html.is-preload .frame__rule { transform: scaleY(0); }
 html.is-preload .frame__mark { opacity: 0; }
 

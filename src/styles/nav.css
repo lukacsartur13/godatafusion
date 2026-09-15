@@ -33,7 +33,15 @@
      a little more of it and the blur is gone. Same reasoning as the
      annotation panels in Phase 8.2.
      ------------------------------------------------------------------ */
-  background: linear-gradient(180deg, rgba(8,10,11,.92), rgba(8,10,11,.55) 62%, rgba(8,10,11,0));
+  background: linear-gradient(180deg, rgb(var(--bg-rgb) / .92), rgb(var(--bg-rgb) / .55) 62%, rgb(var(--bg-rgb) / 0));
+}
+/* PHASE 12.1 — THE HEADER TAKES THE TONE OF THE SECTION UNDER IT.
+   modules/nav.js writes `data-tone` from whichever section is passing
+   beneath the bar, the same way the tracker rail does. The light tone
+   would also hand the bar an opaque background (styles/tone.css); the
+   gradient is restated at higher specificity so the scrim stays a scrim. */
+.nav[data-tone="light"] {
+  background: linear-gradient(180deg, rgb(var(--bg-rgb) / .92), rgb(var(--bg-rgb) / .55) 62%, rgb(var(--bg-rgb) / 0));
 }
 
 .nav__brand { display: inline-flex; align-items: center; gap: .6em; }
@@ -121,7 +129,7 @@
   position: fixed; z-index: 55; inset: var(--nav-h) 0 auto 0;
   display: flex; flex-direction: column;
   padding: 8px var(--gutter) 26px;
-  background: rgba(8,10,11,.97);
+  background: rgb(var(--bg-rgb) / .97);
   border-bottom: var(--rule-w) solid var(--rule-secondary);
   /* PHASE 8.3 — the panel is 97% opaque. A 12 px blur of the 3% that
      shows through is a render surface bought for nothing. */
@@ -152,4 +160,128 @@
 @media (max-width: 860px) {
   .nav__links, .nav .btn--cta { display: none; }
   .nav__burger { display: block; }
+}
+
+/* ============================================================
+   PHASE 13 — THE SERVICES DISCLOSURE, AND THE LANGUAGE SWITCH
+
+   The header stopped being a table of contents for one long page and
+   became an index of routes. Four things live in it now: the three
+   services behind one control, the company, the contact, and the call
+   to action. Everything else the old bar carried was an anchor into a
+   section of the homepage, and those sections are documents now.
+   ============================================================ */
+.navmenu { position: relative; display: flex; align-items: center; }
+.navmenu__btn {
+  position: relative;
+  display: inline-flex; align-items: center; gap: .5em;
+  padding-block: 6px;
+  color: var(--fg-60);
+  cursor: pointer;
+  transition: color var(--motion-ui) var(--ease-out);
+}
+.navmenu__btn::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: var(--rule-w);
+  background: var(--rule-measure); transform: scaleX(0); transform-origin: left;
+  transition: transform var(--motion-ui) var(--ease-line),
+              background-color var(--motion-ui) var(--ease-out);
+}
+.navmenu__btn:hover, .navmenu__btn:focus-visible,
+.navmenu.is-open .navmenu__btn { color: var(--fg); }
+.navmenu__btn:hover::after, .navmenu__btn:focus-visible::after,
+.navmenu.is-open .navmenu__btn::after { transform: scaleX(1); background: var(--accent-c); }
+
+/* A drawn caret, not a glyph: two hairlines of the same weight as every
+   other rule on the page, so the control belongs to the drawing system. */
+.navmenu__caret {
+  position: relative; width: 7px; height: 7px; flex: none;
+  transform: translateY(-2px) rotate(45deg);
+  border-right: var(--rule-w) solid currentColor;
+  border-bottom: var(--rule-w) solid currentColor;
+  opacity: .7;
+  transition: transform var(--t-state) var(--ease);
+}
+.navmenu.is-open .navmenu__caret { transform: translateY(1px) rotate(225deg); }
+
+.navmenu__panel {
+  position: absolute; top: calc(100% + 14px); left: -18px;
+  z-index: 70;
+  width: min(23rem, 78vw);
+  display: grid;
+  padding: 6px;
+  background: rgb(var(--bg-rgb) / .97);
+  border: var(--rule-w) solid var(--rule-primary);
+  /* The bar has no backdrop filter for measured reasons (see above), and
+     neither does this: the panel is opaque instead. */
+}
+.navmenu__panel[hidden] { display: none; }
+/* The panel is a menu, so it opens as one movement rather than fading. */
+.navmenu.is-open .navmenu__panel { animation: navmenu-in var(--t-state) var(--ease) both; }
+@keyframes navmenu-in {
+  from { opacity: 0; transform: translate3d(0, -6px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+.navmenu__i {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: 'x k' 'gl c';
+  gap: 2px 10px;
+  align-items: center;
+  padding: 13px 14px 14px;
+  border-bottom: var(--rule-w) solid var(--rule-secondary);
+  transition: background-color var(--t-hover) var(--ease);
+}
+.navmenu__i:last-child { border-bottom: 0; }
+.navmenu__i:hover, .navmenu__i:focus-visible { background: var(--accent-08); }
+.navmenu__x {
+  grid-area: x;
+  font-family: var(--ff-mono); font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono); color: var(--accent-c);
+}
+.navmenu__i .gl { grid-area: gl; --gl-size: 20px; color: var(--accent-c); align-self: start; }
+.navmenu__k {
+  grid-area: k;
+  font-family: var(--ff-display); text-transform: uppercase;
+  font-size: 1.02rem; font-weight: 500; letter-spacing: -.02em;
+  color: var(--fg);
+}
+.navmenu__c {
+  grid-area: c;
+  font-size: .8rem; line-height: 1.35; color: var(--fg-50);
+}
+
+/* ---- language ---- */
+.langsw {
+  display: flex; align-items: center; gap: 2px;
+  margin-left: clamp(10px, 1.4vw, 22px);
+  font-family: var(--ff-mono); font-size: var(--fs-mono); letter-spacing: var(--ls-mono);
+}
+.langsw a {
+  padding: 5px 7px;
+  color: var(--fg-38);
+  transition: color var(--t-hover) var(--ease);
+}
+.langsw a:hover, .langsw a:focus-visible { color: var(--fg); }
+.langsw a[aria-current="true"] {
+  color: var(--fg);
+  box-shadow: inset 0 -1px 0 var(--accent-c);
+}
+
+/* ---- the drawer's section keys ---- */
+.nav__drawer-k {
+  padding-top: 18px; padding-bottom: 6px;
+  font-family: var(--ff-label); font-size: var(--fs-micro);
+  letter-spacing: var(--ls-micro); text-transform: uppercase;
+  color: var(--fg-38); font-weight: 500;
+}
+.nav__drawer-k:first-child { padding-top: 6px; }
+
+@media (max-width: 860px) {
+  /* The disclosure is a desktop control; the drawer lists the same three
+     routes outright, which is the right shape for a phone. */
+  .navmenu { display: none; }
+  .langsw { margin-left: auto; margin-right: 6px; }
+  .langsw a { padding: 5px 5px; }
 }

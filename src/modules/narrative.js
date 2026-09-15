@@ -44,6 +44,42 @@ export function initNarrative({ getScene, scanPlane }) {
   const chapters = CH.map((c) => ({ ...c, node: document.querySelector(c.el) }))
                      .filter((c) => c.node);
 
+  /* ------------------------------------------------------------------
+     PHASE 12.1 / 13 — THE GROUND SWITCHES WHERE IT CANNOT BE SEEN.
+
+     The hero stands on a light canvas (styles/hero.css); the service
+     chapters stand on the dark one. Between them are the bridge — one
+     viewport of held footage — and the results block, which is an opaque
+     light section. From the moment the results block's top edge reaches
+     the top of the viewport until the chapters have finished, the canvas
+     is entirely covered by one or the other. That is where the stage,
+     the atmosphere behind it, the scan plane and the renderer's palettes
+     turn dark — and turn light again on the way back up, at the same
+     edge. No scrub, no tween: a cut nobody can watch is cleaner than a
+     fade someone might.
+
+     PHASE 13 re-keyed it from the old section 02 to the results block,
+     which is the first opaque thing under the hero now. The markup boots
+     light; the scene reads the stage's tone when it lands, so a lazy
+     renderer arriving after this trigger has already fired sees the
+     right ground. Runs under reduced motion too.
+     ------------------------------------------------------------------ */
+  const ovw = document.getElementById('eredmeny');
+  const groundEls = [stage, document.querySelector('.atmos'), document.getElementById('scanplane')]
+    .filter(Boolean);
+  const setGround = (light) => {
+    const tone = light ? 'light' : 'dark';
+    for (const el of groundEls) if (el.dataset.tone !== tone) el.dataset.tone = tone;
+    S()?.setGround(light);
+  };
+  if (ovw) {
+    ScrollTrigger.create({
+      trigger: ovw, start: 'top top',
+      endTrigger: services, end: 'bottom bottom',
+      onToggle: (self) => setGround(!self.isActive),
+    });
+  }
+
   /* ---------- reduced motion: resolve everything, drive nothing ---------- */
   if (env.reducedMotion) {
     S()?.setNarrative({ decision: 1 });
@@ -244,10 +280,13 @@ export function initNarrative({ getScene, scanPlane }) {
   });
 
   /* ---------- suspend the renderer behind the opaque half of the page ---- */
+  /* PHASE 13 — everything below the chapters is opaque, and WHY is the
+     first of it. The renderer suspends there rather than at the old
+     PROCESS block, which no longer exists on this document. */
   ScrollTrigger.create({
-    trigger: '#process',
-    // Not 'top 92%': at that point PROCESS is still below the fold and the
-    // canvas is very much on screen. Suspend once it genuinely covers it.
+    trigger: '#why',
+    // Not 'top 92%': at that point the section is still below the fold and
+    // the canvas is very much on screen. Suspend once it genuinely covers it.
     start: 'top 30%',
     onEnter: () => {
       S()?.setActive(false);
@@ -260,8 +299,11 @@ export function initNarrative({ getScene, scanPlane }) {
   });
 
   /* ---------- the callouts must dodge whichever column is live ---------- */
+  /* PHASE 13 — the hero's callouts must clear the headline column until
+     the hero has actually been left behind. The manifesto used to be the
+     thing that said so; the bridge says it now. */
   ScrollTrigger.create({
-    trigger: manifesto || hero,
+    trigger: document.getElementById('bridge') || manifesto || hero,
     start: 'top 60%',
     onEnter: () => S()?.setAvoid(null, { top: 90 }),
     onLeaveBack: () => S()?.setAvoid(document.querySelector('.hero__content'), { top: 132 }),

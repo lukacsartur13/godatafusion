@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { SITE, heightAt } from './field.js';
 import { totalStations } from './stations.js';
+import { t } from '../i18n/t.js';
 import {
   PLAN, planFeatures, levelFeatures, buildingQuantities, planY,
   LEVELS, LEVEL_IDS, ROOF, roofY, elevationLabel, levelById,
@@ -95,19 +96,19 @@ export function extractsFor(level = 'L00') {
   const out = [];
   const push = (id, f, box, k, v) => { if (f) out.push({ id, f, box, k, v, level }); };
   push('d01', nth(F.doors, 'D01', 1) || nth(F.doors, 'D01', 0), [0.9, 0.9],
-       'AJTÓ · D01', `× ${countOf(F.doors, 'D01')}`);
+       t('AJTÓ · D01'), `× ${countOf(F.doors, 'D01')}`);
   push('d02', nth(F.doors, 'D02', 1) || nth(F.doors, 'D02', 0), [0.9, 0.9],
-       'AJTÓ · D02', `× ${countOf(F.doors, 'D02')}`);
+       t('AJTÓ · D02'), `× ${countOf(F.doors, 'D02')}`);
   push('w03', nth(F.windows, 'W03', 0) || nth(F.windows, 'W01', 0), [0.85, 0.85],
-       'ABLAK', `× ${countOf(F.windows, nth(F.windows, 'W03', 0) ? 'W03' : 'W01')}`);
+       t('ABLAK'), `× ${countOf(F.windows, nth(F.windows, 'W03', 0) ? 'W03' : 'W01')}`);
   push('room', room, [room.w * 0.92, room.d * 0.9],
-       `HELYISÉG · ${room.id}`, `${fmt(room.area)} m²`);
+       `${t('HELYISÉG')} · ${room.id}`, `${fmt(room.area)} m²`);
   const finish = Object.entries(lq.finishes).sort((a, b) => b[1] - a[1])[0];
   const fRoom = [...F.rooms]
     .filter((r) => r.kind !== 'CIRC' && r.kind !== 'CORE' && r.id !== room.id)
     .sort((x, y) => y.area - x.area)[0] || room;
   push('f1', fRoom, [fRoom.w * 0.8, fRoom.d * 0.7],
-       `PADLÓBURKOLAT · ${finish[0]}`, `${fmt(finish[1])} m²`);
+       `${t('PADLÓBURKOLAT')} · ${finish[0]}`, `${fmt(finish[1])} m²`);
   return out.map((e) => ({ ...e, y }));
 }
 
@@ -451,7 +452,7 @@ export function createAnnotations(container, sets = {}) {
       if (!it || !room) return null;
       const next = {
         ...it, f: room, box: [room.w * 0.92, room.d * 0.9],
-        k: `HELYISÉG · ${room.id}`,
+        k: `${t('HELYISÉG')} · ${room.id}`,
         v: `${room.area.toFixed(1).replace('.', ',')} m²`,
         y: planY(room.level),
         level: room.level,

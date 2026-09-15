@@ -82,6 +82,7 @@
 :root {
   /* ---- surface ---- */
   --bg:            #080A0B;
+  --bg-rgb:        8 10 11;      /* the same colour as channels, for rgb(var(--bg-rgb) / a) */
   --bg-lift:       #0C0F10;
   --fg:            #F1F0EB;
   --grey:          #242729;

@@ -42,12 +42,43 @@ main { position: relative; z-index: 2; }
    seconds deep in the narrative scroll, and modules/narrative.js sets
    the hint for exactly that window and clears it afterwards.
    ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------
+   PHASE 12.1 — THE HERO STANDS ON A LIGHT GROUND.
+
+   The hero is the one section that is not an opaque block over the
+   canvas: the canvas IS its ground. So the ground is a TONE on the stage
+   (`data-tone="light"` in the markup, dark on the service pages), and
+   everything that used to assume the page is black reads it instead:
+
+     * the stage's own background — what shows before the renderer boots,
+       and what the canvas fades towards in the narrative;
+     * the veils, whose gradients are rgb(var(--bg-rgb) / a) rather than
+       a literal near-black;
+     * the callouts' shadows and panels, the same way;
+     * the renderer's clear colour, fog target, line, point and surface
+       palettes and the accent's ink variant — webgl/scene.js reads the
+       stage's tone and swaps them (`setGround`).
+
+   The atmosphere layer behind the stage carries the same tone, because
+   the narrative fades the stage OUT over it: a light canvas fading over
+   a black atmosphere would darken the hero as the reader scrolls.
+
+   The tone is switched by modules/narrative.js at the one scroll
+   position where it cannot be seen: section 02 is an opaque light block,
+   and once its top edge has reached the top of the viewport the canvas
+   is entirely covered until 03 begins — so the ground turns dark there,
+   and light again on the way back, and nobody watches it happen.
+   ------------------------------------------------------------------ */
 .stage {
   position: fixed; inset: 0; z-index: 1;
   overflow: hidden; pointer-events: none;
+  background: var(--bg);
   --veil-l: 1;
   --veil-r: 0;
 }
+/* A light TONE gives these a background; the hero must stay transparent
+   (the canvas is behind it) and the scan plane is a band, not a sheet. */
+.hero[data-tone="light"], .scanplane[data-tone="light"] { background: transparent; }
 .stage.is-off { opacity: 0 !important; visibility: hidden; }
 .stage__canvas { width: 100%; height: 100%; }
 
@@ -56,20 +87,20 @@ main { position: relative; z-index: 2; }
    other, so the live text column always wins against the geometry. */
 .stage__veil {
   position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(180deg, rgba(8,10,11,0) 46%, rgba(8,10,11,.42) 74%,
-    rgba(8,10,11,.84) 92%, rgba(8,10,11,.95) 100%);
+  background: linear-gradient(180deg, rgb(var(--bg-rgb) / 0) 46%, rgb(var(--bg-rgb) / .42) 74%,
+    rgb(var(--bg-rgb) / .84) 92%, rgb(var(--bg-rgb) / .95) 100%);
 }
 .stage__veil::before, .stage__veil::after {
   content: ''; position: absolute; inset: 0;
 }
 .stage__veil::before {
-  background: linear-gradient(96deg, rgba(8,10,11,.97) 0%, rgba(8,10,11,.92) 22%,
-    rgba(8,10,11,.64) 42%, rgba(8,10,11,.22) 58%, rgba(8,10,11,0) 70%);
+  background: linear-gradient(96deg, rgb(var(--bg-rgb) / .97) 0%, rgb(var(--bg-rgb) / .92) 22%,
+    rgb(var(--bg-rgb) / .64) 42%, rgb(var(--bg-rgb) / .22) 58%, rgb(var(--bg-rgb) / 0) 70%);
   opacity: var(--veil-l);
 }
 .stage__veil::after {
-  background: linear-gradient(264deg, rgba(8,10,11,.97) 0%, rgba(8,10,11,.92) 22%,
-    rgba(8,10,11,.64) 42%, rgba(8,10,11,.22) 58%, rgba(8,10,11,0) 70%);
+  background: linear-gradient(264deg, rgb(var(--bg-rgb) / .97) 0%, rgb(var(--bg-rgb) / .92) 22%,
+    rgb(var(--bg-rgb) / .64) 42%, rgb(var(--bg-rgb) / .22) 58%, rgb(var(--bg-rgb) / 0) 70%);
   opacity: var(--veil-r);
 }
 @media (max-width: 900px) {
@@ -85,14 +116,14 @@ main { position: relative; z-index: 2; }
      The fallbacks keep a sane band if the module never runs. */
   .stage__veil {
     background: linear-gradient(180deg,
-      rgba(8,10,11,.98) 0%,
-      rgba(8,10,11,.96) calc(var(--win-a, 42%) - 2.6%),
-      rgba(8,10,11,.30) calc(var(--win-a, 42%) + 0.4%),
-      rgba(8,10,11,var(--win-floor, .05)) calc(var(--win-a, 42%) + 2.4%),
-      rgba(8,10,11,var(--win-floor, .05)) calc(var(--win-b, 62%) - 3%),
-      rgba(8,10,11,.46) calc(var(--win-b, 62%) - 0.4%),
-      rgba(8,10,11,.93) calc(var(--win-b, 62%) + 2.6%),
-      rgba(8,10,11,.98) 100%);
+      rgb(var(--bg-rgb) / .98) 0%,
+      rgb(var(--bg-rgb) / .96) calc(var(--win-a, 42%) - 2.6%),
+      rgb(var(--bg-rgb) / .30) calc(var(--win-a, 42%) + 0.4%),
+      rgb(var(--bg-rgb) / var(--win-floor, .05)) calc(var(--win-a, 42%) + 2.4%),
+      rgb(var(--bg-rgb) / var(--win-floor, .05)) calc(var(--win-b, 62%) - 3%),
+      rgb(var(--bg-rgb) / .46) calc(var(--win-b, 62%) - 0.4%),
+      rgb(var(--bg-rgb) / .93) calc(var(--win-b, 62%) + 2.6%),
+      rgb(var(--bg-rgb) / .98) 100%);
   }
   .stage__veil::before, .stage__veil::after { display: none; }
   /* IDLE is a dark mass and wants the window wide open. A service mode
@@ -155,13 +186,13 @@ body.no-webgl .stage__fallback { display: grid; }
 .anno__dot {
   width: 5px; height: 5px; margin-left: -3px; flex: none;
   border: 1px solid var(--accent-c); border-radius: 50%;
-  box-shadow: 0 0 6px rgba(8,10,11,.9);
+  box-shadow: 0 0 6px rgb(var(--bg-rgb) / .9);
 }
 .anno__line { width: clamp(18px, 2.3vw, 36px); height: 1px; background: rgb(var(--accent) / .42); flex: none; }
 .anno__text {
   padding-left: 9px;
   /* the callouts sit over a lit point cloud — keep them legible */
-  text-shadow: 0 0 3px rgba(8,10,11,.95), 0 1px 10px rgba(8,10,11,.85);
+  text-shadow: 0 0 3px rgb(var(--bg-rgb) / .95), 0 1px 10px rgb(var(--bg-rgb) / .85);
 }
 .anno__text i { font-style: normal; color: var(--fg-42); }
 .anno__text b { font-weight: 400; color: var(--accent-c); font-variant-numeric: tabular-nums; }
@@ -171,7 +202,7 @@ body.no-webgl .stage__fallback { display: grid; }
 .anno--x .anno__text {
   display: grid; gap: 3px; line-height: 1.25;
   padding: 5px 9px 5px 11px;
-  background: rgba(8,10,11,.86);
+  background: rgb(var(--bg-rgb) / .86);
   border-left: 1px solid var(--accent-40);
   /* No backdrop blur. What is behind these labels is a dark 3D render, not
      text, so the blur was invisible — and each blurred element is a
@@ -197,7 +228,7 @@ body.no-webgl .stage__fallback { display: grid; }
 .anno--level .anno__text {
   display: flex; align-items: baseline; gap: 10px;
   padding: 3px 10px 3px 10px;
-  background: rgba(8,10,11,.80);
+  background: rgb(var(--bg-rgb) / .80);
   border-left: 1px solid var(--accent-40);
 }
 .anno--level .anno__text i { color: var(--accent-c); letter-spacing: .18em; }
@@ -242,8 +273,28 @@ body.no-webgl .stage__fallback { display: grid; }
   letter-spacing: var(--ls-dxl);
   text-wrap: balance;
 }
-.line { display: block; overflow: hidden; padding-bottom: .08em; margin-bottom: -.08em; }
+/* THE MASK HAS TO HOLD THE ACCENTS (homepage edition of service.css
+   PATCH 9.1). `.line` is a reveal mask — overflow: hidden with the words
+   translated in from underneath. Its box is one line box at --lh-d (.875),
+   which is far tighter than the font's own ascent: with the shipped
+   Instrument Sans metrics (hhea 970 / -250) the line box tops out .797 em
+   above the baseline while Á É Í Ó Ő Ú Ű reach .950 em, so the mask was
+   shaving .152 em off every accented capital — 17 px at 112 px type.
+   "ÉPÍTŐIPAR, MÉRHETŐ ADATBAN." and "EGY HELYSZÍN, HÁROM OLVASAT." read
+   as if set without accents. The comma overshoots the bottom by .066 em.
+
+   The type does not change. The BOX grows .18 em above and .10 em below
+   the line box and is pulled back by the same amounts, so the mask holds
+   the ink and the composition is unchanged to the pixel. The headings are
+   flex columns so the negative margins do not collapse (a collapsed pair
+   would cancel only the larger one and loosen the leading). The reveal
+   parks the words at 135 % instead of 105 % — see modules/sections.js,
+   modules/intro.js and the is-preload rule in main.css — because a taller
+   mask would otherwise show the accents of the parked line before it plays. */
+.line { display: block; overflow: hidden; padding-block: .18em .10em; margin-block: -.18em -.10em; }
 .line__in { display: block; will-change: transform; }
+.hero__title, .sec-title, .manifesto__title, .output__title, .services__title,
+.process__title, .why__title, .project__title, .about__title { display: flex; flex-direction: column; }
 .hero__title .dot { color: var(--accent-c); }
 
 .hero__lede {
@@ -380,7 +431,7 @@ body.no-webgl .stage__fallback { display: grid; }
      engineering language the rest of the site draws in. */
   .hwin__axis {
     position: absolute; left: var(--gutter); top: 20px; bottom: 46px; width: 1px;
-    background: linear-gradient(180deg, var(--fg-16), rgba(241,240,235,.03));
+    background: linear-gradient(180deg, var(--fg-16), transparent);
   }
 
   /* REALITY → DATA, written into the frame. This is the one line that has
@@ -392,7 +443,7 @@ body.no-webgl .stage__fallback { display: grid; }
   }
   /* The caption sits directly on the object, which can be a lit point
      cloud. Same treatment the 3D callouts get. */
-  .hwin__cap-a, .hwin__cap-b { text-shadow: 0 0 4px rgba(8,10,11,.95), 0 1px 12px rgba(8,10,11,.9); }
+  .hwin__cap-a, .hwin__cap-b { text-shadow: 0 0 4px rgb(var(--bg-rgb) / .95), 0 1px 12px rgb(var(--bg-rgb) / .9); }
   .hwin__cap-a { color: var(--fg-50); }
   .hwin__cap-b { color: var(--fg); }
   /* The rule between them fills with the accent while the first-contact

@@ -11,3 +11,8 @@ test/.perf/
 .env.*
 !.env.example
 .netlify
+
+# generated language documents — tools/i18n/core.mjs writes these from the
+# Hungarian pages and the dictionaries in src/i18n/ on every build.
+/en/
+/de/

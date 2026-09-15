@@ -11,6 +11,8 @@
    ============================================================ */
 
 import { SERVICES, UPLOAD, LIMITS, MEASURE_OUTPUTS, QUANTIFY_TASKS } from '../src/data/services.js';
+import { LANGS, DEFAULT_LANG } from '../src/i18n/routes.js';
+import { tr } from '../src/i18n/messages.js';
 import { sendMail, MailError } from './mail.mjs';
 
 /* Every field the endpoint will look at. Anything else in the body is a
@@ -19,7 +21,7 @@ import { sendMail, MailError } from './mail.mjs';
 const ALLOWED = new Set([
   'service', 'name', 'email', 'phone', 'site', 'size', 'brief',
   'task', 'outputs',
-  'files', 'company', 'started',
+  'files', 'company', 'started', 'lang',
 ]);
 
 const RE_MAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -108,22 +110,33 @@ export async function handleProjectRequest(request, { env = {}, ip = null } = {}
     return new Response(null, { status: 204, headers: { allow: 'POST, OPTIONS' } });
   }
   if (request.method !== 'POST') {
-    return json(405, { ok: false, error: 'method_not_allowed', message: 'POST szükséges.' });
+    return json(405, { ok: false, error: 'method_not_allowed', message: tr(lang, 'POST szükséges.') });
   }
 
   /* ---- parse ---- */
+  /* PHASE 14 — THE ENDPOINT ANSWERS IN THE LANGUAGE IT WAS ASKED IN.
+
+     The form posts the language of the page it was sent from, and every
+     message below is looked up in src/i18n/messages.js, which the browser
+     merges into its own dictionary — so a validation line the visitor sees
+     before submitting and the one the server sends back are the same
+     sentence. An unknown or absent value falls back to Hungarian, which is
+     what a hand-rolled POST gets. */
+  let lang = DEFAULT_LANG;
   let form;
   try {
     const ct = request.headers.get('content-type') || '';
     if (!ct.includes('multipart/form-data') && !ct.includes('application/x-www-form-urlencoded')) {
-      return json(415, { ok: false, error: 'unsupported_media_type', message: 'Érvénytelen kérésformátum.' });
+      return json(415, { ok: false, error: 'unsupported_media_type', message: tr(lang, 'Érvénytelen kérésformátum.') });
     }
     form = await request.formData();
+    const asked = String(form.get('lang') || '');
+    if (LANGS.includes(asked)) lang = asked;
   } catch {
     return json(400, {
       ok: false,
       error: 'bad_request',
-      message: 'A kérés nem volt feldolgozható. Lehet, hogy a csatolmány túl nagy.',
+      message: tr(lang, 'A kérés nem volt feldolgozható. Lehet, hogy a csatolmány túl nagy.'),
     });
   }
 
@@ -133,7 +146,7 @@ export async function handleProjectRequest(request, { env = {}, ip = null } = {}
     return json(400, {
       ok: false,
       error: 'unexpected_fields',
-      message: 'Ismeretlen mező a kérésben.',
+      message: tr(lang, 'Ismeretlen mező a kérésben.'),
       fields: unknown.slice(0, 8),
     });
   }
@@ -150,7 +163,7 @@ export async function handleProjectRequest(request, { env = {}, ip = null } = {}
     return json(429, {
       ok: false,
       error: 'too_fast',
-      message: 'Túl gyors beküldés. Próbálja újra néhány másodperc múlva.',
+      message: tr(lang, 'Túl gyors beküldés. Próbálja újra néhány másodperc múlva.'),
     });
   }
 
@@ -159,7 +172,7 @@ export async function handleProjectRequest(request, { env = {}, ip = null } = {}
     return json(429, {
       ok: false,
       error: 'rate_limited',
-      message: 'Túl sok kérés érkezett erről a címről. Próbálja újra később, vagy írjon közvetlenül emailben.',
+      message: tr(lang, 'Túl sok kérés érkezett erről a címről. Próbálja újra később, vagy írjon közvetlenül emailben.'),
     });
   }
 
@@ -167,7 +180,7 @@ export async function handleProjectRequest(request, { env = {}, ip = null } = {}
   const service = String(form.get('service') || '');
   const cfg = SERVICES[service];
   if (!cfg) {
-    return json(400, { ok: false, error: 'invalid_service', message: 'Ismeretlen szolgáltatás.' });
+    return json(400, { ok: false, error: 'invalid_service', message: tr(lang, 'Ismeretlen szolgáltatás.') });
   }
 
   /* ---- text fields ---- */
@@ -178,14 +191,14 @@ export async function handleProjectRequest(request, { env = {}, ip = null } = {}
     const raw = clean(form.get(key), LIMITS[key]);
     if (!rule) {
       // Field does not belong to this service — must be empty.
-      if (raw) errors[key] = 'Ez a mező nem tartozik a kiválasztott szolgáltatáshoz.';
+      if (raw) errors[key] = tr(lang, 'Ez a mező nem tartozik a kiválasztott szolgáltatáshoz.');
       continue;
     }
     values[key] = raw;
-    if (rule === 'req' && !raw) errors[key] = 'Kötelező mező.';
-    else if (key === 'email' && raw && !RE_MAIL.test(raw)) errors[key] = 'Érvényes email címet adjon meg.';
-    else if (key === 'brief' && raw && raw.length < LIMITS.briefMin) errors[key] = 'Néhány szóval írja le a feladatot.';
-    else if (raw.length >= LIMITS[key]) errors[key] = `Legfeljebb ${LIMITS[key]} karakter.`;
+    if (rule === 'req' && !raw) errors[key] = tr(lang, 'Kötelező mező.');
+    else if (key === 'email' && raw && !RE_MAIL.test(raw)) errors[key] = tr(lang, 'Érvényes email címet adjon meg.');
+    else if (key === 'brief' && raw && raw.length < LIMITS.briefMin) errors[key] = tr(lang, 'Néhány szóval írja le a feladatot.');
+    else if (raw.length >= LIMITS[key]) errors[key] = tr(lang, 'Legfeljebb {n} karakter.', { n: LIMITS[key] });
   }
 
   /* ---- the structured questions (PHASE 12) ----
@@ -194,21 +207,21 @@ export async function handleProjectRequest(request, { env = {}, ip = null } = {}
      unknown value is a stale client or a probe, never a silent pass. */
   const rawTask = String(form.get('task') || '');
   if (cfg.fields.task) {
-    if (cfg.fields.task === 'req' && !rawTask) errors.task = 'Válassza ki, milyen kimutatást kér.';
-    else if (rawTask && !QUANTIFY_TASKS[rawTask]) errors.task = 'Ismeretlen feladattípus.';
+    if (cfg.fields.task === 'req' && !rawTask) errors.task = tr(lang, 'Válassza ki, milyen kimutatást kér.');
+    else if (rawTask && !QUANTIFY_TASKS[rawTask]) errors.task = tr(lang, 'Ismeretlen feladattípus.');
     else if (rawTask) values.task = rawTask;
   } else if (rawTask) {
-    errors.task = 'Ez a mező nem tartozik a kiválasztott szolgáltatáshoz.';
+    errors.task = tr(lang, 'Ez a mező nem tartozik a kiválasztott szolgáltatáshoz.');
   }
 
   const rawOutputs = form.getAll('outputs').map(String);
   if (cfg.fields.outputs) {
     const bad = rawOutputs.filter((o) => !MEASURE_OUTPUTS[o]);
-    if (bad.length) errors.outputs = 'Ismeretlen eredménytípus.';
-    else if (cfg.fields.outputs === 'req' && !rawOutputs.length) errors.outputs = 'Jelölje meg, milyen eredményre van szüksége.';
+    if (bad.length) errors.outputs = tr(lang, 'Ismeretlen eredménytípus.');
+    else if (cfg.fields.outputs === 'req' && !rawOutputs.length) errors.outputs = tr(lang, 'Jelölje meg, milyen eredményre van szüksége.');
     else values.outputs = [...new Set(rawOutputs)];
   } else if (rawOutputs.length) {
-    errors.outputs = 'Ez a mező nem tartozik a kiválasztott szolgáltatáshoz.';
+    errors.outputs = tr(lang, 'Ez a mező nem tartozik a kiválasztott szolgáltatáshoz.');
   }
 
   /* ---- files ---- */
@@ -219,27 +232,27 @@ export async function handleProjectRequest(request, { env = {}, ip = null } = {}
   let total = 0;
 
   if (incoming.length > UPLOAD.maxFiles) {
-    fileError = `Legfeljebb ${UPLOAD.maxFiles} fájl csatolható.`;
+    fileError = tr(lang, 'Legfeljebb {n} fájl csatolható.', { n: UPLOAD.maxFiles });
   } else {
     for (const f of incoming) {
       const name = safeName(f.name);
       const ext = extOf(name);
       if (!cfg.upload.accept.includes(ext)) {
-        fileError = `Nem támogatott formátum: ${name}. Elfogadott: ${cfg.upload.formats}.`;
+        fileError = tr(lang, 'Nem támogatott formátum: {name}. Elfogadott: {formats}.', { name, formats: cfg.upload.formats });
         break;
       }
       if (f.size > UPLOAD.maxFileBytes) {
-        fileError = `${name} túl nagy. Fájlonként legfeljebb ${Math.round(UPLOAD.maxFileBytes / 1048576)} MB.`;
+        fileError = tr(lang, '{name} túl nagy. Fájlonként legfeljebb {mb} MB.', { name, mb: Math.round(UPLOAD.maxFileBytes / 1048576) });
         break;
       }
       total += f.size;
       if (total > UPLOAD.maxTotalBytes) {
-        fileError = `A csatolmányok összmérete legfeljebb ${Math.round(UPLOAD.maxTotalBytes / 1048576)} MB lehet.`;
+        fileError = tr(lang, 'A csatolmányok összmérete legfeljebb {mb} MB lehet.', { mb: Math.round(UPLOAD.maxTotalBytes / 1048576) });
         break;
       }
       const bytes = new Uint8Array(await f.arrayBuffer());
       if (!magicOk(ext, bytes)) {
-        fileError = `${name} tartalma nem egyezik a kiterjesztésével. Töltse fel valódi ${ext.toUpperCase()} fájlként.`;
+        fileError = tr(lang, '{name} tartalma nem egyezik a kiterjesztésével. Töltse fel valódi {ext} fájlként.', { name, ext: ext.toUpperCase() });
         break;
       }
       attachments.push({ filename: name, contentType: UPLOAD.types[ext].mime, bytes });
@@ -247,7 +260,7 @@ export async function handleProjectRequest(request, { env = {}, ip = null } = {}
   }
 
   if (!fileError && cfg.upload.required && !attachments.length) {
-    fileError = 'Ehhez a szolgáltatáshoz egy reprezentatív mintarajz szükséges.';
+    fileError = tr(lang, 'Ehhez a szolgáltatáshoz egy reprezentatív mintarajz szükséges.');
   }
   if (fileError) errors.files = fileError;
 
@@ -255,7 +268,7 @@ export async function handleProjectRequest(request, { env = {}, ip = null } = {}
     return json(422, {
       ok: false,
       error: 'validation_failed',
-      message: 'Néhány mezőt javítani kell.',
+      message: tr(lang, 'Néhány mezőt javítani kell.'),
       fields: errors,
     });
   }
@@ -266,13 +279,13 @@ export async function handleProjectRequest(request, { env = {}, ip = null } = {}
     return json(429, {
       ok: false,
       error: 'rate_limited',
-      message: 'Túl sok kérés érkezett erről a címről. Próbálja újra később, vagy írjon közvetlenül emailben.',
+      message: tr(lang, 'Túl sok kérés érkezett erről a címről. Próbálja újra később, vagy írjon közvetlenül emailben.'),
     });
   }
 
   /* ---- deliver ---- */
   const reference = refFor(service);
-  const text = compose({ cfg, values, attachments, reference, ip });
+  const text = compose({ cfg, values, attachments, reference, ip, lang });
 
   try {
     const { transport } = await sendMail({
@@ -293,7 +306,7 @@ export async function handleProjectRequest(request, { env = {}, ip = null } = {}
     return json(isMail ? err.status : 500, {
       ok: false,
       error: isMail && err.status === 503 ? 'transport_unconfigured' : 'delivery_failed',
-      message: isMail ? err.message : 'Váratlan hiba történt a feldolgozás közben.',
+      message: isMail ? err.message : tr(lang, 'Váratlan hiba történt a feldolgozás közben.'),
     });
   }
 }
@@ -311,13 +324,14 @@ function refFor(service) {
 const RULE = '—'.repeat(52);
 const pad = (s, n) => String(s).padEnd(n, ' ');
 
-function compose({ cfg, values, attachments, reference, ip }) {
+function compose({ cfg, values, attachments, reference, ip, lang }) {
   const L = [];
   L.push('GODATAFUSION — PROJEKT KÉRÉS');
   L.push(RULE);
   L.push(`${pad('AZONOSÍTÓ', 16)}${reference}`);
   L.push(`${pad('SZOLGÁLTATÁS', 16)}${cfg.key} — ${cfg.sub}`);
   L.push(`${pad('BEÉRKEZETT', 16)}${new Date().toISOString()}`);
+  L.push(`${pad('NYELV', 16)}${lang}`);
   L.push(RULE);
   if (values.task) L.push(`${pad('KIMUTATÁS', 16)}${QUANTIFY_TASKS[values.task]}`);
   if (values.outputs?.length) {

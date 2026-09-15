@@ -1,6 +1,7 @@
 import {
   levelFeatures, levelById, elevationLabel,
 } from '../webgl/levels.js';
+import { t } from '../i18n/t.js';
 import { REF_UID } from '../webgl/reference.js';
 
 /* ============================================================
@@ -112,7 +113,7 @@ export function createFloorMap(root, onPick) {
         cx: st.x, cy: st.z, r: 0.085, class: 'pmap__d',
         'data-map-station': st.id,
       });
-      d.appendChild(el('title')).textContent = `${st.id} — ${st.room}`;
+      d.appendChild(el('title')).textContent = `${st.id} — ${t(st.room)}`;
       svg.appendChild(d);
       dots.set(st.id, d);
     }
@@ -122,7 +123,7 @@ export function createFloorMap(root, onPick) {
     root.dataset.level = levelId;
     const cap = root.querySelector('.pmap__cap');
     if (cap) {
-      cap.textContent = `${levelId} · ${levelById(levelId).label} · `
+      cap.textContent = `${levelId} · ${t(levelById(levelId).label)} · `
         + `${elevationLabel(levelId)}`;
     }
   }

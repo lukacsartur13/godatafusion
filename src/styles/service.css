@@ -153,8 +153,11 @@
 
 .sv-hero__title .line,
 .sv-h .line {
-  padding-block: .12em;
-  margin-block: -.12em;
+  /* Re-measured for Instrument Sans (Phase 10 swapped Geist out): at the
+     .91 hero leading the accents overshoot the line box by .135 em, so the
+     old .12 em still shaved a hairline. .14 em holds them; 135 % still clears. */
+  padding-block: .14em;
+  margin-block: -.14em;
 }
 
 .sv-lede {
