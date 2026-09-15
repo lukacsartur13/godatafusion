@@ -80,7 +80,14 @@ export function initNarrative({ getScene, scanPlane }) {
   if (ovw) {
     ScrollTrigger.create({
       trigger: ovw, start: 'top top',
-      endTrigger: darkEnd, end: 'bottom bottom',
+      /* `bottom top`, not `bottom bottom`: the field's frame is STICKY, so
+         its block's bottom reaching the bottom of the viewport is the
+         moment the hold releases — the frame itself is still on screen
+         for a whole viewport after that, and switching there washed the
+         drawing and its closing sentence out on a light ground. By the
+         time the block's bottom passes the TOP, the frame has left and
+         WHY's opaque light already covers the canvas: nobody sees it. */
+      endTrigger: darkEnd, end: 'bottom top',
       onToggle: (self) => setGround(!self.isActive),
     });
   }
