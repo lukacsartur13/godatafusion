@@ -1,4 +1,5 @@
 import { SITE, heightAt } from '../webgl/field.js';
+import { fmtNum } from '../i18n/t.js';
 
 /* ============================================================
    MEASURED VALUES FOR THE DEMONSTRATION TERRAIN
@@ -42,9 +43,10 @@ function sample() {
 let cached = null;
 const field = () => (cached ??= sample());
 
-const hu = (n, d = 2) => n.toLocaleString('hu-HU', {
-  minimumFractionDigits: d, maximumFractionDigits: d, useGrouping: true,
-});
+/* PHASE 14 — the page's own number format. Hungarian writes 1 248,62,
+   English 1,248.62 and German 1.248,62, and a figure the site computed
+   has to arrive in the format of the document it appears in. */
+const hu = (n, d = 2) => fmtNum(n, d);
 
 /** World-space extremes of the field, for the 3D cut prism. */
 export function bounds() {

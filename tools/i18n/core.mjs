@@ -290,6 +290,28 @@ export function sourceLiterals() {
   return set;
 }
 
+/* Every `t('…')` call site in src/, by its key. This is the exact rule the
+   orthographic scan above can only approximate: a string handed to t() is
+   BY DEFINITION meant to be translated, accents or not — and the site's own
+   uppercase vocabulary (TEREPSZINT, DB, SHEET) carries none. */
+const T_CALL = /\bt\(\s*(?:'((?:[^'\\\n]|\\.)*)'|"((?:[^"\\\n]|\\.)*)")/g;
+
+export function translatedKeys() {
+  const set = new Set();
+  for (const f of jsFiles(join(ROOT, 'src'))) {
+    const src = readFileSync(f, 'utf8')
+      .replace(/\/\*[\s\S]*?\*\//g, ' ')
+      .replace(/(^|[^:'"\\])\/\/[^\n]*/g, '$1');
+    let m;
+    T_CALL.lastIndex = 0;
+    while ((m = T_CALL.exec(src))) {
+      const k = unescape(m[1] ?? m[2] ?? '').replace(/\s+/g, ' ').trim();
+      if (k) set.add(k);
+    }
+  }
+  return set;
+}
+
 /** The dictionary lines JavaScript can ask for, as the inline object. */
 export function runtimeBlob(dict, literals) {
   const obj = {};

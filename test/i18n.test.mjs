@@ -14,7 +14,7 @@ import { join } from 'node:path';
 
 import {
   ROOT, PAGES, TARGET_LANGS, loadDict, loadNeutral, normKey,
-  translatePage, outputPath, sourceLiterals,
+  translatePage, outputPath, sourceLiterals, translatedKeys,
 } from '../tools/i18n/core.mjs';
 import { LANGS, DEFAULT_LANG, ROUTES, route, keyOfPath, langOf, localizePath } from '../src/i18n/routes.js';
 import { MESSAGES } from '../src/i18n/messages.js';
@@ -77,7 +77,12 @@ test('every language can translate every string the code writes into the page', 
      template fragment nor a neutral mark has to be in the dictionary. */
   const HU = /[áéíóöőúüűÁÉÍÓÖŐÚÜŰ]/;
   const FRAGMENT = /\$\{|^<|<\/[a-z]/;
-  const literals = [...sourceLiterals()].filter((s) => HU.test(s) && !FRAGMENT.test(s) && !neutral.has(s));
+  /* A key the code hands t() must be translatable — that is exact, and it
+     catches the site's unaccented uppercase vocabulary (TEREPSZINT, DB)
+     that an orthographic test cannot see. Anything else that looks
+     Hungarian is caught too. */
+  const literals = [...new Set([...translatedKeys(), ...[...sourceLiterals()].filter((s) => HU.test(s))])]
+    .filter((s) => !FRAGMENT.test(s) && !neutral.has(s));
   assert.ok(literals.length > 40, 'the literal scan found almost nothing — it has stopped working');
   for (const lang of TARGET_LANGS) {
     const dict = loadDict(lang);

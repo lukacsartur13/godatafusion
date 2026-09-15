@@ -65,9 +65,26 @@ Két új kapcsoló a jelenetben (`webgl/scene.js`):
 | `setCallouts(v)` | minden kivetített feliratcsalád jelenléte egyszerre |
 
 Mindkettő **értéket vesz át, nem időtartamot**: a görgetés az óra, egy
-tween második óra lenne mellette. Csökkentett mozgásnál a végállapot
-jelenik meg, út nélkül; WebGL nélkül a blokk kirajzolja a statikus
-alaprajzot, mert akkor nincs mi feloldódjon.
+tween második óra lenne mellette. Mindkettő szorzó a feloldott rétegkészlet
+fölött, nem új preset — így azt az állapotot csökkenti, amiben az olvasó
+épp van, és nincs mihez szinkronban maradnia.
+
+Három dolog, ami közben kiderült, és mindhárom valódi hiba volt:
+
+- A sötét futam **nem a fejezetekkel ért véget**. Az alapváltó a Részletek
+  aljáig tartott, így az átlátszó adatmező világos vásznat kapott, rajta egy
+  blokknyi fehér tipográfiával.
+- A blokknak **túl kell élnie azt, akitől a képet átvette**. A narratíva
+  0,35 mp-es scrub-farka a saját vége után is ír: a legutolsó írása —
+  három szint, oldalra tolt objektum — a mező utolsó írása UTÁN érkezett.
+  A mező triggere ezért a teljes blokkot fogja át, a feloldás pedig az
+  első képernyőnyi útra van leképezve.
+- A főoldal kiírásai **angolul voltak** (`DOORS`, `WINDOWS`, `PCS`) egy
+  magyar-első oldalon, és a MEASURE három értéke beírt szám volt. Mind a
+  kilenc a szótáron megy át, a három érték pedig a terepmetrikából jön.
+
+Csökkentett mozgásnál a végállapot jelenik meg, út nélkül; WebGL nélkül a
+blokk kirajzolja a statikus alaprajzot, mert akkor nincs mi feloldódjon.
 
 Ez időzítési szabály, mielőtt stílus lenne. A kép egy képernyőnyit áll, és
 minden, ami rajta van — a rajz, a nyolc szám, a záró mondat — **készen van,

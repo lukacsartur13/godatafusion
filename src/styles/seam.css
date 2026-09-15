@@ -343,13 +343,16 @@
   pointer-events: none;
 }
 .dfield__end span {
-  --lv: clamp(0, calc((var(--t, 0) - .40 - var(--d, 0)) * 9), 1);
+  --lv: clamp(0, calc((var(--t, 0) - .48 - var(--d, 0)) * 9), 1);
   opacity: var(--lv);
   transform: translate3d(0, calc((1 - var(--lv)) * 1.6vh), 0);
 }
 /* The field's own numbers step back as the sentence lands, so the two
    never compete for the same frame. */
-.dfield__set { opacity: calc(1 - .72 * clamp(0, calc((var(--t, 0) - .40) * 6), 1)); }
+/* The figures stand down BEFORE the sentence arrives, not while it is
+   arriving: they are the evidence and it is the conclusion, and a frame
+   carrying both at full is a frame carrying neither. */
+.dfield__set { opacity: calc(1 - .74 * clamp(0, calc((var(--t, 0) - .34) * 8), 1)); }
 .dfield__e1 {
   grid-area: 3 / 2 / 5 / 8; align-self: center;
   font-size: clamp(2.6rem, 9vw, 10rem);

@@ -72,10 +72,15 @@ export function initNarrative({ getScene, scanPlane }) {
     for (const el of groundEls) if (el.dataset.tone !== tone) el.dataset.tone = tone;
     S()?.setGround(light);
   };
+  /* The dark run does not end with the chapters: the data field that
+     closes them is transparent, and the canvas it stands on is the one
+     the reader has been reading. Ending the ground here handed the field
+     a LIGHT canvas under a dark block's worth of white type. */
+  const darkEnd = document.getElementById('adat') || services;
   if (ovw) {
     ScrollTrigger.create({
       trigger: ovw, start: 'top top',
-      endTrigger: services, end: 'bottom bottom',
+      endTrigger: darkEnd, end: 'bottom bottom',
       onToggle: (self) => setGround(!self.isActive),
     });
   }

@@ -183,7 +183,8 @@ export function initDataField(root = document, { getScene } = {}) {
     const settle = () => {
       const sc = S();
       if (sc) {
-        sc.setDrawingOnly(1); sc.setCallouts(0); sc.setLevel(LEVEL); sc.setFocusSide(0, 0);
+        sc.setDrawingOnly(1); sc.setCallouts(0); sc.setFloorLabels(0, 0);
+        sc.setLevel(LEVEL); sc.setFocusSide(0, 0);
         return;
       }
       if (++tries < 40) requestAnimationFrame(settle);
@@ -192,20 +193,40 @@ export function initDataField(root = document, { getScene } = {}) {
     return;
   }
 
+  /* The trigger spans the WHOLE block, not just the resolution, and the
+     resolution is mapped onto its first viewport of travel. Ending it at
+     `top top` looked equivalent and is not: the narrative runs a scrubbed
+     0.35s tail past its own end, and its last write — three storeys, the
+     object pushed to one side — landed after this one had stopped. The
+     authority over a frame has to outlast the authority it took it from. */
+  const resolveSpan = () => {
+    const vh = window.innerHeight;
+    return vh / Math.max(1, block.offsetHeight + vh);
+  };
+
   let applied = -1;
   ScrollTrigger.create({
     trigger: block,
     start: 'top bottom',
-    end: 'top top',
+    end: 'bottom top',
     scrub: true,
     onUpdate: (self) => {
-      const p = self.progress;
+      const p = Math.min(1, self.progress / resolveSpan());
       if (Math.abs(p - applied) < 0.004) return;
       applied = p;
       const sc = S();
       if (!sc) return;
       sc.setDrawingOnly(p);
-      sc.setCallouts(1 - p);
+      /* Faster than the drawing resolves: the captions have to be gone
+         before the block's own figures arrive, or two label systems share
+         one frame — which is the thing this whole sequence is removing. */
+      sc.setCallouts(1 - Math.min(1, p * 1.7));
+      /* The world-space floor indicator goes with them. It is set by the
+         MODE rather than by the narrative — QUANTIFY asks for it — so it
+         survives everything else fading, and it would be the one caption
+         left standing on a sheet that is about to carry eight of its own.
+         The block names the storey in its own type anyway. */
+      sc.setFloorLabels(1 - Math.min(1, p * 1.7), 0);
       /* One storey, from the moment the resolution starts — the numbers
          are a reading of ONE sheet, and three stacked drawings under them
          would be three readings. */
@@ -225,6 +246,8 @@ export function initDataField(root = document, { getScene } = {}) {
       sc.setCallouts(1);
       sc.setLevel(null);
       sc.setFocusSide(-0.9, 0);
+      /* Back into QUANTIFY, which is a mode that wants its floor marks. */
+      sc.setFloorLabels(1, 0);
     },
   });
 }

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { SITE, heightAt } from './field.js';
 import { totalStations } from './stations.js';
 import { t } from '../i18n/t.js';
+import { metrics, SCALE } from '../data/terrain-metrics.js';
 import {
   PLAN, planFeatures, levelFeatures, buildingQuantities, planY,
   LEVELS, LEVEL_IDS, ROOF, roofY, elevationLabel, levelById,
@@ -43,18 +44,24 @@ export const ANCHORS = [
      (qa/p9/shots/before-lap-home-capture.png). They are on the building
      now — over the facade and the roof, where there is a surface behind
      them — and the round's own numbers are counted rather than typed. */
-  { set: 'capture', p: [-2.60, PAD + 0.95, 2.55], k: 'CAPTURE POINTS', v: `${totalStations()}` },
-  { set: 'capture', p: [-2.35, PAD + 3.35, -1.35], k: 'RESOLUTION', v: '8K / 360°' },
-  { set: 'capture', p: [1.90, PAD + 3.95, 0.30], k: 'LEVELS', v: `${LEVELS.length} + ROOF` },
+  { set: 'capture', p: [-2.60, PAD + 0.95, 2.55], k: t('FELVÉTELI PONT'), v: `${totalStations()}` },
+  { set: 'capture', p: [-2.35, PAD + 3.35, -1.35], k: t('FELBONTÁS'), v: '8K / 360°' },
+  { set: 'capture', p: [1.90, PAD + 3.95, 0.30], k: t('SZINT'), v: `${LEVELS.length} + ${t('TETŐ')}` },
   // ---- MEASURE ----
-  /* PHASE 9 §15 — the three MEASURE callouts belong to the GROUND, so they
+  /* PHASE 14 — and their VALUES are derived too. Area, cut volume and the
+     elevation at the point the third one stands on all come out of
+     data/terrain-metrics.js, integrated over the same height field the
+     canvas renders — so they are in the reader's own number format and
+     they cannot drift from the ground they are pointing at.
+
+     PHASE 9 §15 — the three MEASURE callouts belong to the GROUND, so they
      stand on it rather than inside the building: VOLUME on the cut prism it
      names, AREA on the parcel, ELEVATION on the slope it is measuring — and
      the last one has come in from x 6.2, where at 1440 it was cropped by
      the right edge of the frame. */
-  { set: 'measure', p: [-0.6, PAD + 0.06, 1.9], k: 'AREA', v: '1 248,62 m²' },
-  { set: 'measure', p: [-2.5, PAD + 2.55, -1.9], k: 'VOLUME', v: '684,30 m³' },
-  { set: 'measure', p: [4.3, heightAt(4.3, -2.9) + 0.12, -2.9], k: 'ELEVATION', v: '+3,42 m' },
+  { set: 'measure', p: [-0.6, PAD + 0.06, 1.9], k: t('TERÜLET'), v: metrics().areaText },
+  { set: 'measure', p: [-2.5, PAD + 2.55, -1.9], k: t('FÖLDTÖMEG'), v: metrics().cutText },
+  { set: 'measure', p: [4.3, heightAt(4.3, -2.9) + 0.12, -2.9], k: t('TEREPSZINT'), v: `+${fmt(heightAt(4.3, -2.9) * SCALE, 2)} m` },
   /* ---- QUANTIFY (summary) ----
      PHASE 8 — these three were the last typed quantities on the site: "24
      PCS", "31 PCS", "842,6 m²", written into the markup when the building
@@ -70,9 +77,9 @@ export const ANCHORS = [
      They are on the near and right EDGES of the drawing now, where the leader
      line has somewhere to come from and the label has somewhere to sit — the
      same convention a dimension string on a real sheet follows. */
-  { set: 'quantify', p: [PLAN.X1 + 0.42, PLAN.y + 0.06, -2.00], k: 'DOORS', v: `${Q.total.doors} PCS` },
-  { set: 'quantify', p: [PLAN.X1 + 0.42, PLAN.y + 0.06, -0.55], k: 'WINDOWS', v: `${Q.total.windows} PCS` },
-  { set: 'quantify', p: [PLAN.X1 + 0.42, PLAN.y + 0.06, 0.90], k: 'FLOOR', v: `${fmt(Q.total.area)} m²` },
+  { set: 'quantify', p: [PLAN.X1 + 0.42, PLAN.y + 0.06, -2.00], k: t('AJTÓ'), v: `${Q.total.doors} ${t('DB')}` },
+  { set: 'quantify', p: [PLAN.X1 + 0.42, PLAN.y + 0.06, -0.55], k: t('ABLAK'), v: `${Q.total.windows} ${t('DB')}` },
+  { set: 'quantify', p: [PLAN.X1 + 0.42, PLAN.y + 0.06, 0.90], k: t('ALAPTERÜLET'), v: `${fmt(Q.total.area)} m²` },
 ];
 
 /* ------------------------------------------------------------------
