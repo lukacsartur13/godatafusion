@@ -1,7 +1,8 @@
+import { ScrollTrigger } from '../core/scroll.js';
+import { env } from '../core/env.js';
 import { buildingQuantities, levelFeatures, levelById } from '../webgl/levels.js';
 import { referenceFacts, REF_UID } from '../webgl/reference.js';
-import { fmtNum } from '../i18n/t.js';
-import { t } from '../i18n/t.js';
+import { fmtNum, t } from '../i18n/t.js';
 
 /* ============================================================
    THE DATA FIELD — the end of the descent, kept.
@@ -17,6 +18,18 @@ import { t } from '../i18n/t.js';
    figures are counted from the same room rectangles the plan behind them
    is drawn from (webgl/levels.js), so the drawing and the numbers cannot
    disagree. That is the claim the block is making, made structurally.
+
+   AND THE PLAN IS THE LIVE ONE. Over the last viewport of the third
+   chapter the scene resolves into a single storey's drawing — everything
+   that is not the plan fades out, the projected callouts go with it, and
+   what is left is the line network the numbers were read off. The block
+   draws no plan of its own: it is the same object the reader has been
+   looking at since the hero, arriving at the state the page has been
+   arguing towards. A flat copy of it here would be a picture of the
+   claim instead of the claim.
+
+   The static drawing below is the fallback, and only that: it is drawn
+   when there is no renderer to resolve.
 
    `--t` across the crossing is written by modules/seams.js; each figure
    carries an `--i` and resolves from it in CSS, so the set arrives in
@@ -60,11 +73,15 @@ function figures() {
   ];
 }
 
+/** Which storey the block resolves the scene to, and captions. */
+const LEVEL = 'L01';
+
 /**
  * The drawing the numbers were read out of — one storey, rooms and
- * outline, nothing else. Quiet on purpose: this is the evidence under the
- * argument, not the subject. The reference room is marked, because it is
- * the one room the rest of the site keeps coming back to.
+ * outline, nothing else. Drawn ONLY where there is no WebGL: with a
+ * renderer the live scene is the drawing, and two of them would be one
+ * too many. Quiet on purpose, and the reference room is marked, because
+ * it is the one room the rest of the site keeps coming back to.
  */
 function drawPlan(fig) {
   const levelId = fig.dataset.dfieldPlan || 'L01';
@@ -106,7 +123,7 @@ function drawPlan(fig) {
   if (cap) cap.textContent = `${levelId} · ${t(levelById(levelId).label)}`;
 }
 
-export function initDataField(root = document) {
+export function initDataField(root = document, { getScene } = {}) {
   const block = root.querySelector('[data-dfield]');
   if (!block) return;
 
@@ -135,5 +152,79 @@ export function initDataField(root = document) {
     });
   }
 
-  block.querySelectorAll('[data-dfield-plan]').forEach(drawPlan);
+  /* The caption names the storey whichever way the drawing arrives. */
+  for (const fig of block.querySelectorAll('[data-dfield-plan]')) {
+    const cap = fig.querySelector('[data-dfield-cap]');
+    if (cap) cap.textContent = `${LEVEL} · ${t(levelById(LEVEL).label)}`;
+    if (!env.webgl || document.body.classList.contains('no-webgl')) drawPlan(fig);
+  }
+
+  /* ------------------------------------------------------------------
+     THE RESOLUTION — the last viewport of the third chapter.
+
+     Not the block's own crossing: by the time the block's top reaches the
+     top of the viewport the frame has to BE the drawing already, because
+     that is when the first figure lands on it. So this runs over the
+     viewport before that, which is the chapter's closing screen, and the
+     reader watches the scene it has been reading all along put its
+     materials down and become a sheet.
+
+     Scrubbed, and the scene's two controls take values rather than
+     durations — the scroll is the clock and a tween would be a second
+     one. On the way back up it is undone in the same movement.
+     ------------------------------------------------------------------ */
+  const S = () => getScene?.() ?? null;
+  if (env.reducedMotion) {
+    /* One frame, resolved: the drawing, without the journey to it. The
+       renderer is a lazy chunk and is usually not here yet at boot, so
+       this waits for it — briefly, and then gives up, because a reader
+       with no WebGL has the drawn fallback and needs nothing from here. */
+    let tries = 0;
+    const settle = () => {
+      const sc = S();
+      if (sc) {
+        sc.setDrawingOnly(1); sc.setCallouts(0); sc.setLevel(LEVEL); sc.setFocusSide(0, 0);
+        return;
+      }
+      if (++tries < 40) requestAnimationFrame(settle);
+    };
+    settle();
+    return;
+  }
+
+  let applied = -1;
+  ScrollTrigger.create({
+    trigger: block,
+    start: 'top bottom',
+    end: 'top top',
+    scrub: true,
+    onUpdate: (self) => {
+      const p = self.progress;
+      if (Math.abs(p - applied) < 0.004) return;
+      applied = p;
+      const sc = S();
+      if (!sc) return;
+      sc.setDrawingOnly(p);
+      sc.setCallouts(1 - p);
+      /* One storey, from the moment the resolution starts — the numbers
+         are a reading of ONE sheet, and three stacked drawings under them
+         would be three readings. */
+      sc.setLevel(p > 0.02 ? LEVEL : null);
+      /* The chapters hold the object off to one side to leave the reading
+         column clear. Nothing is beside it here — the figures are ON it —
+         so it comes back to the middle of the frame as it resolves. The
+         narrative's own trigger ends exactly where this one begins, so
+         there are never two authorities writing this. */
+      sc.setFocusSide(-0.9 * (1 - p), 0);
+    },
+    onLeaveBack: () => {
+      applied = -1;
+      const sc = S();
+      if (!sc) return;
+      sc.setDrawingOnly(0);
+      sc.setCallouts(1);
+      sc.setLevel(null);
+      sc.setFocusSide(-0.9, 0);
+    },
+  });
 }

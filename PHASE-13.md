@@ -44,9 +44,30 @@ rajz, és fölötte a számok, amiket **a rajzból** olvastunk ki. Ez most a
 **Részletek vége** — nem utána tett blokk, hanem a fejezetek zárlata
 (`modules/datafield.js`, `styles/seam.css` §04). Mindhárom fejezet egy-egy
 olvasatot adott ugyanarról a helyszínről; ez az, amivé a három együtt
-válik. Fölötte nincs él: a fejezetek átlátszóak egy sötét vászon fölött,
-ez pedig sötét alap. Utána ugyanúgy ad át, ahogy a híd: a Miért világos
-alapja ráemelkedik a tartott képre.
+válik. Fölötte nincs él, és a blokknak nincs saját alapja sem: átlátszó.
+Utána ugyanúgy ad át, ahogy a híd — a Miért világos alapja ráemelkedik a
+tartott képre.
+
+**És a rajz az élő jelenet.** A harmadik fejezet utolsó képernyőjén a
+jelenet feloldódik egyetlen szint alaprajzává: minden, ami nem a
+vonalrajz — terep, tömeg, pontfelhő, élek, maga az épületszerkezet —
+elhalványul nullára, a rajzra kivetett mérési feliratok vele együtt, és
+ami marad, az a vonalháló, amiről a számokat leolvastuk. A blokk nem rajzol
+saját alaprajzot: ugyanaz az objektum, amit az olvasó a nyitány óta néz,
+megérkezik abba az állapotba, amit az oldal végig állított. Egy lapos
+másolat itt a mondandó képe lenne a mondandó helyett.
+
+Két új kapcsoló a jelenetben (`webgl/scene.js`):
+
+| kapcsoló | mit csinál |
+|---|---|
+| `setDrawingOnly(v)` | 0 a komponált kép, 1 csak az alaprajz vonalhálója |
+| `setCallouts(v)` | minden kivetített feliratcsalád jelenléte egyszerre |
+
+Mindkettő **értéket vesz át, nem időtartamot**: a görgetés az óra, egy
+tween második óra lenne mellette. Csökkentett mozgásnál a végállapot
+jelenik meg, út nélkül; WebGL nélkül a blokk kirajzolja a statikus
+alaprajzot, mert akkor nincs mi feloldódjon.
 
 Ez időzítési szabály, mielőtt stílus lenne. A kép egy képernyőnyit áll, és
 minden, ami rajta van — a rajz, a nyolc szám, a záró mondat — **készen van,

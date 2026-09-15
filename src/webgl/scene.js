@@ -740,6 +740,11 @@ export function createScene({ canvas, stage, annoContainer, callouts, route = 'h
   const state = {
     resolve: 1, camZoom: 1, planeVis: 1, bracket: 0, pulse: 0,
     explode: 0, labels: 0,
+    /* PHASE 13 — `drawing` 0 leaves the composed frame, 1 leaves the plan's
+       line network and nothing else. `callouts` scales every projected
+       label family at once. Both are written per frame by the reader's
+       scroll, never tweened — see setDrawingOnly / setCallouts. */
+    drawing: 0, callouts: 1,
   };
 
   /* ==================================================================
@@ -1277,6 +1282,28 @@ export function createScene({ canvas, stage, annoContainer, callouts, route = 'h
     }
 
     /* ------------------------------------------------------------------
+       PHASE 13 — THE DRAWING, ALONE.
+
+       `planTight` is already almost this: the plan at 1, and a remainder
+       of terrain at .05, massing at .02, points at .06, edges at .24 and
+       a trace of the architectural shell. That remainder is what makes
+       the state read as a building seen from above rather than as a
+       DRAWING, and at the end of the third chapter the page needs the
+       drawing — the numbers that land on it were counted off a sheet,
+       not measured off a model.
+
+       So one value fades everything that is not the plan. It is a
+       multiplier on the resolved layer set rather than a new preset,
+       because the state it reduces is whatever the reader happens to be
+       in: the same control would work anywhere, and there is nothing to
+       keep in step with the blend.
+       ------------------------------------------------------------------ */
+    if (state.drawing > 0.001) {
+      const keep = 1 - state.drawing;
+      for (const key of LAYER_KEYS) if (key !== 'plan') L[key] *= keep;
+    }
+
+    /* ------------------------------------------------------------------
        PHASE 8 — A LAYER AT ZERO OPACITY IS STILL A DRAW CALL.
 
        Nine of the eleven procedural layers are at or near zero in any given
@@ -1500,6 +1527,10 @@ export function createScene({ canvas, stage, annoContainer, callouts, route = 'h
        DOM composed on the block's own field. Two label systems over one
        building is what the phase is removing, not adding to. */
     if (journey.active) for (const k in setW) setW[k] = 0;
+    /* PHASE 13 — and the same, by degree, for a frame that is resolving
+       into its drawing: the captions are a device of a composed view, and
+       they have to be gone before the block's own typography arrives. */
+    if (state.callouts < 0.999) for (const k in setW) setW[k] *= state.callouts;
   }
 
   /* ==================================================================
@@ -2140,6 +2171,27 @@ export function createScene({ canvas, stage, annoContainer, callouts, route = 'h
     },
 
     /** Suspend rendering while the stage is hidden behind opaque sections. */
+    /**
+     * How far the frame is reduced to its drawing: 0 the composed scene,
+     * 1 the plan's line network and nothing else. Written per frame from
+     * the reader's scroll, so it takes a value rather than a duration —
+     * a tween here would be a second clock against the first.
+     */
+    setDrawingOnly(v) {
+      const n = v < 0 ? 0 : v > 1 ? 1 : v;
+      if (Math.abs(n - state.drawing) < 0.002) return;
+      state.drawing = n;
+      invalidate();
+    },
+
+    /** How present every projected callout family is. 0 hides all of them. */
+    setCallouts(v) {
+      const n = v < 0 ? 0 : v > 1 ? 1 : v;
+      if (Math.abs(n - state.callouts) < 0.002) return;
+      state.callouts = n;
+      invalidate();
+    },
+
     setActive(v) {
       if (active === v) return;
       active = v;

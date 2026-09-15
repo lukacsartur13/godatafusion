@@ -235,7 +235,12 @@
   /* Under the light sections, which wipe over it — the same place in the
      stack the bridge takes. */
   z-index: 1;
-  background: var(--ground-dark);
+  /* TRANSPARENT. What is behind this block is the live scene, resolved to
+     the plan the figures were counted off; a ground of its own would be a
+     lid over the only thing the block is about. The dark comes from the
+     canvas and the atmosphere behind it, which is where the rest of this
+     run of the page gets it too. */
+  background: transparent;
   color: #F1F0EB;
   /* No top edge. The chapters run straight into this: they are
      transparent over a dark canvas and this is a dark ground, so there is
@@ -251,7 +256,10 @@
   overflow: clip;
 }
 
-/* ---- the drawing ---- */
+/* ---- the drawing ----
+   Empty with a renderer: the scene behind the block IS the drawing, and
+   `modules/datafield.js` only fills this in when there is no WebGL to
+   resolve. The caption names the storey either way. ---- */
 .dfield__plan {
   position: absolute; inset: 0;
   display: grid; place-items: center;

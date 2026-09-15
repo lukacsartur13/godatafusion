@@ -148,9 +148,11 @@ initQuantities();
    renderer so the light sections are complete on every device. */
 initExamples();
 initMedia();
-/* PHASE 13 — the drawing, and the figures counted out of it. Derived, so
-   it is on the page whether or not the renderer ever arrives. */
-initDataField();
+/* PHASE 13 — the drawing, and the figures counted out of it. The figures
+   are derived and are on the page whether or not the renderer arrives;
+   the drawing under them is the live scene resolving, and falls back to a
+   flat one only where there is no WebGL. */
+initDataField(document, { getScene: () => scene });
 mountRequest(document.getElementById('projectMount'));
 initSections({ scanPlane });
 initTracker();

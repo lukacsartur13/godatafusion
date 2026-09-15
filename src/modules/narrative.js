@@ -280,13 +280,12 @@ export function initNarrative({ getScene, scanPlane }) {
   });
 
   /* ---------- suspend the renderer behind the opaque half of the page ---- */
-  /* PHASE 13 — everything below the chapters is opaque, and the data
-     field that ends them is the first of it. The renderer suspends there
-     rather than at the old PROCESS block, which no longer exists on this
-     document — and a viewport earlier than WHY, which is a viewport of
-     rendering nobody can see. */
+  /* PHASE 13 — the data field that ends the chapters is the LAST thing
+     the renderer draws: its numbers stand on the live plan, not on a
+     picture of one. So the suspension waits for WHY, which is the first
+     opaque thing under it. */
   ScrollTrigger.create({
-    trigger: '#adat',
+    trigger: '#why',
     // Not 'top 92%': at that point the section is still below the fold and
     // the canvas is very much on screen. Suspend once it genuinely covers it.
     start: 'top 30%',
