@@ -236,21 +236,24 @@
 
 /* ---- the drawing ---- */
 .dfield__plan {
-  grid-area: 1 / 1 / 13 / 13;
-  place-self: center;
-  width: min(86%, 1180px);
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
   margin: 0;
   /* Evidence, not subject: it resolves early and stays under everything. */
-  opacity: calc(.10 + .26 * clamp(0, calc(var(--t, 0) * 4), 1));
+  opacity: calc(.14 + .34 * clamp(0, calc(var(--t, 0) * 4), 1));
   transform: scale(calc(1.06 - .06 * clamp(0, calc(var(--t, 0) * 3), 1)));
 }
-.dfield__plan svg { width: 100%; height: auto; max-height: 76svh; }
+.dfield__plan svg { width: min(86%, 1180px); height: auto; max-height: 74svh; }
+/* The caption names the storey being read. It sat centred under the
+   drawing, which is the middle of the field — straight under the figure
+   placed at 11 / 2, where the two overlapped and neither could be read.
+   It belongs with the other metadata, in the corner. */
 .dfield__plan figcaption {
-  margin-top: 10px;
+  position: absolute; top: var(--nav-safe); right: var(--gutter);
   font-family: var(--ff-mono); font-size: var(--fs-mono);
   letter-spacing: var(--ls-mono); color: rgba(241, 240, 235, .38);
 }
-.df-room { fill: rgb(var(--accent) / .05); stroke: rgba(241,240,235,.20); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.df-room { fill: rgb(var(--accent) / .06); stroke: rgba(241,240,235,.30); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .df-room--ref { fill: rgb(var(--accent) / .22); }
 .df-out { fill: none; stroke: rgba(241,240,235,.55); stroke-width: 1.6; vector-effect: non-scaling-stroke; }
 .df-dim { fill: none; stroke: var(--accent-c); stroke-width: 1; vector-effect: non-scaling-stroke; opacity: .6; }
@@ -361,7 +364,7 @@
   .dfield__e3 { grid-area: 8 / 1 / 11 / 9; font-size: clamp(2.2rem, 14vw, 5.6rem); margin-left: -5vw; }
   .dfield__k { grid-area: 1 / 2 / 2 / 9; }
   .dfield__demo { grid-area: 12 / 1 / 13 / 9; padding-inline: clamp(12px, 2vw, 34px); }
-  .dfield__plan { width: 94%; }
+  .dfield__plan svg { width: 94%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
