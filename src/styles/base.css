@@ -153,7 +153,7 @@ dl, dd, dt, p, h1, h2, h3, figure { margin: 0; }
    ============================================================ */
 .u-label,
 .eyebrow, .strip__scroll, .telemetry__k, .mode__hu, .modes__disclaimer,
-.btn, .nav__links a, .tk b, .spec__k, .pf__legend, .foot__k,
+.btn, .nav__links a, .navmenu__btn, .tk b, .spec__k, .pf__legend, .foot__k,
 .readout__data dt, .readouts__idle b, .hwin__cap,
 .pstage__k, .phand__k, .chapter__eyebrow {
   font-family: var(--ff-label);

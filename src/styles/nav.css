@@ -174,7 +174,7 @@
 .navmenu { position: relative; display: flex; align-items: center; }
 .navmenu__btn {
   position: relative;
-  display: inline-flex; align-items: center; gap: .5em;
+  display: inline-flex; align-items: center; gap: .55em;
   padding-block: 6px;
   color: var(--fg-60);
   cursor: pointer;
@@ -194,7 +194,7 @@
 /* A drawn caret, not a glyph: two hairlines of the same weight as every
    other rule on the page, so the control belongs to the drawing system. */
 .navmenu__caret {
-  position: relative; width: 7px; height: 7px; flex: none;
+  position: relative; width: .52em; height: .52em; flex: none;
   transform: translateY(-2px) rotate(45deg);
   border-right: var(--rule-w) solid currentColor;
   border-bottom: var(--rule-w) solid currentColor;

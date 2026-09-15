@@ -21,14 +21,18 @@ export function initNav() {
   if (nav) {
     const drawerEl = document.getElementById('navLinksMobile');
     const mid = () => `${Math.round(nav.offsetHeight / 2)}px`;
-    document.querySelectorAll('main > section').forEach((sec) => {
+    /* PHASE 13 — a CROSSING is not a section, and the bar still has to
+       stand on it. The bridge and the data field are the page's two dark
+       crossings; they carry `data-nav-tone` and are read the same way a
+       section's `data-tone` is. */
+    document.querySelectorAll('main > section, main > [data-nav-tone]').forEach((sec) => {
       ScrollTrigger.create({
         trigger: sec,
         start: () => `top ${mid()}`,
         end: () => `bottom ${mid()}`,
         onToggle: (self) => {
           if (!self.isActive) return;
-          const tone = sec.dataset.tone || 'dark';
+          const tone = sec.dataset.navTone || sec.dataset.tone || 'dark';
           nav.dataset.tone = tone;
           if (drawerEl) drawerEl.dataset.tone = tone;
         },

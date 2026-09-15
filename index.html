@@ -189,10 +189,9 @@
 <aside class="tracker" id="tracker" aria-label="Szakasz-navigáció">
   <a class="tk" href="#intro"    data-track="01"><i>01</i><b>NYITÁNY</b></a>
   <a class="tk" href="#eredmeny" data-track="02"><i>02</i><b>EREDMÉNY</b></a>
-  <a class="tk" href="#adat"     data-track="03"><i>03</i><b>ADAT</b></a>
-  <a class="tk" href="#services" data-track="04"><i>04</i><b>RÉSZLETEK</b></a>
-  <a class="tk" href="#why"      data-track="05"><i>05</i><b>MIÉRT</b></a>
-  <a class="tk" href="#project"  data-track="06"><i>06</i><b>AJÁNLAT</b></a>
+  <a class="tk" href="#services" data-track="03"><i>03</i><b>RÉSZLETEK</b></a>
+  <a class="tk" href="#why"      data-track="04"><i>04</i><b>MIÉRT</b></a>
+  <a class="tk" href="#project"  data-track="05"><i>05</i><b>AJÁNLAT</b></a>
 </aside>
 
 <main id="main">
@@ -370,7 +369,7 @@
        held for one viewport while the hero's canvas leaves behind it and
        the light results ground rises over it, so REALITY → DATA happens
        in one continuous movement instead of across three edges. -->
-  <div class="bridge" id="bridge" data-svc="capture" data-seam data-media-gate>
+  <div class="bridge" id="bridge" data-svc="capture" data-seam data-media-gate data-nav-tone="dark">
     <div class="bridge__stick">
       <div class="bridge__frame">
         <video data-autoplay data-src="/media/minta-360-helyszin.mp4" muted loop playsinline preload="none"
@@ -539,8 +538,7 @@
        in detail, and it is the argument of the whole company in one image —
        a plan is a picture until somebody counts it. Every number is derived
        from the same room rectangles the plan is drawn from. -->
-  <section class="dfield" id="adat" data-seam data-dfield data-svc="quantify"
-           data-section="03" data-section-name="ADAT" data-track="03">
+  <div class="dfield" id="adat" data-seam data-dfield data-svc="quantify" data-nav-tone="dark">
     <div class="dfield__stick">
       <figure class="dfield__plan" data-dfield-plan="L01" aria-hidden="true">
         <figcaption data-dfield-cap></figcaption>
@@ -561,12 +559,13 @@
 
       <p class="dfield__demo">Demonstrációs épület — minden érték a tervlapról számolva.</p>
     </div>
-  </section>
-  <!-- ================= 03 / RÉSZLETEK — SERVICES over the live scene ================= -->
-  <section class="services" id="services" data-section="04" data-section-name="RÉSZLETEK" data-track="04">
+  </div>
+
+<!-- ================= 03 / RÉSZLETEK — SERVICES over the live scene ================= -->
+  <section class="services" id="services" data-section="03" data-section-name="RÉSZLETEK" data-track="03">
     <div class="services__head">
       <p class="eyebrow eyebrow--section">
-        <span class="eyebrow__idx">04</span>
+        <span class="eyebrow__idx">03</span>
         <span class="eyebrow__rule" aria-hidden="true"></span>
         <span>A HÁROM SZOLGÁLTATÁS RÉSZLETESEN</span>
       </p>
@@ -775,13 +774,13 @@
 
   <div class="seam" data-seam data-from="dark" data-to="light" aria-hidden="true">
     <span class="seam__rule"></span>
-    <span class="seam__k"><i>05</i>MIÉRT</span>
+    <span class="seam__k"><i>04</i>MIÉRT</span>
   </div>
   <!-- ================= 04 / MIÉRT — LIGHT. Outcomes, then trust. ================= -->
-  <section class="why" id="why" data-tone="light" data-section="05" data-section-name="MIÉRT" data-track="05">
+  <section class="why" id="why" data-tone="light" data-section="04" data-section-name="MIÉRT" data-track="04">
     <div class="why__head">
       <p class="eyebrow eyebrow--section">
-        <span class="eyebrow__idx">05</span>
+        <span class="eyebrow__idx">04</span>
         <span class="eyebrow__rule" aria-hidden="true"></span>
         <span>MIÉRT ÉRI MEG</span>
       </p>
@@ -835,13 +834,13 @@
 
   <div class="seam" data-seam data-from="light" data-to="dark" aria-hidden="true">
     <span class="seam__rule"></span>
-    <span class="seam__k"><i>06</i>AJÁNLAT</span>
+    <span class="seam__k"><i>05</i>AJÁNLAT</span>
   </div>
   <!-- ================= 05 / AJÁNLAT — PROJEKT INDÍTÁSA ================= -->
-  <section class="project" id="project" data-section="06" data-section-name="AJÁNLAT" data-track="06">
+  <section class="project" id="project" data-section="05" data-section-name="AJÁNLAT" data-track="05">
     <div class="project__head">
       <p class="eyebrow eyebrow--section">
-        <span class="eyebrow__idx">06</span>
+        <span class="eyebrow__idx">05</span>
         <span class="eyebrow__rule" aria-hidden="true"></span>
         <span>PROJEKT INDÍTÁSA / AJÁNLATKÉRÉS</span>
       </p>

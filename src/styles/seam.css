@@ -200,9 +200,20 @@
 /* ============================================================
    04 — THE DATA FIELD
 
-   The last frame of the Phase 11 journey, kept as the crossing from the
-   results block into the three services. A drawing, and over it the
-   figures counted out of the drawing.
+   The last frame of the Phase 11 journey, kept as the CROSSING from the
+   results block into the three services — not a section of its own. It
+   carries no index, no entry in the tracker and no name: it is the
+   movement between two readings, and the reader should come out of it
+   feeling they never left one section.
+
+   That is a timing rule before it is a styling one. The frame is held
+   for one viewport and everything in it — the drawing, the eight
+   figures, the closing statement — is FINISHED before the hold releases
+   (`--t` reaches 0.67 at release, and the last element lands at 0.60).
+   What scrolls away afterwards is a settled, complete image, and the
+   three chapters are already rising into it: `.services` overlaps the
+   tail rather than starting after it, so there is no gap anywhere for a
+   section boundary to live in.
 
    The block is a twelve-by-twelve field and every figure is PLACED on it
    (`--a`, a grid area authored in modules/datafield.js beside the value
@@ -232,6 +243,12 @@
   grid-template-rows: repeat(12, 1fr);
   padding: var(--nav-safe) var(--gutter) clamp(18px, 4vh, 48px);
   overflow: clip;
+  /* The frame softens as it leaves, over exactly the viewport of travel
+     the hold takes to clear. Not a dissolve before the hand-over — the
+     image has to still be there while it is being handed over, or the
+     reader scrolls through an empty dark stretch, which reads as a
+     boundary just as loudly as a line would. */
+  opacity: calc(1 - .8 * clamp(0, calc((var(--t, 0) - .80) * 5), 1));
 }
 
 /* ---- the drawing ---- */
@@ -279,7 +296,7 @@
   grid-template-rows: repeat(12, 1fr);
 }
 .dfield__set li {
-  --lv: clamp(0, calc((var(--t, 0) - var(--i) * .052) * 7), 1);
+  --lv: clamp(0, calc((var(--t, 0) - var(--i) * .040) * 9), 1);
   grid-area: var(--a);
   display: grid; align-content: center; gap: .25em;
   justify-items: var(--j, start);
@@ -318,14 +335,13 @@
   pointer-events: none;
 }
 .dfield__end span {
-  --lv: clamp(0, calc((var(--t, 0) - .62 - var(--d, 0)) * 7), 1);
+  --lv: clamp(0, calc((var(--t, 0) - .40 - var(--d, 0)) * 9), 1);
   opacity: var(--lv);
   transform: translate3d(0, calc((1 - var(--lv)) * 1.6vh), 0);
 }
 /* The field's own numbers step back as the sentence lands, so the two
    never compete for the same frame. */
-.dfield__set { opacity: calc(1 - .72 * clamp(0, calc((var(--t, 0) - .62) * 5), 1)); }
-.dfield__plan { }
+.dfield__set { opacity: calc(1 - .72 * clamp(0, calc((var(--t, 0) - .40) * 6), 1)); }
 .dfield__e1 {
   grid-area: 3 / 2 / 5 / 8; align-self: center;
   font-size: clamp(2.6rem, 9vw, 10rem);
@@ -335,13 +351,13 @@
   font-size: clamp(1rem, 2.2vw, 2.2rem);
   color: rgba(241, 240, 235, .55);
   padding-right: clamp(12px, 2vw, 34px);
-  --d: .06;
+  --d: .045;
 }
 .dfield__e3 {
   grid-area: 8 / 1 / 12 / 13; align-self: center;
   font-size: clamp(3.2rem, 14.5vw, 16rem);
   margin-left: -3vw;
-  --d: .12;
+  --d: .09;
 }
 
 .dfield__demo {
@@ -376,4 +392,25 @@
   .dfield__set li, .dfield__end span, .dfield__k, .dfield__demo { opacity: 1; transform: none; }
   .dfield__set { opacity: 1; }
   .dfield__plan { opacity: .3; transform: none; }
+}
+
+/* THE HAND-OVER IS ADJACENCY, NOT OVERLAP.
+
+   A sticky frame takes exactly one viewport of scroll to clear once its
+   hold releases, and what rises behind it in that viewport is whatever
+   comes next in the document. So the chapters simply follow: the frame's
+   bottom edge and the chapters' first pixel are the same line, and the
+   two move as one column.
+
+   Pulling the chapters UP into the tail was tried and is wrong — the
+   section is transparent and paints after the field, so its eyebrow
+   landed on top of the field's own figures and two compositions fought
+   for one frame. The only thing that needed removing was the section's
+   full opening pad, which was the gap that read as a boundary. */
+.dfield + .services {
+  margin-top: 0;
+  padding-block-start: clamp(30px, 6vh, 80px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .dfield + .services { padding-block-start: clamp(40px, 8vh, 110px); }
 }

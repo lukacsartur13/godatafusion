@@ -41,7 +41,13 @@ kiesnek.
 
 A bejárás utolsó képe volt az egyetlen, aminek meg kellett maradnia: a
 rajz, és fölötte a számok, amiket **a rajzból** olvastunk ki. Ez most a
-02 → 04 átmenet (`modules/datafield.js`, `styles/seam.css` §04).
+02 → 03 **átmenet** (`modules/datafield.js`, `styles/seam.css` §04).
+
+Ez időzítési szabály, mielőtt stílus lenne. A kép egy képernyőnyit áll, és
+minden, ami rajta van — a rajz, a nyolc szám, a záró mondat — **készen van,
+mire a tartás elenged** (`--t` 0,60-nál végez, az elengedés 0,67-nél van).
+Ami utána elgördül, egy kész, nyugvó kép, és a fejezetek közvetlenül a
+széle alatt jönnek: nincs sehol rés, amiben egy szekcióhatár megülhetne.
 
 Nincs benne egyetlen beírt érték sem. A nyolc szám ugyanabból a
 helyiség-geometriából (`webgl/levels.js`) számolódik, amiből a mögötte
