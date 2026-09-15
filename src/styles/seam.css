@@ -395,7 +395,14 @@
   .dfield__e2 { grid-area: 6 / 4 / 7 / 9; font-size: clamp(.9rem, 4vw, 1.2rem); }
   .dfield__e3 { grid-area: 8 / 1 / 11 / 9; font-size: clamp(2.2rem, 14vw, 5.6rem); margin-left: -5vw; }
   .dfield__k { grid-area: 1 / 2 / 2 / 9; }
-  .dfield__demo { grid-area: 12 / 1 / 13 / 9; padding-inline: clamp(12px, 2vw, 34px); }
+  .dfield__demo {
+    grid-area: 12 / 1 / 13 / 9; padding-inline: clamp(12px, 2vw, 34px);
+    /* On a phone the ring closes at the bottom of the frame and the last
+       pair of figures reaches into this row, so the two were written over
+       each other. Of the two, the caption is the one that can wait: it
+       arrives with the sentence, by which time the figures have gone. */
+    opacity: clamp(0, calc((var(--t, 0) - .58) * 10), 1);
+  }
   .dfield__plan svg { width: 94%; }
 }
 
