@@ -41,7 +41,12 @@ kiesnek.
 
 A bejárás utolsó képe volt az egyetlen, aminek meg kellett maradnia: a
 rajz, és fölötte a számok, amiket **a rajzból** olvastunk ki. Ez most a
-02 → 03 **átmenet** (`modules/datafield.js`, `styles/seam.css` §04).
+**Részletek vége** — nem utána tett blokk, hanem a fejezetek zárlata
+(`modules/datafield.js`, `styles/seam.css` §04). Mindhárom fejezet egy-egy
+olvasatot adott ugyanarról a helyszínről; ez az, amivé a három együtt
+válik. Fölötte nincs él: a fejezetek átlátszóak egy sötét vászon fölött,
+ez pedig sötét alap. Utána ugyanúgy ad át, ahogy a híd: a Miért világos
+alapja ráemelkedik a tartott képre.
 
 Ez időzítési szabály, mielőtt stílus lenne. A kép egy képernyőnyit áll, és
 minden, ami rajta van — a rajz, a nyolc szám, a záró mondat — **készen van,

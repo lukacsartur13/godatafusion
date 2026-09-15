@@ -200,20 +200,23 @@
 /* ============================================================
    04 — THE DATA FIELD
 
-   The last frame of the Phase 11 journey, kept as the CROSSING from the
-   results block into the three services — not a section of its own. It
-   carries no index, no entry in the tracker and no name: it is the
-   movement between two readings, and the reader should come out of it
-   feeling they never left one section.
+   The last frame of the Phase 11 journey, kept as THE END OF THE
+   CHAPTERS — not a section of its own and not a block placed after them.
+   It carries no index, no entry in the tracker and no name, and there is
+   no edge where the chapters stop and it starts: both are dark, and the
+   canvas behind the chapters is the same dark. The reader should arrive
+   at it feeling they are still inside the section they were reading.
 
-   That is a timing rule before it is a styling one. The frame is held
-   for one viewport and everything in it — the drawing, the eight
-   figures, the closing statement — is FINISHED before the hold releases
-   (`--t` reaches 0.67 at release, and the last element lands at 0.60).
-   What scrolls away afterwards is a settled, complete image, and the
-   three chapters are already rising into it: `.services` overlaps the
-   tail rather than starting after it, so there is no gap anywhere for a
-   section boundary to live in.
+   That is a timing rule before it is a styling one. Everything in the
+   frame — the drawing, the eight figures, the closing statement — is
+   FINISHED well before the hold ends (the last element lands at `--t`
+   0.60), so the image is settled by the time anything moves over it.
+
+   Then it hands over the way the bridge does: WHY is opaque light and
+   simply rises over the held frame. An opaque section scrolling over a
+   sticky one is a wipe that costs nothing and cannot desynchronise, and
+   it is the same gesture the page already used once, which is why the
+   two crossings read as one idea rather than two tricks.
 
    The block is a twelve-by-twelve field and every figure is PLACED on it
    (`--a`, a grid area authored in modules/datafield.js beside the value
@@ -229,11 +232,14 @@
   position: relative;
   z-index: 2;
   height: 210svh;
+  /* Under the light sections, which wipe over it — the same place in the
+     stack the bridge takes. */
+  z-index: 1;
   background: var(--ground-dark);
   color: #F1F0EB;
-  /* The light results block above ends against this, and a hard edge
-     between two grounds is the one thing this phase is removing. */
-  border-top: var(--rule-w) solid rgba(241, 240, 235, .12);
+  /* No top edge. The chapters run straight into this: they are
+     transparent over a dark canvas and this is a dark ground, so there is
+     nothing to draw a line between. */
 }
 .dfield__stick {
   position: sticky; top: 0;
@@ -243,12 +249,6 @@
   grid-template-rows: repeat(12, 1fr);
   padding: var(--nav-safe) var(--gutter) clamp(18px, 4vh, 48px);
   overflow: clip;
-  /* The frame softens as it leaves, over exactly the viewport of travel
-     the hold takes to clear. Not a dissolve before the hand-over — the
-     image has to still be there while it is being handed over, or the
-     reader scrolls through an empty dark stretch, which reads as a
-     boundary just as loudly as a line would. */
-  opacity: calc(1 - .8 * clamp(0, calc((var(--t, 0) - .80) * 5), 1));
 }
 
 /* ---- the drawing ---- */
@@ -394,23 +394,7 @@
   .dfield__plan { opacity: .3; transform: none; }
 }
 
-/* THE HAND-OVER IS ADJACENCY, NOT OVERLAP.
-
-   A sticky frame takes exactly one viewport of scroll to clear once its
-   hold releases, and what rises behind it in that viewport is whatever
-   comes next in the document. So the chapters simply follow: the frame's
-   bottom edge and the chapters' first pixel are the same line, and the
-   two move as one column.
-
-   Pulling the chapters UP into the tail was tried and is wrong — the
-   section is transparent and paints after the field, so its eyebrow
-   landed on top of the field's own figures and two compositions fought
-   for one frame. The only thing that needed removing was the section's
-   full opening pad, which was the gap that read as a boundary. */
-.dfield + .services {
-  margin-top: 0;
-  padding-block-start: clamp(30px, 6vh, 80px);
-}
-@media (prefers-reduced-motion: reduce) {
-  .dfield + .services { padding-block-start: clamp(40px, 8vh, 110px); }
-}
+/* The chapters already close with no bottom pad (styles/services.css), so
+   the last thing they say and the frame that concludes them are one
+   continuous dark run with nothing between them. Nothing to add here —
+   this note is the reason there is no rule. */
