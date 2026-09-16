@@ -44,6 +44,15 @@ jobs:
 
       - run: npm ci
 
+      # The translated documents are GENERATED, and .gitignore keeps them
+      # out of the repository — a clean checkout has no /en/ or /de/ at
+      # all. `npm run build` makes them on its own (vite.config.js calls
+      # generateAll before Rollup reads its inputs), but the gate in front
+      # of the build runs first and asserts they exist, so on a fresh
+      # runner the suite failed before anything was ever built. Generating
+      # here also means the gate tests the same documents that ship.
+      - run: npm run i18n
+
       - run: npm test
 
       - name: Build
