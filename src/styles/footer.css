@@ -101,3 +101,11 @@
   .foot__word[data-l="3"] { color: var(--accent-c); }
   .foot__slash { color: var(--accent-40); }
 }
+
+/* the client's logo signs the base line — same construction as the
+   header (styles/nav.css), smaller, and painted in the footer's --fg */
+.foot__base { align-items: center; }
+.foot__brand {
+  --logo-h: 22px;
+  display: inline-flex; align-items: center; gap: calc(var(--logo-h) * .142);
+}

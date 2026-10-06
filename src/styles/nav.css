@@ -44,29 +44,29 @@
   background: linear-gradient(180deg, rgb(var(--bg-rgb) / .92), rgb(var(--bg-rgb) / .55) 62%, rgb(var(--bg-rgb) / 0));
 }
 
-.nav__brand { display: inline-flex; align-items: center; gap: .6em; }
-.nav__word {
-  /* The wordmark is the one place the DISPLAY face appears at interface
-     size. It is the signature, so it is set in the signature face — and
-     at 550 rather than 500, because Instrument Sans at 16 px against
-     tracked Plex Sans caps needs the extra half-step to hold the corner. */
-  font-family: var(--ff-display);
-  font-size: clamp(.96rem, 1.15vw, 1.1rem);
-  font-weight: 550; letter-spacing: -.022em;
+/* The logo is the client's own mark, in the proportions of the master
+   artwork: the blue bars are a square of --logo-h, the wordmark is .64 of
+   that tall and sits .14 of it away. The bars are an image because their
+   blues do not change with the ground. The wordmark is a MASK painted in
+   --fg, so it is black over a light section and white over a dark one —
+   the same two artworks the client supplied, chosen by the tone system
+   that already turns the rest of the bar. */
+.nav__brand {
+  --logo-h: clamp(24px, 2.1vw, 30px);
+  display: inline-flex; align-items: center; gap: calc(var(--logo-h) * .142);
 }
-.nav__glyph {
-  position: relative; width: 15px; height: 15px; flex: none;
-}
-.nav__glyph::before, .nav__glyph::after {
-  content: ''; position: absolute; left: 0; right: 0; height: var(--rule-w);
+.brand__mark { width: var(--logo-h); height: var(--logo-h); flex: none; display: block; }
+.brand__word {
+  display: block; flex: none;
+  height: calc(var(--logo-h) * .64);
+  aspect-ratio: 772 / 96;
   background: var(--fg);
-  transition: transform var(--motion-state) var(--ease-io),
-              background-color var(--motion-state) var(--ease-io);
+  -webkit-mask: url('/brand/wordmark.png') center / contain no-repeat;
+          mask: url('/brand/wordmark.png') center / contain no-repeat;
+  /* the name stays in the document for anything that reads text */
+  color: transparent; font-size: 0; overflow: hidden;
+  transition: background-color var(--motion-state) var(--ease-io);
 }
-.nav__glyph::before { top: 4px; }
-.nav__glyph::after  { top: 10px; background: var(--accent-c); }
-.nav__brand:hover .nav__glyph::before { transform: translateY(3px); }
-.nav__brand:hover .nav__glyph::after  { transform: translateY(-3px); }
 
 /* ============================================================
    §09 — NAVIGATION
